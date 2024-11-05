@@ -17,7 +17,7 @@ uv sync
 ### Activate the virtual environment (to have access to all the tools, dependencies...)
 
 ```bash
-uv venv
+source .venv/bin/activate
 ```
 
 ### Run the linting etc.. before you commit ! (venv should be enabled)
