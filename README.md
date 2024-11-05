@@ -20,10 +20,10 @@ uv sync
 source .venv/bin/activate
 ```
 
-### Run the linting etc.. before you commit ! (venv should be enabled)
+### Run the linting etc.. before you commit !
 
 ```bash
-tox
+uv run tox
 ```
 
 ### Execute the application
