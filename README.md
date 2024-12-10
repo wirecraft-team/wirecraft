@@ -1,5 +1,5 @@
 # client
-The client side of WireCreft.
+The client side of WireCraft.
 
 
 ## Commands
@@ -14,20 +14,26 @@ Check https://docs.astral.sh/uv/getting-started/installation/
 uv sync
 ```
 
-### Activate the virtual environment (to have access to all the tools, dependencies...)
+### Run the project
 
 ```bash
-source .venv/bin/activate
+uv run python ./src/main.py
 ```
 
-### Run the linting etc.. before you commit !
+### Run the linting etc.. **before you commit** !
 
 ```bash
 uv run tox
 ```
 
-### Execute the application
+### (Optional) Activate the virtual environment (to have access to all the tools, dependencies...)
 
+#### Linux / MacOS
 ```bash
-./run.sh
+source .venv/bin/activate
+```
+
+#### Windows
+```bash
+./.venv/Scripts/activate.bat
 ```
