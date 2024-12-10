@@ -1,2 +1,1 @@
-def get_value():
-    return "Hello World"
+from .server import Server as Server

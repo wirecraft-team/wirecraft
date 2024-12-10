@@ -4,6 +4,7 @@ import pygame
 from pygame.locals import QUIT
 
 from server import get_value
+from .server_interface import ServerInterface
 
 FPS = pygame.time.Clock()
 FPS.tick(30)
@@ -13,6 +14,11 @@ BLACK = (0, 0, 0)
 class Game:
     def __init__(self, view: str) -> None:
         pygame.init()
+        self.server = ServerInterface()
+        self.displaysurf = pygame.display.set_mode((400, 300))
+
+        # Example: get the money
+        self.server.get_money()
         self.displaysurf = pygame.display.set_mode((1920, 1080))
         self.view = view
         # pygame.display.set_caption(get_value())
