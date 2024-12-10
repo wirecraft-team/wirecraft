@@ -3,7 +3,6 @@ import sys
 import pygame
 from pygame.locals import QUIT
 
-from server import get_value
 from .server_interface import ServerInterface
 
 FPS = pygame.time.Clock()
@@ -21,7 +20,6 @@ class Game:
         self.server.get_money()
         self.displaysurf = pygame.display.set_mode((1920, 1080))
         self.view = view
-        # pygame.display.set_caption(get_value())
         pygame.display.set_caption("Wirecraft")
 
     def menu(self) -> None:
