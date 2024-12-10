@@ -2,7 +2,7 @@ from client import Game
 
 
 def main():
-    game = Game()
+    game = Game("menu")
     game.start()
 
 
