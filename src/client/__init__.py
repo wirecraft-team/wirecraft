@@ -45,7 +45,7 @@ class Game:
         if play_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
             self.game()
 
-    def updatecam(self, event) -> None:
+    def updatecam(self) -> None:
         # TODO Add support for mouse drag and touchpad two finger drag
         # TODO This is terrible, fix it
         if pygame.key.get_pressed()[pygame.K_LEFT]:
@@ -65,11 +65,11 @@ class Game:
         device1 = Device((1920 / 3 + self.camera.x, 1080 / 3 + self.camera.y), "switch", self.camera.zoom)
         device1.draw(self.displaysurf)
 
-    def updateview(self, events) -> None:
+    def updateview(self) -> None:
         if self.view == "menu":
             self.menu()
         elif self.view == "game":
-            self.updatecam(events)
+            self.updatecam()
             self.game()
 
     def start(self):
@@ -85,22 +85,19 @@ class Game:
                         self.camera.zoom += 0.1
                     if event.button == 5 and self.camera.zoom > 0.3:
                         self.camera.zoom -= 0.1
-            self.updateview(pygame.event.get())
+            self.updateview()
             pygame.display.update()
 
 
 class Device(pygame.sprite.Sprite):
-    def __init__(self, pos: tuple, device_type: str, zoom: float = 1):
+    def __init__(self, pos: tuple[float,float], device_type: str, zoom: float = 1):
         super().__init__()
         self.image = pygame.image.load(f"assets/{device_type}.png")
         self.image = pygame.transform.scale(
             self.image, (int(self.image.get_width() * zoom), int(self.image.get_height() * zoom))
         )
         self.rect = self.image.get_rect()
-        self.rect.center = pos
+        self.rect.center = int(pos[0]), int(pos[1])
 
-    def draw(self, surface):
+    def draw(self, surface: pygame.Surface):
         surface.blit(self.image, self.rect)
-
-    def set_pos(self, pos):
-        self.rect.center = pos
