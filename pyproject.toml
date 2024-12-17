@@ -17,6 +17,9 @@ dev-dependencies = [
     "tox-uv",
 ]
 
+[tool.pyright]
+typeCheckingMode = "strict"
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
