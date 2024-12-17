@@ -11,6 +11,7 @@ class ServerInterface:
     Dans l'état, elle n'est qu'une "duplication" de la partie "server._private", mais permettra une transition simple
     vers un serveur distant sans trop de refactoring.
     """
+
     def __init__(self) -> None:
         self.connection = Server()
 

@@ -1,8 +1,8 @@
-from client import Game
+from client import Camera, Game
 
 
 def main():
-    game = Game("menu")
+    game = Game("menu", Camera(0, 0, 1))
     game.start()
 
 
