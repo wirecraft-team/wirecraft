@@ -6,6 +6,9 @@ from src.client import Camera, Game, Resolution
 
 
 def main():
+    iswin = platform.system() == "Windows"
+    if iswin:
+        ctypes.windll.user32.SetProcessDPIAware()  # type: ignore
     try:
         with open("settings.json") as file:
             settings = json.load(file)
@@ -20,7 +23,4 @@ def main():
 
 
 if __name__ == "__main__":
-    iswin = platform.system() == "Windows"
-    if iswin:
-        ctypes.windll.user32.SetProcessDPIAware()  # type: ignore
     main()
