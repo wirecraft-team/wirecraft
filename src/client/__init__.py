@@ -90,7 +90,7 @@ class Game:
 
 
 class Device(pygame.sprite.Sprite):
-    def __init__(self, pos: tuple[float,float], device_type: str, zoom: float = 1):
+    def __init__(self, pos: tuple[float, float], device_type: str, zoom: float = 1):
         super().__init__()
         self.image = pygame.image.load(f"assets/{device_type}.png")
         self.image = pygame.transform.scale(

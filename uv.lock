@@ -254,9 +254,9 @@ wheels = [
 ]
 
 [[package]]
-name = "wirecraft-client"
-version = "1.0"
-source = { virtual = "." }
+name = "wirecraft"
+version = "0.1b0"
+source = { editable = "." }
 dependencies = [
     { name = "pygame" },
 ]

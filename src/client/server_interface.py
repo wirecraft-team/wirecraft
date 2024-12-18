@@ -1,4 +1,4 @@
-from server import Server
+from src.server import Server
 
 
 class ServerInterface:
@@ -17,4 +17,3 @@ class ServerInterface:
 
     def get_money(self) -> int:
         return self.connection.get_money()
-

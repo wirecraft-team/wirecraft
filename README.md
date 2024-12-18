@@ -2,22 +2,35 @@
 
 The WireCraft project!
 
-## Commands
+## Installation instructions
+
+> [!IMPORTANT]
+> The project requires Python >= 3.12 !
+
+> [!WARNING]
+> This installation method doesn't work for now.
+
+```bash
+pip install git+https://github.com/wirecraft-team/wirecraft.git -U
+wirecraft
+```
+
+## Development instructions
 
 ### Install `uv`
 
 Check https://docs.astral.sh/uv/getting-started/installation/
 
-### Install the project (dependencies...)
+### Install the dependencies and developer tools
 
 ```bash
-uv sync
+uv sync --dev
 ```
 
 ### Run the project
 
 ```bash
-uv run python ./src/main.py
+uv run wirecraft
 ```
 
 ### Run the linting etc.. **before you commit** !
@@ -27,6 +40,12 @@ uv run tox
 ```
 
 ### (Optional) Activate the virtual environment (to have access to all the tools, dependencies...)
+
+> [!NOTE]
+> `uv sync` will create a virtual environment under a `.venv` directory.
+> When you use the command `uv run {command}`, `uv` will automatically call your command from your virtual environment, so you don't need to activate it.
+> For example, before enable to virtual environment, you can do `uv run tox`, `uv run wirecraft`, `uv run ruff`...
+> But after you enable it, you can directly do `tox`, `wirecraft`, `ruff`...
 
 #### Linux / MacOS
 ```bash
