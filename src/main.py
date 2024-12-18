@@ -1,4 +1,6 @@
+import ctypes
 import json
+import platform
 
 from src.client import Camera, Game, Resolution
 
@@ -18,4 +20,7 @@ def main():
 
 
 if __name__ == "__main__":
+    iswin = platform.system() == "Windows"
+    if iswin:
+        ctypes.windll.user32.SetProcessDPIAware()  # type: ignore
     main()

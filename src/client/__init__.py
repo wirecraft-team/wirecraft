@@ -9,7 +9,7 @@ from .server_interface import ServerInterface
 FPS = pygame.time.Clock()
 FPS.tick(30)
 BLACK = (0, 0, 0)
-RES_LIST = [(3024, 1964), (1920, 1080), (1900, 1200), (1280, 720), (800, 600)]
+RES_LIST = [(3024, 1964), (1920, 1080), (1900, 1200)]
 FLAGS = pygame.FULLSCREEN | pygame.NOFRAME | pygame.SCALED
 
 
