@@ -57,6 +57,33 @@ source .venv/bin/activate
 ./.venv/Scripts/activate.bat
 ```
 
+### Debugging
+
+If you are no a big fan of `print("a")`, `print("aa")`, `print("aaaaaaaaaaaaaaaa")`, you can use the VSCode Debugger! (Or any other debugger, but I will only give explanations for VSCode).
+
+> [!NOTE]
+> The following instructions will work, but I'm not sure if it is the best way to proceed, because it doesn't launch the script in the same way than using `uv run wirecraft`.  
+> However, it works, so be happy with that.
+
+Create a `.vscode/launch.json` and add the following config:
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Wirecraft",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "src/client/__main__.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}
+```
+
+Then, on the debugger tab, you can do `Debug Wirecraft`! Your program will stop on breakpoints, giving you the ability to see your variables, etc...
+
+
 ## Recommended VSCode Extensions
 
 ### Python related extensions
