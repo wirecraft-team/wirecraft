@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 .vscode
 .DS_Store
+settings.json
+.ruff_cache
 
 # C extensions
 *.so
