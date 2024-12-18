@@ -3,6 +3,7 @@ name = "wirecraft"
 version = "0.1b0"
 requires-python = ">=3.12"
 dependencies = [
+    "pre-commit>=4.0.1",
     #
     "pygame",
 ]
