@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import pygame
 from pygame.locals import QUIT
 
+from .assets import SWITCH_DEVICE
 from .server_interface import ServerInterface
 
 FPS = pygame.time.Clock()
@@ -27,7 +28,7 @@ class Game:
         self.camera = camera
         # Example: get the money
         self.server.get_money()
-        self.displaysurf = pygame.display.set_mode((1920, 1080))
+        # self.displaysurf = pygame.display.set_mode((1920, 1080))
         self.view = view
         pygame.display.set_caption("Wirecraft")
 
@@ -98,7 +99,7 @@ class Game:
 class Device(pygame.sprite.Sprite):
     def __init__(self, pos: tuple[float, float], device_type: str, zoom: float = 1):
         super().__init__()
-        self.image = pygame.image.load(f"assets/{device_type}.png")
+        self.image = SWITCH_DEVICE
         self.image = pygame.transform.scale(
             self.image, (int(self.image.get_width() * zoom), int(self.image.get_height() * zoom))
         )

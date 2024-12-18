@@ -1,4 +1,4 @@
-from src.server import Server
+from server import Server
 
 
 class ServerInterface:

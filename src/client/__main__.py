@@ -1,4 +1,4 @@
-from src.client import Camera, Game
+from client import Camera, Game
 
 
 def main():
