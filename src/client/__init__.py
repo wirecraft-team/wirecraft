@@ -44,6 +44,12 @@ class Game:
         self.displaysurf.blit(play, play_rect)
         if play_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
             self.game()
+        exit = buttonfont.render("Exit", True, BLACK)
+        exit_rect = exit.get_rect(center=(1920 / 2, 1080 / 1.5))
+        self.displaysurf.blit(exit, exit_rect)
+        if exit_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+            pygame.quit()
+            sys.exit()
 
     def updatecam(self) -> None:
         # TODO Add support for mouse drag and touchpad two finger drag
@@ -90,7 +96,7 @@ class Game:
 
 
 class Device(pygame.sprite.Sprite):
-    def __init__(self, pos: tuple[float,float], device_type: str, zoom: float = 1):
+    def __init__(self, pos: tuple[float, float], device_type: str, zoom: float = 1):
         super().__init__()
         self.image = pygame.image.load(f"assets/{device_type}.png")
         self.image = pygame.transform.scale(
