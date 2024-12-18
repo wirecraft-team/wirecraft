@@ -1,6 +1,6 @@
 import json
 
-from client import Camera, Game, Resolution
+from src.client import Camera, Game, Resolution
 
 
 def main():
