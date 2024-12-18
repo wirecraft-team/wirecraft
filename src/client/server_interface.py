@@ -17,4 +17,3 @@ class ServerInterface:
 
     def get_money(self) -> int:
         return self.connection.get_money()
-
