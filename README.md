@@ -1,6 +1,6 @@
-# client
-The client side of WireCraft.
+# WireCraft
 
+The WireCraft project!
 
 ## Commands
 
@@ -41,16 +41,22 @@ source .venv/bin/activate
 ## Recommended VSCode Extensions
 
 ### Python related extensions
+
+#### Important ones (for the project)
 ```
-tamasfe.even-better-toml
-VisualStudioExptTeam.vscodeintellicode
-VisualStudioExptTeam.intellicode-api-usage-examples
 ms-python.vscode-pylance
-charliermarsh.ruff
 ms-python.python
 ms-python.debugpy
-donjayamanne.python-environment-manager
+charliermarsh.ruff
+```
+
+#### Bonus ones
+```
 christian-kohler.path-intellisense
+VisualStudioExptTeam.vscodeintellicode
+VisualStudioExptTeam.intellicode-api-usage-examples
+donjayamanne.python-environment-manager
+tamasfe.even-better-toml
 ```
 
 ### General extensions that are usefull
@@ -88,4 +94,30 @@ bierner.markdown-yaml-preamble
 bierner.markdown-footnotes
 darkriszty.markdown-table-prettify
 bpruitt-goddard.mermaid-markdown-syntax-highlighting
+```
+
+## Recommended VSCode Settings
+
+Use the command `>Preferences: Open user Settings (JSON)` (using `CTRL+P`).  
+(You can also use the command `>Preferences: Open Workspace Settings (JSON)` if you don't want to edit your global settings).
+
+Paste the following settings:
+```json
+{
+    "[python]": {
+      "editor.rulers": [
+        120
+      ],
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "python.languageServer": "Pylance",
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.completeFunctionParens": false,
+    "autoDocstring.docstringFormat": "google-notypes",
+    "autoDocstring.startOnNewLine": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.terminal.activateEnvironment": true,
+}
 ```
