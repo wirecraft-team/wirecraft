@@ -3,13 +3,14 @@ name = "wirecraft"
 version = "0.1b0"
 requires-python = ">=3.12"
 dependencies = [
-    "pre-commit>=4.0.1",
     #
+    "pre-commit>=4.0.1",
     "pygame",
+    "sqlmodel>=0.0.22",
 ]
 
-[project.gui-scripts]
-wirecraft = "client.__main__:main"
+[project.scripts]
+wirecraft = "wirecraft.client.__main__:main"
 
 
 [build-system]
@@ -20,8 +21,7 @@ build-backend = "hatchling.build"
 only-include = ["src", "assets"]
 
 [tool.hatch.build.targets.wheel.sources]
-"src/client" = "client"
-"src/server" = "server"
+"src/wirecraft" = "wirecraft"
 "assets" = "wirecraft/assets"
 
 
