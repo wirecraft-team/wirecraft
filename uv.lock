@@ -454,7 +454,6 @@ name = "wirecraft"
 version = "0.1b0"
 source = { editable = "." }
 dependencies = [
-    { name = "pre-commit" },
     { name = "pygame" },
     { name = "sqlmodel" },
 ]
@@ -462,6 +461,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "debugpy" },
+    { name = "pre-commit" },
     { name = "pyright" },
     { name = "ruff" },
     { name = "tox" },
@@ -470,14 +470,14 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pre-commit", specifier = ">=4.0.1" },
     { name = "pygame" },
-    { name = "sqlmodel", specifier = ">=0.0.22" },
+    { name = "sqlmodel" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "debugpy" },
+    { name = "pre-commit" },
     { name = "pyright" },
     { name = "ruff" },
     { name = "tox" },
