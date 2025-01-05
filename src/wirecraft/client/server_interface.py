@@ -1,4 +1,4 @@
-from server import Server
+from wirecraft.server import Server
 
 
 class ServerInterface:
