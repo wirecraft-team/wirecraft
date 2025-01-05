@@ -6,9 +6,10 @@ dependencies = [
     "pre-commit>=4.0.1",
     #
     "pygame",
+    "sqlmodel>=0.0.22",
 ]
 
-[project.gui-scripts]
+[project.scripts]
 wirecraft = "client.__main__:main"
 
 
