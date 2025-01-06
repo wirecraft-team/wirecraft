@@ -158,5 +158,3 @@ class Device(pygame.sprite.Sprite):
 
     def draw(self, surface: pygame.Surface):
         surface.blit(self.image, self.rect)
-
-
