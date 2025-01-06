@@ -1,5 +1,6 @@
 import sys
 from dataclasses import dataclass
+from enum import Enum
 
 import pygame
 from pygame.locals import QUIT
@@ -12,6 +13,20 @@ WHITE = (255, 255, 255)
 RES_LIST = [(3024, 1964), (1920, 1080), (1900, 1200)]
 FLAGS = pygame.FULLSCREEN | pygame.NOFRAME | pygame.SCALED
 FPS = 30
+
+
+class Gamestate(Enum):
+    MENU = 0
+    GAME = 1
+    SETTINGS = 2
+
+
+class MouseButtons(Enum):
+    LEFT = 1
+    MIDDLE = 2
+    RIGHT = 3
+    WHEEL_UP = 4
+    WHEEL_DOWN = 5
 
 
 @dataclass
@@ -109,7 +124,7 @@ class Device(pygame.sprite.Sprite):
 
 
 class Game:
-    def __init__(self, view: str, camera: Camera, resolution: Resolution) -> None:
+    def __init__(self, view: Gamestate, camera: Camera, resolution: Resolution) -> None:
         pygame.init()
         self.clock = pygame.time.Clock()
         self.server = ServerInterface()
@@ -134,7 +149,7 @@ class Game:
         self.click_handled = False
 
     def settings(self) -> None:
-        self.view = "settings"
+        self.view = Gamestate.SETTINGS
         self.displaysurf.fill(WHITE)
         titlefont = pygame.font.Font(None, 150)
         buttonfont = pygame.font.Font(None, 100)
@@ -168,11 +183,11 @@ class Game:
         self.displaysurf.blit(back, back_rect)
 
         if back_rect.collidepoint(mouse_pos) and mouse_clicked:
-            self.view = "menu"
+            self.view = Gamestate.MENU
             self.click_handled = True
 
     def menu(self) -> None:
-        self.view = "menu"
+        self.view = Gamestate.MENU
         self.displaysurf.fill(WHITE)
         titlefont = pygame.font.Font(None, 150)
         buttonfont = pygame.font.Font(None, 100)
@@ -190,7 +205,7 @@ class Game:
         play_rect = play.get_rect(center=(self.resolution.width / 2, self.resolution.height / 3))
         self.displaysurf.blit(play, play_rect)
         if play_rect.collidepoint(mouse_pos) and mouse_clicked:
-            self.view = "game"
+            self.view = Gamestate.GAME
             self.click_handled = True
 
         # Render settings button
@@ -198,7 +213,7 @@ class Game:
         settings_rect = settings.get_rect(center=(self.resolution.width / 2, self.resolution.height / 2))
         self.displaysurf.blit(settings, settings_rect)
         if settings_rect.collidepoint(mouse_pos) and mouse_clicked:
-            self.view = "settings"
+            self.view = Gamestate.SETTINGS
             self.click_handled = True
 
         # Render exit button
@@ -214,21 +229,21 @@ class Game:
             pygame.quit()
             sys.exit()
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.view = "menu"
+            self.view = Gamestate.MENU
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 4:  # Mouse wheel up
+            if event.button == MouseButtons.WHEEL_UP:
                 self.camera.adjust_zoom(0.1, pygame.mouse.get_pos(), self.resolution.size)
-            elif event.button == 5:  # Mouse wheel down
+            elif event.button == MouseButtons.WHEEL_DOWN:
                 self.camera.adjust_zoom(-0.1, pygame.mouse.get_pos(), self.resolution.size)
-            elif event.button == 1 and self.view == "game":  # Left mouse button
+            elif event.button == MouseButtons.LEFT and self.view == Gamestate.GAME:
                 self.dragging = True
                 self.last_mouse_pos = pygame.mouse.get_pos()
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:  # Left mouse button
+            if event.button == MouseButtons.LEFT:
                 self.dragging = False
                 self.last_mouse_pos = None
                 self.click_handled = False
-        elif event.type == pygame.MOUSEMOTION and self.dragging and self.view == "game":
+        elif event.type == pygame.MOUSEMOTION and self.dragging and self.view == Gamestate.GAME:
             current_pos = pygame.mouse.get_pos()
             if self.last_mouse_pos:
                 dx = (current_pos[0] - self.last_mouse_pos[0]) / self.camera.zoom
@@ -244,11 +259,11 @@ class Game:
             device.draw(self.displaysurf)
 
     def updateview(self) -> None:
-        if self.view == "menu":
+        if self.view == Gamestate.MENU:
             self.menu()
-        elif self.view == "game":
+        elif self.view == Gamestate.GAME:
             self.game()
-        elif self.view == "settings":
+        elif self.view == Gamestate.SETTINGS:
             self.settings()
 
     def start(self):
