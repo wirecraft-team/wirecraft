@@ -23,17 +23,19 @@ class Server:
     def _start_thread(self):
         print("Start backend in separate thread...")
         self._thread = threading.Thread(target=self._run)
+        self._stop = threading.Event()
 
     def start(self):
-        self.stopped = False
         self._thread.start()
 
     def stop(self):
-        self.stopped = True
+        self._stop.set()
 
     def _run(self):
-        while self.stopped is False:
-            sleep(5)
+        while self._stop.is_set() is False:
+            is_stopped = self._stop.wait(5)
+            if is_stopped:
+                break
             print("HERE")
             self.client_connexion.money_update()
 
