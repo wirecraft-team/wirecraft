@@ -27,11 +27,11 @@ class Camera:
         screen coordinates are relative to the top left corner of the screen, world coordinates are relative to the center of the screen
 
         Args:
-            screen_pos (tuple[float, float]): the position on the screen
-            screen_size (tuple[int, int]): the size of the screen
+            screen_pos: the position on the screen
+            screen_size: the size of the screen
 
         Returns:
-            tuple[float, float]: the position in the world
+            the position in the world
         """
         screen_center = (screen_size[0] / 2, screen_size[1] / 2)
         rel_x = (screen_pos[0] - screen_center[0]) / self.zoom
