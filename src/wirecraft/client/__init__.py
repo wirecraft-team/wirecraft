@@ -59,10 +59,10 @@ class Camera:
         Adjust zoom level while maintaining the world position under the mouse cursor.
 
         Args:
-            delta (float): The amount to change zoom by. Positive values zoom in,
+            delta: The amount to change zoom by. Positive values zoom in,
                 negative values zoom out.
-            mouse_pos (Tuple[int, int]): The current mouse position in screen coordinates.
-            screen_size (Tuple[int, int]): The (width, height) of the screen in pixels.
+            mouse_pos: The current mouse position in screen coordinates.
+            screen_size: The (width, height) of the screen in pixels.
 
         Note:
             - Camera position is adjusted to maintain the mouse position
