@@ -132,7 +132,7 @@ class Window:
         self.data = data
 
     def update_pos(self, index: int, resolution: Resolution) -> None:
-        offset = (index) * resolution.width / 9
+        offset = (index) * resolution.width / 7.5
         self.position = (resolution.width - self.size[0] - 20, 20 + offset)
         self.size = (resolution.width / 5, resolution.height / 5)
 
@@ -256,6 +256,12 @@ class Game:
         # Position new windows with offset from existing ones
         offset = len(self.windows) * self.resolution.width / 9
         window_pos = (self.resolution.width - window_size[0] - 20, 20 + offset)
+        # If we are out of bounds, don't create the window
+        if (
+            window_pos[0] > self.resolution.width - window_size[0] - 20
+            or window_pos[1] > self.resolution.height - window_size[1] - 20
+        ):
+            return
         self.windows.append(Window(window_pos, window_size, "Device properties", f"Switch {device.world_pos}"))
 
     def drawmenu(self, device: Device) -> None:
