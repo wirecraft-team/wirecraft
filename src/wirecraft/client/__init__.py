@@ -231,15 +231,15 @@ class Game:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.view = Gamestate.MENU
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == MouseButtons.WHEEL_UP:
+            if event.button == MouseButtons.WHEEL_UP.value:
                 self.camera.adjust_zoom(0.1, pygame.mouse.get_pos(), self.resolution.size)
-            elif event.button == MouseButtons.WHEEL_DOWN:
+            elif event.button == MouseButtons.WHEEL_DOWN.value:
                 self.camera.adjust_zoom(-0.1, pygame.mouse.get_pos(), self.resolution.size)
-            elif event.button == MouseButtons.LEFT and self.view == Gamestate.GAME:
+            elif event.button == MouseButtons.LEFT.value and self.view == Gamestate.GAME:
                 self.dragging = True
                 self.last_mouse_pos = pygame.mouse.get_pos()
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == MouseButtons.LEFT:
+            if event.button == MouseButtons.LEFT.value:
                 self.dragging = False
                 self.last_mouse_pos = None
                 self.click_handled = False
