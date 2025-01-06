@@ -131,6 +131,11 @@ class Window:
         self.title = title
         self.data = data
 
+    def update_pos(self, index: int, resolution: Resolution) -> None:
+        offset = (index) * resolution.width / 9
+        self.position = (resolution.width - self.size[0] - 20, 20 + offset)
+        self.size = (resolution.width / 5, resolution.height / 5)
+
     def draw(self, surface: pygame.Surface) -> None:
         window = pygame.Surface(self.size)
         window.fill(GREY)
@@ -310,7 +315,8 @@ class Game:
         for device in self.devices:
             device.update(self.camera, self.resolution.size)
             device.draw(self.displaysurf)
-        for window in self.windows:
+        for i, window in enumerate(self.windows):
+            window.update_pos(i, self.resolution)
             window.draw(self.displaysurf)
 
     def updateview(self) -> None:
