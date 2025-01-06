@@ -148,7 +148,7 @@ class Game:
     def __init__(self, view: Gamestate, camera: Camera, resolution: Resolution) -> None:
         pygame.init()
         self.clock = pygame.time.Clock()
-        self.server = ServerInterface()
+        self.server = ServerInterface(self)
         self.resolution = resolution
         self.displaysurf = pygame.display.set_mode(self.resolution.size, FLAGS)
         self.camera = camera
@@ -243,6 +243,7 @@ class Game:
         exit_rect = exit.get_rect(center=(self.resolution.width / 2, self.resolution.height / 1.5))
         self.displaysurf.blit(exit, exit_rect)
         if exit_rect.collidepoint(mouse_pos) and mouse_clicked:
+            self.server.close_connection()
             pygame.quit()
             sys.exit()
 
