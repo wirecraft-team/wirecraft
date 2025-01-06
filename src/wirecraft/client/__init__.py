@@ -73,8 +73,8 @@ class Camera:
         if old_zoom == self.zoom:
             return
         new_screen_pos = self.world_to_screen(old_world_pos, screen_size)
-        self.x += (mouse_pos[0] - new_screen_pos[0]) / self.zoom
-        self.y += (mouse_pos[1] - new_screen_pos[1]) / self.zoom
+        self.x -= (mouse_pos[0] - new_screen_pos[0]) / self.zoom
+        self.y -= (mouse_pos[1] - new_screen_pos[1]) / self.zoom
 
 
 @dataclass
