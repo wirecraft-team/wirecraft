@@ -5,11 +5,12 @@ from enum import Enum
 import pygame
 from pygame.locals import QUIT
 
-from .assets import SWITCH_DEVICE
+from .assets import CLOSE_BUTTON, SWITCH_DEVICE
 from .server_interface import ServerInterface
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+GREY = (128, 128, 128)
 RES_LIST = [(3024, 1964), (1920, 1080), (1900, 1200)]
 FLAGS = pygame.FULLSCREEN | pygame.NOFRAME | pygame.SCALED
 FPS = 30
@@ -123,6 +124,26 @@ class Device(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)
 
 
+class Window:
+    def __init__(self, position: tuple[float, float], size: tuple[float, float], title: str, data: str) -> None:
+        self.position = position
+        self.size = size
+        self.title = title
+        self.data = data
+
+    def draw(self, surface: pygame.Surface) -> None:
+        window = pygame.Surface(self.size)
+        window.fill(GREY)
+        close_button = pygame.transform.scale(CLOSE_BUTTON, (25, 25))
+        pygame.draw.rect(window, BLACK, (0, 0, self.size[0], self.size[1]), 5)
+        surface.blit(window, self.position)
+        surface.blit(close_button, (self.position[0] + self.size[0] - 40, self.position[1] + 10))
+        title = pygame.font.Font(None, 50).render(self.title, True, BLACK)
+        surface.blit(title, (self.position[0] + 10, self.position[1] + 10))
+        text = pygame.font.Font(None, 50).render(self.data, True, BLACK)
+        surface.blit(text, (self.position[0] + 10, self.position[1] + 50))
+
+
 class Game:
     def __init__(self, view: Gamestate, camera: Camera, resolution: Resolution) -> None:
         pygame.init()
@@ -135,6 +156,7 @@ class Game:
         self.server.get_money()
         self.view = view
         self.devices: list[Device] = []
+        self.windows: list[Window] = []
         pygame.display.set_caption("Wirecraft")
 
         # Initialize devices
@@ -224,6 +246,24 @@ class Game:
             pygame.quit()
             sys.exit()
 
+    def add_device_window(self, device: Device) -> None:
+        window_size = (self.resolution.width / 5, self.resolution.height / 5)
+        # Position new windows with offset from existing ones
+        offset = len(self.windows) * self.resolution.width / 9
+        window_pos = (self.resolution.width - window_size[0] - 20, 20 + offset)
+        self.windows.append(Window(window_pos, window_size, "Device properties", f"Switch {device.world_pos}"))
+
+    def drawmenu(self, device: Device) -> None:
+        # display a window on the top right side of the screen with the device's properties
+        window_size = (self.resolution.width / 5, self.resolution.height / 5)
+        window_coord = (self.resolution.width - window_size[0] - 20, 20)
+        window = pygame.Surface(window_size)
+        window.fill(GREY)
+        pygame.draw.rect(window, BLACK, (0, 0, window_size[0], window_size[1]), 5)
+        self.displaysurf.blit(window, window_coord)
+        text = pygame.font.Font(None, 50).render("Device properties", True, BLACK)
+        self.displaysurf.blit(text, (window_coord[0] + 10, window_coord[1] + 10))
+
     def handle_input(self, event: pygame.event.Event):
         if event.type == QUIT:
             pygame.quit()
@@ -238,8 +278,21 @@ class Game:
             elif event.button == MouseButtons.LEFT.value and self.view == Gamestate.GAME:
                 self.dragging = True
                 self.last_mouse_pos = pygame.mouse.get_pos()
+            if event.button == MouseButtons.RIGHT.value and self.view == Gamestate.GAME and self.devices:
+                for device in self.devices:
+                    if device.rect.collidepoint(pygame.mouse.get_pos()):
+                        self.add_device_window(device)
+
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == MouseButtons.LEFT.value:
+                for window in self.windows:
+                    if (
+                        window.position[0] + window.size[0] - 40
+                        < pygame.mouse.get_pos()[0]
+                        < window.position[0] + window.size[0] - 15
+                        and window.position[1] + 10 < pygame.mouse.get_pos()[1] < window.position[1] + 35
+                    ):
+                        self.windows.remove(window)
                 self.dragging = False
                 self.last_mouse_pos = None
                 self.click_handled = False
@@ -257,6 +310,8 @@ class Game:
         for device in self.devices:
             device.update(self.camera, self.resolution.size)
             device.draw(self.displaysurf)
+        for window in self.windows:
+            window.draw(self.displaysurf)
 
     def updateview(self) -> None:
         if self.view == Gamestate.MENU:
