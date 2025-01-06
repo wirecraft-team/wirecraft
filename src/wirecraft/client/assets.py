@@ -11,3 +11,5 @@ if not os.path.exists(assets_dir):
     assets_dir = "./assets"
 
 SWITCH_DEVICE = pygame.image.load(f"{assets_dir}/switch.png")
+
+PC_DEVICE = pygame.image.load(f"{assets_dir}/pc.png")
