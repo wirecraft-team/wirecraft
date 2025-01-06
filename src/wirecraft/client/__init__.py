@@ -41,11 +41,13 @@ class Camera:
     def world_to_screen(self, world_pos: tuple[float, float], screen_size: tuple[int, int]) -> tuple[float, float]:
         """Convert world coordinates to screen coordinates
         screen coordinates are relative to the top left corner of the screen, world coordinates are relative to the center of the screen
+
         Args:
-            world_pos (tuple[float, float]): the position in the world
-            screen_size (tuple[int, int]): the size of the screen
+            world_pos: the position in the world
+            screen_size: the size of the screen
+
         Returns:
-            tuple[float, float]: the position on the screen
+            the position on the screen
         """
         screen_center = (screen_size[0] / 2, screen_size[1] / 2)
         rel_x = (world_pos[0] - self.x) * self.zoom
