@@ -134,11 +134,13 @@ class Window:
         self.data = data
 
     def update_pos(self, index: int, resolution: Resolution) -> None:
+        """This function should only be called for device properties windows, and should be modified when they are properly implemented"""
         offset = (index) * resolution.width / 7.5
         self.position = (resolution.width - self.size[0] - 20, 20 + offset)
         self.size = (resolution.width / 5, resolution.height / 5)
 
     def draw(self, surface: pygame.Surface) -> None:
+        """Draws a windows according to the position and size attributes. Coordinates are screen coordinates. (top left corner is (0, 0))"""
         window = pygame.Surface(self.size)
         window.fill(GREY)
         close_button = pygame.transform.scale(CLOSE_BUTTON, (25, 25))
@@ -165,6 +167,7 @@ class Button:
         self.image = image
 
     def draw(self, surface: pygame.Surface) -> None:
+        """Draws a button according to the position and size attributes. Coordinates are screen coordinates. (top left corner is (0, 0))"""
         self.image = pygame.transform.scale(self.image, self.size)
         surface.blit(self.image, self.position)
 
@@ -188,9 +191,10 @@ class Game:
         # Initialize devices
         self.devices.append(Device((0, 0), "switch"))
         self.devices.append(Device((-200, -200), "switch"))
+
+        # Initialize inventory button
         self.buttons.append(
             Button(
-                # bottom left
                 (0 + PADDING, self.resolution.height - 100 - PADDING),
                 (100, 100),
                 self.show_inventory,
@@ -219,12 +223,14 @@ class Game:
         mouse_pos = pygame.mouse.get_pos()
         mouse_clicked = pygame.mouse.get_pressed()[0] and not self.click_handled
 
+        # Render resolution list
         for i, res in enumerate(RES_LIST):
             res_text = f"{res[0]}x{res[1]}"
             res_render = buttonfont.render(res_text, True, BLACK)
             res_rect = res_render.get_rect(center=(self.resolution.width / 2, self.resolution.height / 3 + i * 100))
             self.displaysurf.blit(res_render, res_rect)
 
+            # Change and save resolution
             if res_rect.collidepoint(mouse_pos) and mouse_clicked:
                 self.resolution = Resolution(res[0], res[1])
                 self.displaysurf = pygame.display.set_mode(self.resolution.size, FLAGS)
@@ -282,6 +288,7 @@ class Game:
             sys.exit()
 
     def add_device_window(self, device: Device) -> None:
+        """Add a window displaying the properties of a device."""
         window_size = (self.resolution.width / 5, self.resolution.height / 5)
         # Position new windows with offset from existing ones
         offset = len(self.windows) * self.resolution.width / 9
@@ -295,7 +302,7 @@ class Game:
         self.windows.append(Window(window_pos, window_size, "Device properties", f"Switch {device.world_pos}"))
 
     def drawmenu(self, device: Device) -> None:
-        # display a window on the top right side of the screen with the device's properties
+        """display a window on the top right side of the screen with the device's properties"""
         window_size = (self.resolution.width / 5, self.resolution.height / 5)
         window_coord = (self.resolution.width - window_size[0] - 20, 20)
         window = pygame.Surface(window_size)
@@ -306,26 +313,36 @@ class Game:
         self.displaysurf.blit(text, (window_coord[0] + 10, window_coord[1] + 10))
 
     def handle_input(self, event: pygame.event.Event):
+        """handle input events."""
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.view = Gamestate.MENU
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Handle zoom
             if event.button == MouseButtons.WHEEL_UP.value:
                 self.camera.adjust_zoom(0.1, pygame.mouse.get_pos(), self.resolution.size)
             elif event.button == MouseButtons.WHEEL_DOWN.value:
                 self.camera.adjust_zoom(-0.1, pygame.mouse.get_pos(), self.resolution.size)
+
+            # Handle panning
             elif event.button == MouseButtons.LEFT.value and self.view == Gamestate.GAME:
                 self.dragging = True
                 self.last_mouse_pos = pygame.mouse.get_pos()
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            # Handle right click on devices
             if event.button == MouseButtons.RIGHT.value and self.view == Gamestate.GAME and self.devices:
                 for device in self.devices:
                     if device.rect.collidepoint(pygame.mouse.get_pos()):
                         self.add_device_window(device)
 
-        elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == MouseButtons.LEFT.value:
+                self.dragging = False
+                self.last_mouse_pos = None
+                self.click_handled = False
+                # Handle close button
                 for window in self.windows:
                     if (
                         window.position[0] + window.size[0] - 40
@@ -334,15 +351,15 @@ class Game:
                         and window.position[1] + 10 < pygame.mouse.get_pos()[1] < window.position[1] + 35
                     ):
                         self.windows.remove(window)
+                # Handle click on buttons
                 for button in self.buttons:
                     if (
                         button.position[0] < pygame.mouse.get_pos()[0] < button.position[0] + button.size[0]
                         and button.position[1] < pygame.mouse.get_pos()[1] < button.position[1] + button.size[1]
                     ):
                         button.action()
-                self.dragging = False
-                self.last_mouse_pos = None
-                self.click_handled = False
+
+        # Handle panning
         elif event.type == pygame.MOUSEMOTION and self.dragging and self.view == Gamestate.GAME:
             current_pos = pygame.mouse.get_pos()
             if self.last_mouse_pos:
@@ -354,13 +371,19 @@ class Game:
 
     def game(self) -> None:
         self.displaysurf.fill(WHITE)
+
+        # Update and draw devices
         for device in self.devices:
             device.update(self.camera, self.resolution.size)
             device.draw(self.displaysurf)
+
+        # Update and draw windows
         for i, window in enumerate(self.windows):
             if window.title != "Inventory":
                 window.update_pos(i, self.resolution)
             window.draw(self.displaysurf)
+
+        # Draw buttons
         for button in self.buttons:
             button.draw(self.displaysurf)
 
@@ -373,6 +396,7 @@ class Game:
             self.settings()
 
     def start(self):
+        """main game loop."""
         while True:
             for event in pygame.event.get():
                 self.handle_input(event)
@@ -382,6 +406,7 @@ class Game:
             self.clock.tick(FPS)
 
     def show_inventory(self):
+        """Inventory button action."""
         # display a window on the right side taking all the height of the screen
         self.windows.append(
             Window(
