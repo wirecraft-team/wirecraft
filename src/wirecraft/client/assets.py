@@ -12,3 +12,4 @@ if not os.path.exists(assets_dir):
 
 SWITCH_DEVICE = pygame.image.load(f"{assets_dir}/switch.png")
 CLOSE_BUTTON = pygame.image.load(f"{assets_dir}/close.png")
+INVENTORY_BUTTON = pygame.image.load(f"{assets_dir}/inventory.png")

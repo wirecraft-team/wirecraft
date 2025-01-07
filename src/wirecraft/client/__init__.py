@@ -1,11 +1,12 @@
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 
 import pygame
 from pygame.locals import QUIT
 
-from .assets import CLOSE_BUTTON, SWITCH_DEVICE
+from .assets import CLOSE_BUTTON, INVENTORY_BUTTON, SWITCH_DEVICE
 from .server_interface import ServerInterface
 
 BLACK = (0, 0, 0)
@@ -14,6 +15,7 @@ GREY = (128, 128, 128)
 RES_LIST = [(3024, 1964), (1920, 1080), (1900, 1200)]
 FLAGS = pygame.FULLSCREEN | pygame.NOFRAME | pygame.SCALED
 FPS = 30
+PADDING = 20
 
 
 class Gamestate(Enum):
@@ -149,6 +151,24 @@ class Window:
         surface.blit(text, (self.position[0] + 10, self.position[1] + 50))
 
 
+class Button:
+    def __init__(
+        self,
+        position: tuple[float, float],
+        size: tuple[float, float],
+        action: Callable[[], None],
+        image: pygame.Surface,
+    ) -> None:
+        self.position = position
+        self.size = size
+        self.action = action
+        self.image = image
+
+    def draw(self, surface: pygame.Surface) -> None:
+        self.image = pygame.transform.scale(self.image, self.size)
+        surface.blit(self.image, self.position)
+
+
 class Game:
     def __init__(self, view: Gamestate, camera: Camera, resolution: Resolution) -> None:
         pygame.init()
@@ -162,11 +182,21 @@ class Game:
         self.view = view
         self.devices: list[Device] = []
         self.windows: list[Window] = []
+        self.buttons: list[Button] = []
         pygame.display.set_caption("Wirecraft")
 
         # Initialize devices
         self.devices.append(Device((0, 0), "switch"))
         self.devices.append(Device((-200, -200), "switch"))
+        self.buttons.append(
+            Button(
+                # bottom left
+                (0 + PADDING, self.resolution.height - 100 - PADDING),
+                (100, 100),
+                self.show_inventory,
+                INVENTORY_BUTTON,
+            )
+        )
 
         # For camera panning
         self.dragging = False
@@ -304,6 +334,12 @@ class Game:
                         and window.position[1] + 10 < pygame.mouse.get_pos()[1] < window.position[1] + 35
                     ):
                         self.windows.remove(window)
+                for button in self.buttons:
+                    if (
+                        button.position[0] < pygame.mouse.get_pos()[0] < button.position[0] + button.size[0]
+                        and button.position[1] < pygame.mouse.get_pos()[1] < button.position[1] + button.size[1]
+                    ):
+                        button.action()
                 self.dragging = False
                 self.last_mouse_pos = None
                 self.click_handled = False
@@ -322,8 +358,11 @@ class Game:
             device.update(self.camera, self.resolution.size)
             device.draw(self.displaysurf)
         for i, window in enumerate(self.windows):
-            window.update_pos(i, self.resolution)
+            if window.title != "Inventory":
+                window.update_pos(i, self.resolution)
             window.draw(self.displaysurf)
+        for button in self.buttons:
+            button.draw(self.displaysurf)
 
     def updateview(self) -> None:
         if self.view == Gamestate.MENU:
@@ -341,3 +380,14 @@ class Game:
             self.updateview()
             pygame.display.update()
             self.clock.tick(FPS)
+
+    def show_inventory(self):
+        # display a window on the right side taking all the height of the screen
+        self.windows.append(
+            Window(
+                (self.resolution.width - self.resolution.width / 5 - 20, 20),
+                (self.resolution.width / 5, self.resolution.height - 40),
+                "Inventory",
+                "You have 10 switches",
+            )
+        )
