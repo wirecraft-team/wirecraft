@@ -8,17 +8,19 @@ from typing import Literal
 class Port:
     type: Literal["RJ45", "SFP"]  # type of the port (RJ45, SFP, ...)
     speed: int  # speed of the port (MB/s)
-    state: bool  # state of the port (up or not)
+    PoE: bool  # does the port has PoE capabilities ?
 
 
 @dataclass
 class Switch:
-    pass
+    PoE: bool  # does the switch has PoE support ?
+    capacity: int  # switching capacity in Mbps
 
 
 @dataclass
 class Router:
-    pass
+    firewall: bool  # does the router has a firewall ?
+    capacity: int  # routing capacity in Mbps
 
 
 @dataclass
@@ -33,7 +35,8 @@ class Device:
     features: list[Host | Switch | Router]  # list of features of the device
     name: str  # name of the device
     ports: list[Port]  # list of ports
-    state: bool  # state of the device (running or not)
+    ports_pos: list[tuple[int, int]]  # list of ports positions relative to the device sprite's center
+    sprite: str  # path to the sprite of the device
 
 
 @dataclass
@@ -52,6 +55,13 @@ class Cable:
 first_pc = Device(
     features=[Host(ram=4, cpu=10, storage=256)],
     name="PC dla hess",
-    ports=[Port(type="RJ45", speed=250, state=True)],
-    state=True,
+    ports=[
+        Port(type="RJ45", speed=250, PoE=False),
+        Port(type="RJ45", speed=1000, PoE=False),
+    ],
+    ports_pos=[
+        (30, 0),
+        (90, 0),
+    ],
+    sprite="PC_DEVICE",
 )
