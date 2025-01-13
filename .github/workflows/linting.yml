@@ -1,0 +1,26 @@
+name: Check for style, typing, etc...
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    name: Execute test, check style, lint...
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+        with:
+            version: 0.4.0
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+            python-version-file: "pyproject.toml"
+      - name: Install the project
+        run: uv sync --all-extras --dev
+      - name: Execute tox
+        run: |
+            uv run tox
