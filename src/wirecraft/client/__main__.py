@@ -2,7 +2,7 @@ import ctypes
 import json
 import platform
 
-from wirecraft.client import Camera, Game, Gamestate, Resolution
+from . import Camera, Game, Gamestate, Resolution
 
 
 def main():
