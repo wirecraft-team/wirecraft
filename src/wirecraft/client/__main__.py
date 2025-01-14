@@ -2,7 +2,8 @@ import ctypes
 import json
 import platform
 
-from . import Camera, Game, Gamestate, Resolution
+from .game import Game, Gamestate
+from .ui import Camera, Resolution
 
 
 def main():

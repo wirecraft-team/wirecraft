@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 import pygame
 
+from ..constants import RED
 from .assets import SWITCH_DEVICE
 
 if TYPE_CHECKING:
-    from ..constants import RED
     from .camera import Camera
 
 
