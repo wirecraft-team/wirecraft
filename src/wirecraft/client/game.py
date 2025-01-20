@@ -7,15 +7,13 @@ from typing import TYPE_CHECKING
 import pygame
 from pygame.locals import QUIT
 
-from .constants import BLACK, FPS, GREY, PADDING, RES_LIST, WHITE
+from .constants import BLACK, FLAGS, FPS, GREY, PADDING, RES_LIST, WHITE
 from .server_interface import ServerInterface
 from .ui import Button, Cable, Device, Resolution, Window
 from .ui.assets import INVENTORY_BUTTON
 
 if TYPE_CHECKING:
     from .ui import Camera
-
-FLAGS = pygame.FULLSCREEN | pygame.NOFRAME | pygame.SCALED
 
 
 class Gamestate(Enum):

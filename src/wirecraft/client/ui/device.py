@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 import pygame
@@ -33,5 +34,6 @@ class Device(pygame.sprite.Sprite):
 
     def draw(self, surface: pygame.Surface) -> None:
         # draw the rect in red so we can see it
-        pygame.draw.rect(surface, RED, self.rect)
+        if os.environ.get("DEBUG"):  # for now, nothing has been decided about a "DEBUG" mode. Could be discussed later.
+            pygame.draw.rect(surface, RED, self.rect)
         surface.blit(self.image, self.rect)
