@@ -54,7 +54,7 @@ class Cable:
 
 first_pc = Device(
     features=[Host(ram=4, cpu=10, storage=256)],
-    name="PC dla hess",
+    name="1er PC",
     ports=[
         Port(type="RJ45", speed=250, PoE=False),
         Port(type="RJ45", speed=1000, PoE=False),

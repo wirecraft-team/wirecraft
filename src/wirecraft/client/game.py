@@ -311,11 +311,45 @@ class Game:
     def show_inventory(self):
         """Inventory button action."""
         # display a window on the right side taking all the height of the screen
-        self.windows.append(
-            Window(
-                (self.resolution.width - self.resolution.width / 5 - 20, 20),
-                (self.resolution.width / 5, self.resolution.height - 40),
-                "Inventory",
-                "You have 10 switches",
+
+        box_height = 100  # TODO need to have some logic to calculate the height of the box and padding
+        box_width = self.resolution.width / 5
+        box_padding = 10
+
+        print(box_height, box_width, box_padding)
+
+        inv = [("1er PC", 1), ("Routeur lvl 1", 3)]  # lets assume that this is our inventory
+
+        for index, object in enumerate(inv):
+            # self.windows.append(
+            #     Window(
+            #         (self.resolution.width - self.resolution.width / 5 - 20, 20 + (index * box_height)),
+            #         (self.resolution.width / 5, box_height),
+            #         f"{object[0]} x{object[1]}",
+            #         "This is an object",
+            #     )
+            # )
+            print(index, object)
+            pygame.draw.rect(
+                self.displaysurf,
+                (255, 0, 0),
+                (
+                    100,
+                    100,
+                    100,
+                    100,
+                    # self.resolution.width - box_width - 20,
+                    # 20 + (index * box_height),
+                    # box_width,
+                    # box_height,
+                ),
             )
-        )
+
+        # self.windows.append(
+        #     Window(
+        #         (self.resolution.width - self.resolution.width / 5 - 20, 20),
+        #         (self.resolution.width / 5, self.resolution.height - 40),
+        #         "Inventory",
+        #         "You have 10 switches",
+        #     )
+        # )

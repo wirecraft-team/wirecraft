@@ -27,7 +27,7 @@ class Window:
         """This function should only be called for device properties windows, and should be modified when they are properly implemented"""
         offset = (index) * resolution.width / 7.5
         self.position = (resolution.width - self.size[0] - 20, 20 + offset)
-        self.size = (resolution.width / 5, resolution.height / 5)
+        # self.size = (resolution.width / 5, resolution.height / 5)
 
     def draw(self, surface: pygame.Surface) -> None:
         """Draws a windows according to the position and size attributes. Coordinates are screen coordinates. (top left corner is (0, 0))"""
