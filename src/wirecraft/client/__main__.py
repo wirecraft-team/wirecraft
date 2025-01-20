@@ -2,7 +2,8 @@ import ctypes
 import json
 import platform
 
-from wirecraft.client import Camera, Game, Resolution
+from .game import Game, Gamestate
+from .ui import Camera, Resolution
 
 
 def main():
@@ -18,7 +19,7 @@ def main():
             resolution = Resolution(settings["resolution"]["width"], settings["resolution"]["height"])
     except FileNotFoundError:
         resolution = Resolution(1920, 1080)
-    game = Game("menu", Camera(0, 0, 1), resolution)
+    game = Game(Gamestate.MENU, Camera(0, 0, 1), resolution)
     game.start()
 
 

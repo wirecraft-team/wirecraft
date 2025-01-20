@@ -39,6 +39,12 @@ uv run wirecraft
 uv run tox
 ```
 
+### Init pre-commit
+
+```bash
+pre-commit install
+```
+
 ### (Optional) Activate the virtual environment (to have access to all the tools, dependencies...)
 
 > [!NOTE]
