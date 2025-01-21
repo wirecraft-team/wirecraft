@@ -4,7 +4,7 @@ import threading
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from wirecraft.client import ServerInterface
+    from wirecraft.client.server_interface import ServerInterface
 
 
 class Server:

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from wirecraft.server import Server
 
 if TYPE_CHECKING:
-    from wirecraft.client import Game
+    from .game import Game
 
 
 def event[T](f: T) -> T:
