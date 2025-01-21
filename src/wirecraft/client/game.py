@@ -11,6 +11,7 @@ from .constants import BLACK, FLAGS, FPS, GREY, PADDING, RES_LIST, WHITE
 from .server_interface import ServerInterface
 from .ui import Button, Cable, Device, Resolution, Window
 from .ui.assets import INVENTORY_BUTTON
+from .ui.assets import TASK_BUTTON
 
 if TYPE_CHECKING:
     from .ui import Camera
@@ -59,6 +60,16 @@ class Game:
                 (100, 100),
                 self.show_inventory,
                 INVENTORY_BUTTON,
+            )
+        )
+
+        # Initialize task button
+        self.buttons.append(
+            Button(
+                (0 + PADDING, self.resolution.height - 200 - PADDING),
+                (100, 100),
+                self.show_tasks,
+                TASK_BUTTON,
             )
         )
 
@@ -317,5 +328,16 @@ class Game:
                 (self.resolution.width / 5, self.resolution.height - 40),
                 "Inventory",
                 "You have 10 switches",
+            )
+        )
+    def show_tasks(self):
+        """Task button action."""
+        # display a window on the left side taking all the height of the screen
+        self.windows.append(
+            Window(
+                (200,200),
+                (self.resolution.width / 5, self.resolution.height - 40),
+                "Tasks",
+                "You have 3 tasks",
             )
         )
