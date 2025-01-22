@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wirecraft.server import Server
+from wirecraft.shared_context import server_var
 
 if TYPE_CHECKING:
     from .game import Game
@@ -40,8 +40,9 @@ class ServerInterface:
 
     def __init__(self, game: Game) -> None:
         self.game = game
-        self.connection = Server(self)
-        self.connection.start()
+
+        server = server_var.get()
+        self.connection = server.new_connection(self)
 
     def close_connection(self):
         self.connection.stop()

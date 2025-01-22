@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [project.scripts]
-wirecraft = "wirecraft.client.__main__:main"
+wirecraft = "wirecraft.__main__:main"
 
 
 [build-system]
