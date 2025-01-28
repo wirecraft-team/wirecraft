@@ -5,7 +5,6 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 import pygame
-from pygame.locals import QUIT
 
 from wirecraft.shared_context import server_var
 
@@ -176,92 +175,140 @@ class Game:
         self.displaysurf.blit(text, (window_coord[0] + 10, window_coord[1] + 10))
 
     def handle_input(self, event: pygame.event.Event, camera: Camera) -> None:
-        """handle input events."""
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.view = Gamestate.MENU
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Handle zoom
-            if event.button == MouseButtons.WHEEL_UP.value:
-                self.camera.adjust_zoom(0.1, pygame.mouse.get_pos(), self.resolution.size)
-                for device in self.devices:
-                    device.update_zoom(self.camera)
-                for cable in self.cables:
-                    cable.update_zoom(self.camera)
-            elif event.button == MouseButtons.WHEEL_DOWN.value:
-                self.camera.adjust_zoom(-0.1, pygame.mouse.get_pos(), self.resolution.size)
-                for device in self.devices:
-                    device.update_zoom(self.camera)
-                for cable in self.cables:
-                    cable.update_zoom(self.camera)
+        """Handle input events."""
+        match event.type:
+            case pygame.QUIT:
+                self.quit_game()
+            case pygame.KEYDOWN:
+                self.handle_keydown(event)
+            case pygame.MOUSEBUTTONDOWN:
+                self.handle_mousebuttondown(event, camera)
+            case pygame.MOUSEBUTTONUP:
+                self.handle_mousebuttonup(event)
+            case pygame.MOUSEMOTION:
+                self.handle_mousemotion(event, camera)
+            case _:
+                pass
 
-            # Handle panning
-            elif event.button == MouseButtons.LEFT.value and self.view == Gamestate.GAME:
-                # if click is on switch device, start a cable connection
-                if not self.is_placing_cable:
-                    for device in self.devices:
-                        if device.rect.collidepoint(pygame.mouse.get_pos()):
-                            self.cables.append(
-                                Cable(
-                                    camera.world_to_screen(device.world_pos, self.resolution.size),
-                                    pygame.mouse.get_pos(),
-                                )
-                            )
-                            self.is_placing_cable = True
-                            break
-                else:
-                    for device in self.devices:
-                        if (
-                            device.rect.collidepoint(pygame.mouse.get_pos())
-                            and camera.world_to_screen(device.world_pos, self.resolution.size) != self.cables[-1].start
-                        ):
-                            self.is_placing_cable = False
-                            self.cables[-1].ended = True
-                            self.cables[-1].end = camera.world_to_screen(device.world_pos, self.resolution.size)
-                            break
-                self.dragging = True
-                self.last_mouse_pos = pygame.mouse.get_pos()
-                for device in self.devices:
-                    device.update_position(self.camera, self.resolution.size)
+    def quit_game(self) -> None:
+        """Quit the game."""
+        server_var.get().stop()
+        pygame.quit()
+        sys.exit()
 
-        elif event.type == pygame.MOUSEBUTTONUP:
-            # Handle right click on devices
-            if event.button == MouseButtons.RIGHT.value and self.view == Gamestate.GAME and self.devices:
-                for device in self.devices:
-                    if device.rect.collidepoint(pygame.mouse.get_pos()):
-                        self.add_device_window(device)
+    def handle_keydown(self, event: pygame.event.Event) -> None:
+        """Handle keydown events."""
+        if event.key == pygame.K_ESCAPE:
+            if not self.is_placing_cable:
+                self.view = Gamestate.MENU
+            else:
+                self.is_placing_cable = False
+                if self.cables:
+                    self.cables.pop()
 
-            if event.button == MouseButtons.LEFT.value:
-                self.dragging = False
-                self.last_mouse_pos = None
-                self.click_handled = False
-                # Handle close button
-                for window in self.windows:
-                    if (
-                        window.position[0] + window.size[0] - 40
-                        < pygame.mouse.get_pos()[0]
-                        < window.position[0] + window.size[0] - 15
-                        and window.position[1] + 10 < pygame.mouse.get_pos()[1] < window.position[1] + 35
-                    ):
-                        self.windows.remove(window)
-                # Handle click on buttons
-                for button in self.buttons:
-                    if (
-                        button.position[0] < pygame.mouse.get_pos()[0] < button.position[0] + button.size[0]
-                        and button.position[1] < pygame.mouse.get_pos()[1] < button.position[1] + button.size[1]
-                    ):
-                        button.action()
+    def handle_mousebuttondown(self, event: pygame.event.Event, camera: Camera) -> None:
+        """Handle mouse button down events."""
+        match event.button:
+            case MouseButtons.WHEEL_UP.value:
+                self.adjust_zoom(0.1, camera)
+            case MouseButtons.WHEEL_DOWN.value:
+                self.adjust_zoom(-0.1, camera)
+            case MouseButtons.LEFT.value:
+                self.handle_left_click(camera)
+            case MouseButtons.RIGHT.value:
+                self.handle_right_click()
+            case _:
+                pass
 
-        # Handle panning
-        elif event.type == pygame.MOUSEMOTION and self.dragging and self.view == Gamestate.GAME:
+    def adjust_zoom(self, amount: float, camera: Camera) -> None:
+        """Adjust the camera zoom."""
+        camera.adjust_zoom(amount, pygame.mouse.get_pos(), self.resolution.size)
+        for device in self.devices:
+            device.update_zoom(camera)
+        for cable in self.cables:
+            cable.update_zoom(camera)
+
+    def handle_left_click(self, camera: Camera) -> None:
+        """Handle left mouse button click."""
+        if not self.is_placing_cable:
+            self.start_cable_connection(camera)
+        else:
+            self.end_cable_connection(camera)
+        self.dragging = True
+        self.last_mouse_pos = pygame.mouse.get_pos()
+        for device in self.devices:
+            device.update_position(camera, self.resolution.size)
+
+    def start_cable_connection(self, camera: Camera) -> None:
+        """Start a cable connection."""
+        for device in self.devices:
+            if device.rect.collidepoint(pygame.mouse.get_pos()):
+                self.cables.append(
+                    Cable(
+                        camera.world_to_screen(device.world_pos, self.resolution.size),
+                        pygame.mouse.get_pos(),
+                    )
+                )
+                self.is_placing_cable = True
+                break
+
+    def end_cable_connection(self, camera: Camera) -> None:
+        """End a cable connection."""
+        for device in self.devices:
+            if (
+                device.rect.collidepoint(pygame.mouse.get_pos())
+                and camera.world_to_screen(device.world_pos, self.resolution.size) != self.cables[-1].start
+            ):
+                self.is_placing_cable = False
+                self.cables[-1].ended = True
+                self.cables[-1].end = camera.world_to_screen(device.world_pos, self.resolution.size)
+                break
+
+    def handle_mousebuttonup(self, event: pygame.event.Event) -> None:
+        """Handle mouse button up events."""
+
+        if event.button == MouseButtons.LEFT.value:
+            self.dragging = False
+            self.last_mouse_pos = None
+            self.click_handled = False
+            self.handle_window_close()
+            self.handle_button_click()
+
+    def handle_right_click(self) -> None:
+        """Handle right mouse button click."""
+        for device in self.devices:
+            if device.rect.collidepoint(pygame.mouse.get_pos()):
+                self.add_device_window(device)
+
+    def handle_window_close(self) -> None:
+        """Handle window close button click."""
+        for window in self.windows:
+            if (
+                window.position[0] + window.size[0] - 40
+                < pygame.mouse.get_pos()[0]
+                < window.position[0] + window.size[0] - 15
+                and window.position[1] + 10 < pygame.mouse.get_pos()[1] < window.position[1] + 35
+            ):
+                self.windows.remove(window)
+
+    def handle_button_click(self) -> None:
+        """Handle button click."""
+        for button in self.buttons:
+            if (
+                button.position[0] < pygame.mouse.get_pos()[0] < button.position[0] + button.size[0]
+                and button.position[1] < pygame.mouse.get_pos()[1] < button.position[1] + button.size[1]
+            ):
+                button.action()
+
+    def handle_mousemotion(self, event: pygame.event.Event, camera: Camera) -> None:
+        """Handle mouse motion events."""
+        if self.dragging and self.view == Gamestate.GAME:
             current_pos = pygame.mouse.get_pos()
             if self.last_mouse_pos:
-                dx = (current_pos[0] - self.last_mouse_pos[0]) / self.camera.zoom
-                dy = (current_pos[1] - self.last_mouse_pos[1]) / self.camera.zoom
-                self.camera.x -= dx
-                self.camera.y -= dy
+                dx = (current_pos[0] - self.last_mouse_pos[0]) / camera.zoom
+                dy = (current_pos[1] - self.last_mouse_pos[1]) / camera.zoom
+                camera.x -= dx
+                camera.y -= dy
             self.last_mouse_pos = current_pos
 
     def game(self) -> None:
