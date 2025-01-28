@@ -5,7 +5,6 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 import pygame
-from pygame.locals import QUIT
 
 from wirecraft.shared_context import server_var
 
@@ -177,20 +176,19 @@ class Game:
 
     def handle_input(self, event: pygame.event.Event, camera: Camera) -> None:
         """Handle input events."""
-        if event.type == QUIT:
-            self.quit_game()
-
-        elif event.type == pygame.KEYDOWN:
-            self.handle_keydown(event)
-
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            self.handle_mousebuttondown(event, camera)
-
-        elif event.type == pygame.MOUSEBUTTONUP:
-            self.handle_mousebuttonup(event)
-
-        elif event.type == pygame.MOUSEMOTION and self.dragging and self.view == Gamestate.GAME:
-            self.handle_mousemotion(event, camera)
+        match event.type:
+            case pygame.QUIT:
+                self.quit_game()
+            case pygame.KEYDOWN:
+                self.handle_keydown(event)
+            case pygame.MOUSEBUTTONDOWN:
+                self.handle_mousebuttondown(event, camera)
+            case pygame.MOUSEBUTTONUP:
+                self.handle_mousebuttonup(event)
+            case pygame.MOUSEMOTION:
+                self.handle_mousemotion(event, camera)
+            case _:
+                pass
 
     def quit_game(self) -> None:
         """Quit the game."""
@@ -210,14 +208,17 @@ class Game:
 
     def handle_mousebuttondown(self, event: pygame.event.Event, camera: Camera) -> None:
         """Handle mouse button down events."""
-        if event.button == MouseButtons.WHEEL_UP.value:
-            self.adjust_zoom(0.1, camera)
-        elif event.button == MouseButtons.WHEEL_DOWN.value:
-            self.adjust_zoom(-0.1, camera)
-        elif event.button == MouseButtons.LEFT.value and self.view == Gamestate.GAME:
-            self.handle_left_click(camera)
-        elif event.button == MouseButtons.RIGHT.value and self.view == Gamestate.GAME and self.devices:
-            self.handle_right_click()
+        match event.button:
+            case MouseButtons.WHEEL_UP.value:
+                self.adjust_zoom(0.1, camera)
+            case MouseButtons.WHEEL_DOWN.value:
+                self.adjust_zoom(-0.1, camera)
+            case MouseButtons.LEFT.value:
+                self.handle_left_click(camera)
+            case MouseButtons.RIGHT.value:
+                self.handle_right_click()
+            case _:
+                pass
 
     def adjust_zoom(self, amount: float, camera: Camera) -> None:
         """Adjust the camera zoom."""
@@ -301,13 +302,14 @@ class Game:
 
     def handle_mousemotion(self, event: pygame.event.Event, camera: Camera) -> None:
         """Handle mouse motion events."""
-        current_pos = pygame.mouse.get_pos()
-        if self.last_mouse_pos:
-            dx = (current_pos[0] - self.last_mouse_pos[0]) / camera.zoom
-            dy = (current_pos[1] - self.last_mouse_pos[1]) / camera.zoom
-            camera.x -= dx
-            camera.y -= dy
-        self.last_mouse_pos = current_pos
+        if self.dragging and self.view == Gamestate.GAME:
+            current_pos = pygame.mouse.get_pos()
+            if self.last_mouse_pos:
+                dx = (current_pos[0] - self.last_mouse_pos[0]) / camera.zoom
+                dy = (current_pos[1] - self.last_mouse_pos[1]) / camera.zoom
+                camera.x -= dx
+                camera.y -= dy
+            self.last_mouse_pos = current_pos
 
     def game(self) -> None:
         self.displaysurf.fill(WHITE)
