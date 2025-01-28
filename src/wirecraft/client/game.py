@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 import pygame
 from pygame.locals import QUIT
 
+from wirecraft.shared_context import server_var
+
 from .constants import BLACK, FLAGS, FPS, GREY, PADDING, RES_LIST, WHITE
 from .server_interface import ServerInterface
 from .ui import Button, Cable, Device, Resolution, Window
@@ -34,7 +36,7 @@ class Game:
     def __init__(self, view: Gamestate, camera: Camera, resolution: Resolution) -> None:
         pygame.init()
         self.clock = pygame.time.Clock()
-        self.server = ServerInterface()
+        self.server = ServerInterface(self)
         self.resolution = resolution
         self.displaysurf = pygame.display.set_mode(self.resolution.size, FLAGS)
         self.camera = camera
@@ -145,7 +147,8 @@ class Game:
         self.displaysurf.blit(exit, exit_rect)
         if exit_rect.collidepoint(mouse_pos) and mouse_clicked:
             pygame.quit()
-            sys.exit()
+            server_var.get().stop()
+            raise SystemExit(0)
 
     def add_device_window(self, device: Device) -> None:
         """Add a window displaying the properties of a device."""
