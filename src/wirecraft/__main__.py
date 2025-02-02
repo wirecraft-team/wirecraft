@@ -3,7 +3,7 @@ import json
 import platform
 
 from wirecraft.client.game import Game, Gamestate
-from wirecraft.client.ui import Camera, Resolution
+from wirecraft.client.ui import Resolution
 from wirecraft.server import Server
 from wirecraft.shared_context import server_var
 
@@ -22,7 +22,7 @@ def init_game():
     except FileNotFoundError:
         resolution = Resolution(1920, 1080)
 
-    game = Game(Gamestate.MENU, Camera(0, 0, 1), resolution)
+    game = Game(Gamestate.MENU, resolution)
     return game
 
 

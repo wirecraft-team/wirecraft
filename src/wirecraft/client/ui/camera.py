@@ -1,15 +1,52 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from typing import TYPE_CHECKING, Literal
+
+if TYPE_CHECKING:
+    from ..game import Game
 
 
-@dataclass
 class Camera:
-    x: float
-    y: float
-    zoom: float
-    min_zoom: float = 0.3
-    max_zoom: float = 10
+    """
+      x: position of the center of the screen
+      y: position of the center of the screen
+
+
+      Imagine the map being a 5000*5000 pixels.
+      Our camera can only view 1080*1920 pixels, and the center of this "view" scare is at the position (x, y) relative to
+      the entire map center.
+
+     ┌──────────────────────────────────┐
+     │                                  │
+     │                                  │
+     │                  ┌────────────┐  │
+     │                  │            │  │
+     │                  │     x,y    │  │
+     │                  │            │  │
+     │                  └────────────┘  │
+     │                                  │
+     │                                  │
+     │                                  │
+    ^│                                  │
+    |│                                  │
+    y└──────────────────────────────────┘
+      x->
+    """
+
+    def __init__(self, game: Game, x: float = 0, y: float = 0, initial_zoom: int = 100):
+        self.x = x
+        self.y = y
+        self.zoom_value = initial_zoom
+        self.game = game
+
+    @property
+    def world_view(self):
+        return (
+            self.x - self.game.resolution.width / self.zoom // 2,
+            self.y - self.game.resolution.height / self.zoom // 2,
+            self.game.resolution.width / self.zoom,
+            self.game.resolution.height / self.zoom,
+        )
 
     def screen_to_world(self, screen_pos: tuple[float, float], screen_size: tuple[int, int]) -> tuple[float, float]:
         """Convert screen coordinates to world coordinates
@@ -43,7 +80,31 @@ class Camera:
         rel_y = (world_pos[1] - self.y) * self.zoom
         return (screen_center[0] + rel_x, screen_center[1] + rel_y)
 
-    def adjust_zoom(self, delta: float, mouse_pos: tuple[int, int], screen_size: tuple[int, int]):
+    @property
+    def zoom(self):
+        return self.zoom_value / 100
+
+    @property
+    def zoom_value(self):
+        return self._zoom_value
+
+    @zoom_value.setter
+    def zoom_value(self, value: int):
+        self._zoom_value = max(3, min(1000, value))
+
+    def zoom_out(self, mouse_pos: tuple[int, int], screen_size: tuple[int, int]):
+        return self._tick_zoom("out", mouse_pos, screen_size)
+
+    def zoom_in(self, mouse_pos: tuple[int, int], screen_size: tuple[int, int]):
+        return self._tick_zoom("in", mouse_pos, screen_size)
+
+    def _tick_zoom(self, mode: Literal["in", "out"], mouse_pos: tuple[int, int], screen_size: tuple[int, int]):
+        v = 1
+        if mode == "out":
+            v = -v
+        return self.set_zoom(self.zoom_value + v, mouse_pos, screen_size)
+
+    def set_zoom(self, zoom_value: int, mouse_pos: tuple[int, int], screen_size: tuple[int, int]):
         """
         Adjust zoom level while maintaining the world position under the mouse cursor.
 
@@ -57,10 +118,13 @@ class Camera:
             - Camera position is adjusted to maintain the mouse position
         """
         old_world_pos = self.screen_to_world(mouse_pos, screen_size)
-        old_zoom = self.zoom
-        self.zoom = max(self.min_zoom, min(self.max_zoom, self.zoom + delta))
-        if old_zoom == self.zoom:
-            return
+
+        old_zoom = self.zoom_value
+        self.zoom_value = zoom_value
+        if self.zoom_value == old_zoom:
+            return False
+
         new_screen_pos = self.world_to_screen(old_world_pos, screen_size)
         self.x -= (mouse_pos[0] - new_screen_pos[0]) / self.zoom
         self.y -= (mouse_pos[1] - new_screen_pos[1]) / self.zoom
+        return True
