@@ -4,6 +4,10 @@ import threading
 import time
 from typing import TYPE_CHECKING, Self
 
+from sqlmodel import Session, select
+
+from .database.models import Device, engine
+
 if TYPE_CHECKING:
     from wirecraft.client.server_interface import ServerInterface
 
@@ -69,3 +73,11 @@ class Server:
 
     def buy_item(self, type: str) -> None:
         return
+
+    def add_cable(self, id_device_1: int, port_1: int, id_device_2: int, port_2: int) -> None:
+        pass
+
+    def get_level_devices(self, id_level: int) -> list[Device]:
+        statement = select(Device).where(Device.id_level == id_level)
+        with Session(engine) as session:
+            return list(session.exec(statement).all())

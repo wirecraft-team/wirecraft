@@ -8,7 +8,7 @@ import pygame
 
 from wirecraft.shared_context import server_var
 
-from .constants import BLACK, FLAGS, FPS, GREY, PADDING, RES_LIST, WHITE
+from .constants import BLACK, FLAGS, FPS, GREY, LEVEL, PADDING, RES_LIST, WHITE
 from .server_interface import ServerInterface
 from .ui import Button, Cable, Device, Resolution, Window
 from .ui.assets import INVENTORY_BUTTON
@@ -50,8 +50,12 @@ class Game:
         pygame.display.set_caption("Wirecraft")
 
         # Initialize devices
-        self.devices.append(Device((0, 0), "switch"))
-        self.devices.append(Device((-200, -200), "switch"))
+        self.devices = []
+        devices = self.server.get_level_devices(LEVEL)
+        print(devices)
+        input()
+        for device in devices:
+            self.devices.append(Device((device.x, device.y), device.type))
 
         # Initialize inventory button
         self.buttons.append(
@@ -337,7 +341,7 @@ class Game:
             cable.draw(self.displaysurf, self.camera, resolution=self.resolution)
 
         # add a debug text for self.is_placing_cable
-        debug_text = pygame.font.Font(None, 30).render(f"Placing Cable: {self.is_placing_cable}", True, BLACK)
+        debug_text = pygame.font.Font(None, 30).render(f"Placing Cable: {len(self.devices)}", True, BLACK)
         self.displaysurf.blit(debug_text, (10, 10))
 
     def updateview(self) -> None:
