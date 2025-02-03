@@ -47,7 +47,7 @@ class Game:
         pygame.display.set_caption("Wirecraft")
 
         # Initialize devices  # TODO: remove (debug)
-        self.devices.append(Device(self, (0, 0), "switch"))
+        self.devices.append(Device(self, (1000, 500), "switch"))
         # self.devices.append(Device(self, (-200, -200), "switch"))
 
         # Initialize inventory button
@@ -160,7 +160,7 @@ class Game:
             or window_pos[1] > self.resolution.height - window_size[1] - 20
         ):
             return
-        self.windows.append(Window(window_pos, window_size, "Device properties", f"Switch {device.world_pos}"))
+        self.windows.append(Window(window_pos, window_size, "Device properties", "Switch"))
 
     def drawmenu(self, device: Device) -> None:
         """display a window on the top right side of the screen with the device's properties"""
@@ -232,46 +232,49 @@ class Game:
             self.update_zoom()
 
     def update_zoom(self):
-        for device in self.devices:
-            device.update_zoom(self.camera)
+        # for device in self.devices:
+        # device.update_zoom(self.camera)
         for cable in self.cables:
             cable.update_zoom(self.camera)
 
     def handle_left_click(self, camera: Camera) -> None:
         """Handle left mouse button click."""
         if not self.is_placing_cable:
-            self.start_cable_connection(camera)
+            pass
+            # self.start_cable_connection(camera)
         else:
-            self.end_cable_connection(camera)
+            pass
+            # self.end_cable_connection(camera)
         self.dragging = True
         self.last_mouse_pos = pygame.mouse.get_pos()
         for device in self.devices:
             device.update_position(camera, self.resolution.size)
 
-    def start_cable_connection(self, camera: Camera) -> None:
-        """Start a cable connection."""
-        for device in self.devices:
-            if device.get_rect().collidepoint(pygame.mouse.get_pos()):
-                self.cables.append(
-                    Cable(
-                        camera.world_to_screen(device.world_pos, self.resolution.size),
-                        pygame.mouse.get_pos(),
-                    )
-                )
-                self.is_placing_cable = True
-                break
+    # def start_cable_connection(self, camera: Camera) -> None:
+    #     """Start a cable connection."""
+    #     for device in self.devices:
+    #         if device.get_rect().collidepoint(pygame.mouse.get_pos()):
+    #             self.cables.append(
+    #                 Cable(
+    #                     camera.world_to_screen(device.centered_world_position, self.resolution.size),
+    #                     pygame.mouse.get_pos(),
+    #                 )
+    #             )
+    #             self.is_placing_cable = True
+    #             break
 
-    def end_cable_connection(self, camera: Camera) -> None:
-        """End a cable connection."""
-        for device in self.devices:
-            if (
-                device.get_rect().collidepoint(pygame.mouse.get_pos())
-                and camera.world_to_screen(device.world_pos, self.resolution.size) != self.cables[-1].start
-            ):
-                self.is_placing_cable = False
-                self.cables[-1].ended = True
-                self.cables[-1].end = camera.world_to_screen(device.world_pos, self.resolution.size)
-                break
+    # def end_cable_connection(self, camera: Camera) -> None:
+    #     """End a cable connection."""
+    #     for device in self.devices:
+    #         if (
+    #             device.get_rect().collidepoint(pygame.mouse.get_pos())
+    #             and camera.world_to_screen(device.centered_world_position, self.resolution.size)
+    #             != self.cables[-1].start
+    #         ):
+    #             self.is_placing_cable = False
+    #             self.cables[-1].ended = True
+    #             self.cables[-1].end = camera.world_to_screen(device.centered_world_position, self.resolution.size)
+    #             break
 
     def handle_mousebuttonup(self, event: pygame.event.Event) -> None:
         """Handle mouse button up events."""
@@ -314,8 +317,8 @@ class Game:
         if self.dragging and self.view == Gamestate.GAME:
             current_pos = pygame.mouse.get_pos()
             if self.last_mouse_pos:
-                dx = (current_pos[0] - self.last_mouse_pos[0]) / camera.zoom
-                dy = (current_pos[1] - self.last_mouse_pos[1]) / camera.zoom
+                dx = int((current_pos[0] - self.last_mouse_pos[0]) / camera.zoom)
+                dy = int((current_pos[1] - self.last_mouse_pos[1]) / camera.zoom)
                 camera.x -= dx
                 camera.y -= dy
             self.last_mouse_pos = current_pos
@@ -357,7 +360,6 @@ class Game:
             RED,
             rect,
         )
-        print(self.camera.world_view)
 
     def updateview(self) -> None:
         if self.view == Gamestate.MENU:

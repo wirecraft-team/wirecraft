@@ -1,9 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, NamedTuple
 
 if TYPE_CHECKING:
     from ..game import Game
+
+
+class WorldObjectBounds(NamedTuple):
+    min_x: int
+    max_x: int
+    min_y: int
+    max_y: int
 
 
 class Camera:
@@ -33,19 +40,37 @@ class Camera:
       x->
     """
 
-    def __init__(self, game: Game, x: float = 0, y: float = 0, initial_zoom: int = 100):
-        self.x = x
-        self.y = y
+    def __init__(self, game: Game, x: int = 0, y: int = 0, initial_zoom: int = 100):
+        self.x: int = x
+        self.y: int = y
         self.zoom_value = initial_zoom
         self.game = game
 
     @property
-    def world_view(self):
-        return (
-            self.x - self.game.resolution.width / self.zoom // 2,
-            self.y - self.game.resolution.height / self.zoom // 2,
-            self.game.resolution.width / self.zoom,
-            self.game.resolution.height / self.zoom,
+    def world_view(self) -> WorldObjectBounds:
+        """
+        This return a tuple of (x_min, x_max, y_min, y_max) relative to the world map.
+        ┌─────────────────────────────┐
+        │                             │
+        │ x_min    x_max              │
+        │ ▼        ▼                  │
+        │ ┌────────┐◄ y_min           │
+        │ │        │                  │
+        │ │        │                  │
+        │ └────────┘◄ y_max           │
+        │                             │
+        └─────────────────────────────┘
+        """
+        return WorldObjectBounds(
+            *map(
+                int,
+                (
+                    self.x - (self.game.resolution.width / 2) / self.zoom,
+                    self.x + (self.game.resolution.width / 2) / self.zoom,
+                    self.y - (self.game.resolution.height / 2) / self.zoom,
+                    self.y + (self.game.resolution.height / 2) / self.zoom,
+                ),
+            )
         )
 
     def screen_to_world(self, screen_pos: tuple[float, float], screen_size: tuple[int, int]) -> tuple[float, float]:
@@ -82,7 +107,8 @@ class Camera:
 
     @property
     def zoom(self):
-        return self.zoom_value / 100
+        return 1
+        # return self.zoom_value / 100
 
     @property
     def zoom_value(self):
@@ -125,6 +151,6 @@ class Camera:
             return False
 
         new_screen_pos = self.world_to_screen(old_world_pos, screen_size)
-        self.x -= (mouse_pos[0] - new_screen_pos[0]) / self.zoom
-        self.y -= (mouse_pos[1] - new_screen_pos[1]) / self.zoom
+        self.x -= int((mouse_pos[0] - new_screen_pos[0]) / self.zoom)
+        self.y -= int((mouse_pos[1] - new_screen_pos[1]) / self.zoom)
         return True

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import os
 import time
 from typing import TYPE_CHECKING, cast
 
 import pygame
 
-from ..constants import RED
+from ..constants import BLACK
 from .assets import SWITCH_DEVICE
+from .camera import WorldObjectBounds
 
 if TYPE_CHECKING:
     from ..game import Game
@@ -15,13 +15,15 @@ if TYPE_CHECKING:
 
 
 class Device(pygame.sprite.Sprite):
-    def __init__(self, game: Game, world_pos: tuple[float, float], device_type: str):
+    def __init__(self, game: Game, position: tuple[int, int], device_type: str):
+        """
+        Position is the point in the world map that refer to the center of the device.
+        """
         super().__init__()
-        self.world_pos = world_pos
-        self.base_image = SWITCH_DEVICE
-        self.image = self.base_image
-        self.rect = self.image.get_rect()
         self.game = game
+        self.position: tuple[int, int] = position
+        self.base_image = SWITCH_DEVICE.convert_alpha()
+        self.size = (SWITCH_DEVICE.get_width(), SWITCH_DEVICE.get_height())
 
     def get_rect(self) -> pygame.Rect:
         """
@@ -35,10 +37,27 @@ class Device(pygame.sprite.Sprite):
         """
         return cast(pygame.Surface, self.image)
 
-    def update_zoom(self, camera: Camera):
+    @property
+    def world_rect(self) -> pygame.Rect:
+        return pygame.Rect(
+            self.position[0] - self.size[0] // 2,
+            self.position[1] - self.size[1] // 2,
+            self.size[0],
+            self.size[1],
+        )
+
+    @property
+    def world_bounds(self):
+        return WorldObjectBounds(
+            self.world_rect[0],
+            self.world_rect[0] + self.size[0],
+            self.world_rect[1],
+            self.world_rect[1] + self.size[1],
+        )
+
+    def update_position(self, camera: Camera, screen_size: tuple[int, int]):
         """
         Update device scale based on camera zoom
-
 
         ┌──────────────────────────────────────────────────────────┐
         │                                                          │
@@ -56,146 +75,61 @@ class Device(pygame.sprite.Sprite):
          ▲
          └ globale map
         """
-        print(camera.zoom)
-        scaled_width = int(self.base_image.get_width() * camera.zoom)
-        scaled_height = int(self.base_image.get_height() * camera.zoom)
-
-        # world_rect = (
-        #     self.world_pos[0] - scaled_width // 2,
-        #     self.world_pos[1] - scaled_height // 2,
-        #     scaled_width,
-        #     scaled_height,
-        # )
-
-        # world_view = (
-        #     self.game.camera.x - self.game.resolution.width // 2,
-        #     self.game.camera.y - self.game.resolution.height // 2,
-        #     self.game.resolution.width,
-        #     self.game.resolution.height,
-        # )
-
-        # print(world_view)
-        # print(world_rect)
-
-        # if world_view[0] < world_rect[0]:
-        #     left = 0
-        # else:
-        #     left = int(((world_view[0] - world_rect[0]) / world_rect[2]) * self.base_image.get_width()) + 10
-
-        # top = 0
-        # width = self.base_image.get_width() - left
-        # height = self.base_image.get_height() - top
-
-        # crop_left = max(0, self.base_image.get_width() * (world_view[0] - world_rect[0]) // camera.zoom)
-        # crop_width = min(
-        #     self.base_image.get_width() - crop_left - 1,
-        #     self.base_image.get_width() * (world_rect[2] - world_view[2]) // camera.zoom,
-        # )
-        # print(crop_left, crop_width)
-        # subsurface = self.base_image.subsurface(
-        #     left,
-        #     top,
-        #     width,
-        #     height,
-        #     # max(0, view_left - sprite_left),
-        #     # max(0, view_top - sprite_top),
-        #     # 1000,
-        #     # 1000,
-        # )
         start = time.perf_counter()
-        self.image = pygame.transform.scale_by(
-            self.base_image, camera.zoom
-        )  # pygame.transform.scale(subsurface, (scaled_width, scaled_height))
+        if not self.is_inside_screen:
+            end = time.perf_counter()
+            self.update_time = end - start
+            return
+        screen_position = self.game.camera.world_to_screen(self.position, self.game.resolution.size)
+
+        self.crop_left = max(0, camera.world_view[0] - self.world_bounds[0])
+        self.crop_right = max(0, self.world_bounds[1] - camera.world_view[1])
+        self.crop_top = max(0, camera.world_view[2] - self.world_bounds[2])
+        self.crop_bottom = max(0, self.world_bounds[3] - camera.world_view[3])
+
+        cropped_width = self.size[0] - (self.crop_left + self.crop_right)
+        cropped_height = self.size[1] - (self.crop_top + self.crop_bottom)
+
+        subsurface = self.base_image.subsurface((self.crop_left, self.crop_top, cropped_width, cropped_height))
+        self.image = subsurface
+        self.rect = self.base_image.get_rect()
+        self.rect.center = screen_position
+
         end = time.perf_counter()
-        print(end - start)
-        self.rect = pygame.Rect(0, 0, scaled_width, scaled_height)
-
-    def update_position(self, camera: Camera, screen_size: tuple[int, int]):
-        """Update device position based on camera"""
-
-        # if world_view[0] < world_rect[0]:
-        # else:
-        #     left = int(((world_view[0] - world_rect[0]) / world_rect[2]) * self.base_image.get_width()) + 10
-
-        world_view = self.game.camera.world_view
-        left = max(world_view[0], self.world_rect[0]) - self.world_rect[0]
-        top = max(world_view[1], self.world_rect[1]) - self.world_rect[1]
-
-        print(left)
-
-        width = self.base_image.get_width() - left
-        height = self.base_image.get_height() - top
-
-        subsurface = self.base_image.subsurface(
-            left,
-            top,
-            width,
-            height,
-            # max(0, view_left - sprite_left),
-            # max(0, view_top - sprite_top),
-            # 1000,
-            # 1000,
-        )
-        start = time.perf_counter()
-        self.image = pygame.transform.scale_by(
-            subsurface, camera.zoom
-        )  # pygame.transform.scale(subsurface, (scaled_width, scaled_height))
-        end = time.perf_counter()
-        print(end - start)
-        self.rect = pygame.Rect(0, 0, self.image.get_width(), self.image.get_height())
-        screen_pos = camera.world_to_screen(self.world_pos, screen_size)
-        self.get_rect().center = (int(screen_pos[0]), int(screen_pos[1]))
-
-    def offset_rec(self):
-        rect = self.get_rect()
-        return (rect[0] + 10, rect[1] + 10, rect[2], rect[3])
+        self.update_time = end - start
 
     @property
-    def world_rect(self):
-        # scaled_width = int(self.base_image.get_width() * self.game.camera.zoom)
-        # scaled_height = int(self.base_image.get_height() * self.game.camera.zoom)
-
+    def is_inside_screen(self) -> bool:
+        """Determine if any portion of the object is inside the screen"""
         return (
-            self.world_pos[0] - self.base_image.get_width() // 2,
-            self.world_pos[1] - self.base_image.get_height() // 2,
-            self.base_image.get_width(),
-            self.base_image.get_height(),
+            self.world_bounds[0] < self.game.camera.world_view[1]
+            and self.world_bounds[1] > self.game.camera.world_view[0]
+            and self.world_bounds[2] < self.game.camera.world_view[3]
+            and self.world_bounds[3] > self.game.camera.world_view[2]
         )
-
-    @property
-    def inside_screen(self):
-        """
-        This function determine if the sprite is inside the screen or not.
-        """
-        left_view_border = self.game.camera.world_view[0]
-        right_view_border = self.game.camera.world_view[0] + self.game.camera.world_view[2]
-        top_view_border = self.game.camera.world_view[1]
-        bottom_view_border = self.game.camera.world_view[1] + +self.game.camera.world_view[3]
-
-        left_rect_border = self.world_rect[0]
-        right_rect_border = self.world_rect[0] + self.world_rect[2]
-        top_rect_border = self.world_rect[1]
-        bottom_rect_border = self.world_rect[1] + +self.world_rect[3]
-
-        # fmt: off
-        return (
-            left_rect_border < right_view_border
-        ) and (
-            right_rect_border > left_view_border
-        ) and (
-            top_rect_border < bottom_view_border
-        ) and (
-            bottom_rect_border > top_view_border
-        )
-        # fmt: on
 
     def draw(self, surface: pygame.Surface) -> None:
         # draw the rect in red so we can see it
-        print(self.inside_screen)
-        if not self.inside_screen:
+        # if not self.inside_screen:
+        # return
+        # if True or os.environ.get(
+        #     "DEBUG"
+        # ):  # for now, nothing has been decided about a "DEBUG" mode. Could be discussed later.
+
+        debug_text = pygame.font.Font(None, 30).render(f"time: {self.update_time}", True, BLACK)
+        surface.blit(debug_text, (10, 50))
+        debug_text = pygame.font.Font(None, 30).render(
+            f"rendered_size: {self.get_surface().get_width()}x{self.get_surface().get_height()}", True, BLACK
+        )
+        surface.blit(debug_text, (10, 70))
+        if not self.is_inside_screen:
             return
-        if True or os.environ.get(
-            "DEBUG"
-        ):  # for now, nothing has been decided about a "DEBUG" mode. Could be discussed later.
-            pygame.draw.rect(surface, RED, self.get_rect())
-        surface.blit(self.get_surface(), self.offset_rec())
+        # pygame.draw.rect(surface, RED, self.get_rect())
+        # debug_text = pygame.font.Font(None, 300).render(f"inside: {self.is_inside_screen}", True, BLACK)
+        # surface.blit(debug_text, (10, 50))
+        start = time.perf_counter()
+        surface.blit(self.get_surface(), (max(self.get_rect()[0], 0), max(self.get_rect()[1], 0)))
+        end = time.perf_counter()
+        self.draw_time = end - start
+        debug_text = pygame.font.Font(None, 30).render(f"draw_time: {self.draw_time}", True, BLACK)
+        surface.blit(debug_text, (10, 90))
