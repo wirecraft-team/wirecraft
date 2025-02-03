@@ -1,4 +1,30 @@
-from wirecraft.server import Server
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from wirecraft.shared_context import server_var
+
+if TYPE_CHECKING:
+    from .game import Game
+
+
+def event[T](f: T) -> T:
+    """
+    This is a fake function. Just to simulate like if we had a websocket connection etc.
+
+    But, from the Server side, instead of doing something like:
+    ```python
+    client.send_msg("update_this", data=serialized_data)
+    ```
+    And having a logic to handle the message and call the correct function from the client side
+
+    We just do
+    ```python
+    interface.update_this(data)
+    ```
+    And the server call directly the client.
+    """
+    return f
 
 
 class ServerInterface:
@@ -12,8 +38,24 @@ class ServerInterface:
     vers un serveur distant sans trop de refactoring.
     """
 
-    def __init__(self) -> None:
-        self.connection = Server()
+    def __init__(self, game: Game) -> None:
+        self.game = game
+
+        server = server_var.get()
+        self.connection = server.new_connection(self)
+
+    def close_connection(self):
+        self.connection.stop()
 
     def get_money(self) -> int:
+        # The client can ask for data to the server
         return self.connection.get_money()
+
+    def buy_item(self, type: str) -> None:
+        # The client can send data to the server
+        return self.connection.buy_item(type)
+
+    @event
+    def money_update(self) -> None:
+        # the server side can send event to client
+        print("money updated")
