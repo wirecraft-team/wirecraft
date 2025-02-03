@@ -11,8 +11,8 @@ from wirecraft.shared_context import server_var
 from .constants import BLACK, FLAGS, FPS, GREY, PADDING, RES_LIST, WHITE
 from .server_interface import ServerInterface
 from .ui import Button, Cable, Device, Resolution, Window
-from .ui.assets import INVENTORY_BUTTON
-from .ui.assets import TASK_BUTTON
+from .ui.assets import INVENTORY_BUTTON, TASK_BUTTON
+from .ui.window import WindowType
 
 if TYPE_CHECKING:
     from .ui import Camera
@@ -172,7 +172,12 @@ class Game:
             or window_pos[1] > self.resolution.height - window_size[1] - 20
         ):
             return
-        self.windows.append(Window(window_pos, window_size, "Device properties", f"Switch {device.world_pos}"))
+        self.windows.append(Window(
+            window_pos,
+            window_size,
+            "Device properties",
+            f"Switch {device.world_pos}",
+            WindowType.DEVICE_PROPERTIES))
 
     def drawmenu(self, device: Device) -> None:
         """display a window on the top right side of the screen with the device's properties"""
@@ -332,8 +337,12 @@ class Game:
 
         # Update and draw windows
         for i, window in enumerate(self.windows):
-            if window.title != "Inventory":
+            # Check if the window is a popup window and if it should be removed
+            if window.type.value != 1:
                 window.update_pos(i, self.resolution)
+                window.time -= 1
+                if window.time == 0:
+                    self.windows.remove(window)
             window.draw(self.displaysurf)
 
         # Draw buttons
@@ -378,6 +387,7 @@ class Game:
                 (self.resolution.width / 5, self.resolution.height - 40),
                 "Inventory",
                 "You have 10 switches",
+                WindowType.INVENTORY,
             )
         )
     def show_tasks(self):
@@ -389,5 +399,6 @@ class Game:
                 (self.resolution.width / 5, self.resolution.height - 40),
                 "Tasks",
                 "You have 3 tasks",
+                WindowType.TASK,
             )
         )

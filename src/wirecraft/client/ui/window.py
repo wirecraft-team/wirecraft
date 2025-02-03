@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 
 import pygame
 
@@ -16,13 +17,22 @@ class Resolution:
         return (self.width, self.height)
 
 
+class WindowType(Enum):
+    POPUP = 1
+    DEVICE_PROPERTIES = 2
+    TASK = 3
+    INVENTORY = 4
+
+    
+
 class Window:
-    def __init__(self, position: tuple[float, float], size: tuple[float, float], title: str, data: str) -> None:
+    def __init__(self, position: tuple[float, float], size: tuple[float, float], title: str, data: str,type: WindowType) -> None:
         self.position = position
         self.size = size
         self.title = title
         self.data = data
-
+        self.type = type
+        self.time = 600 
     def update_pos(self, index: int, resolution: Resolution) -> None:
         """This function should only be called for device properties windows, and should be modified when they are properly implemented"""
         offset = (index) * resolution.width / 7.5
@@ -41,3 +51,4 @@ class Window:
         surface.blit(title, (self.position[0] + 10, self.position[1] + 10))
         text = pygame.font.Font(None, 50).render(self.data, True, BLACK)
         surface.blit(text, (self.position[0] + 10, self.position[1] + 50))
+
