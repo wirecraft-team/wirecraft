@@ -59,3 +59,6 @@ class ServerInterface:
     def money_update(self) -> None:
         # the server side can send event to client
         print("money updated")
+
+    def get_level_devices(self, level_id: int):
+        return self.connection.get_level_devices(level_id)
