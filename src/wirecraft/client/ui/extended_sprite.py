@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import time
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 import pygame
 
-from .camera import WorldObjectBounds
+from .camera import ObjectBounds
 
 if TYPE_CHECKING:
     from ..game import Game
@@ -23,20 +22,33 @@ class ExtendedSprite(pygame.sprite.Sprite):
         self.base_image = image.convert_alpha()  # TODO: convert alpha from the beginning
         self.size = (image.get_width(), image.get_height())
 
-    def get_rect(self) -> pygame.Rect:
-        """
-        Because Sprite.rect "could" be None, but not in our case, this function is only for typing purpose.
-        """
-        return cast(pygame.Rect, self.rect)
-
     def get_surface(self) -> pygame.Surface:
+        if TYPE_CHECKING:
+            assert isinstance(self.image, pygame.Surface)
+        return self.image
+
+    @property
+    def screen_rect(self) -> pygame.Rect:
         """
-        Because Sprite.image "could" be None, but not in our case, this function is only for typing purpose.
+        Return the rect of the sprite relative to the screen.
         """
-        return cast(pygame.Surface, self.image)
+        if TYPE_CHECKING:
+            assert isinstance(self.rect, pygame.Rect)
+        return self.rect
+
+    @property
+    def screen_bounds(self) -> ObjectBounds:
+        """
+        TODO: don't use this, as it is not ready guys
+        Return bounds relative to the screen.
+        """
+        return ObjectBounds(0, 0, 0, 0)  # TODO
 
     @property
     def world_rect(self) -> pygame.Rect:
+        """
+        Return the rect of the sprite relative to the world.
+        """
         return pygame.Rect(
             self.position[0] - self.size[0] // 2,
             self.position[1] - self.size[1] // 2,
@@ -46,12 +58,22 @@ class ExtendedSprite(pygame.sprite.Sprite):
 
     @property
     def world_bounds(self):
-        return WorldObjectBounds(
+        """
+        Return the bounds of the sprite relative to the world.
+        """
+        return ObjectBounds(
             self.world_rect[0],
             self.world_rect[0] + self.size[0],
             self.world_rect[1],
             self.world_rect[1] + self.size[1],
         )
+
+    @property
+    def screen_position(self) -> tuple[int, int]:
+        """
+        The coordinate of the center of the device relative to the screen.
+        """
+        return self.game.camera.world_to_screen(self.position, self.game.resolution.size)
 
     def update_position(self, camera: Camera, screen_size: tuple[int, int]):
         """
@@ -73,12 +95,8 @@ class ExtendedSprite(pygame.sprite.Sprite):
          ▲
          └ globale map
         """
-        start = time.perf_counter()
         if not self.is_inside_screen:
-            end = time.perf_counter()
-            self.update_time = end - start
             return
-        screen_position = self.game.camera.world_to_screen(self.position, self.game.resolution.size)
 
         # TODO: cropping to improve perfs
         # self.crop_left = max(0, camera.world_view[0] - self.world_bounds[0])
@@ -93,11 +111,8 @@ class ExtendedSprite(pygame.sprite.Sprite):
 
         subsurface = pygame.transform.scale_by(self.base_image, self.game.camera.zoom)
         self.image = subsurface
-        self.rect = self.base_image.get_rect()
-        self.rect.center = screen_position
-
-        end = time.perf_counter()
-        self.update_time = end - start
+        self.rect = self.base_image.get_rect().scale_by(self.game.camera.zoom)
+        self.rect.center = self.screen_position
 
     @property
     def is_inside_screen(self) -> bool:
@@ -114,6 +129,4 @@ class ExtendedSprite(pygame.sprite.Sprite):
             return
 
         # surface.blit(self.get_surface(), (max(self.get_rect()[0], 0), max(self.get_rect()[1], 0)))
-        position = self.game.camera.world_to_screen(self.position, self.game.resolution.size)
-        rect = self.get_rect().scale_by(self.game.camera.zoom)
-        surface.blit(self.get_surface(), (position[0] - rect.width // 2, position[1] - rect.height // 2))
+        surface.blit(self.get_surface(), self.screen_rect)
