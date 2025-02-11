@@ -11,8 +11,9 @@ if TYPE_CHECKING:
 
 
 class Device(ExtendedSprite):
-    def __init__(self, game: Game, position: tuple[int, int], device_type: str):
+    def __init__(self, game: Game, position: tuple[int, int], device_type: str, db_id: int):
         """
         Position is the point in the world map that refer to the center of the device.
         """
         super().__init__(game, position, SWITCH_DEVICE)
+        self.db_id = db_id

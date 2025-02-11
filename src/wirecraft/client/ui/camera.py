@@ -40,7 +40,7 @@ class Camera:
       x->
     """
 
-    def __init__(self, game: Game, x: int = 0, y: int = 0, initial_zoom: int = 100):
+    def __init__(self, game: Game, x: int = 0, y: int = 0, initial_zoom: int = 10):
         self.x: int = x
         self.y: int = y
         self.zoom_value = initial_zoom

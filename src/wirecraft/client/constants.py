@@ -9,3 +9,4 @@ FPS = 30
 PADDING = 20
 FLAGS = pygame.FULLSCREEN | pygame.NOFRAME | pygame.SCALED
 LEVEL = 1
+DEBUG = False

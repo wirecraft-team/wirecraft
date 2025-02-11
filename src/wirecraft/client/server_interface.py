@@ -62,3 +62,21 @@ class ServerInterface:
 
     def get_level_devices(self, level_id: int):
         return self.connection.get_level_devices(level_id)
+
+    def get_level_cables(self, level_id: int):
+        return self.connection.get_level_cables(level_id)
+
+    def get_device_pos(self, device_id: int):
+        return self.connection.get_device_pos(device_id)
+
+    def get_port_pos(self, port_id: int, device_id: int):
+        return self.connection.get_port_pos(port_id, device_id)
+
+    def add_cable(self, id_device_1: int, port_1: int, id_device_2: int, port_2: int, level: int):
+        return self.connection.add_cable(id_device_1, port_1, id_device_2, port_2, level)
+
+    def end_cable(self, db_id: int, device_id: int, port_id: int):
+        return self.connection.end_cable(db_id, device_id, port_id)
+
+    def delete_cable(self, db_id: int):
+        return self.connection.delete_cable(db_id)
