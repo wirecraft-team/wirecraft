@@ -10,7 +10,7 @@ assets_dir = str(files("wirecraft").joinpath("assets"))
 if not os.path.exists(assets_dir):
     assets_dir = "./assets"
 
-SWITCH_DEVICE = pygame.image.load(f"{assets_dir}/switch.png")
+SWITCH_DEVICE = pygame.image.load_sized_svg(f"{assets_dir}/switch.svg", (18910, 1660))
 PC_DEVICE = pygame.image.load(f"{assets_dir}/pc.png")
 CLOSE_BUTTON = pygame.image.load(f"{assets_dir}/close.png")
 INVENTORY_BUTTON = pygame.image.load(f"{assets_dir}/inventory.png")
