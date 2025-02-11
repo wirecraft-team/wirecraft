@@ -280,6 +280,11 @@ class Game:
                 self.cables[-1].ended = True
                 self.cables[-1].end = camera.world_to_screen(device.world_pos, self.resolution.size)
                 break
+        else:
+            self.is_placing_cable = False
+            self.cables[-1].ended = False
+            self.cables[-1].end = (0, 0)
+            self.cables.pop()
 
     def handle_right_click(self) -> None:
         """Handle right mouse button click."""
