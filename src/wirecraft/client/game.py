@@ -227,18 +227,18 @@ class Game:
 
         if event.button == MouseButtons.LEFT.value:
             self.dragging = False
-            if self.click_pos == pygame.mouse.get_pos():
-                # button released on the same position as it was clicked
-                if not self.is_placing_cable:
-                    self.start_cable_connection(camera)
-                else:
-                    self.end_cable_connection(camera)
+            # if self.click_pos == pygame.mouse.get_pos():
+            # button released on the same position as it was clicked
+            # if not self.is_placing_cable:
+            # self.start_cable_connection(camera)
+            # else:
+            # self.end_cable_connection(camera)
             self.last_mouse_pos = None
             self.click_handled = False
             self.handle_window_close()
             self.handle_button_click()
 
-    def adjust_zoom(self, amount: float, camera: Camera) -> None:
+    def adjust_zoom(self, amount: Literal["in", "out"]) -> None:
         """Adjust the camera zoom."""
         strategy = self.camera.zoom_out if amount == "out" else self.camera.zoom_in
         changed = strategy(pygame.mouse.get_pos(), self.resolution.size)
@@ -277,22 +277,22 @@ class Game:
     #             self.is_placing_cable = True
     #             break
 
-    def end_cable_connection(self, camera: Camera) -> None:
-        """End a cable connection."""
-        for device in self.devices:
-            if (
-                device.rect.collidepoint(pygame.mouse.get_pos())
-                and camera.world_to_screen(device.world_pos, self.resolution.size) != self.cables[-1].start
-            ):
-                self.is_placing_cable = False
-                self.cables[-1].ended = True
-                self.cables[-1].end = camera.world_to_screen(device.world_pos, self.resolution.size)
-                break
-        else:
-            self.is_placing_cable = False
-            self.cables[-1].ended = False
-            self.cables[-1].end = (0, 0)
-            self.cables.pop()
+    # def end_cable_connection(self, camera: Camera) -> None:
+    #     """End a cable connection."""
+    #     for device in self.devices:
+    #         if (
+    #             device.rect.collidepoint(pygame.mouse.get_pos())
+    #             and camera.world_to_screen(device.world_pos, self.resolution.size) != self.cables[-1].start
+    #         ):
+    #             self.is_placing_cable = False
+    #             self.cables[-1].ended = True
+    #             self.cables[-1].end = camera.world_to_screen(device.world_pos, self.resolution.size)
+    #             break
+    #     else:
+    #         self.is_placing_cable = False
+    #         self.cables[-1].ended = False
+    #         self.cables[-1].end = (0, 0)
+    #         self.cables.pop()
 
     def handle_right_click(self) -> None:
         """Handle right mouse button click."""
@@ -331,7 +331,7 @@ class Game:
                 self.debug_text = f"{self.devices=}"
 
                 for device in self.devices:  # si on clique sur un device, on ne bouge pas la camera
-                    if device.rect.collidepoint(current_pos):
+                    if device.screen_rect.collidepoint(current_pos):
                         (x, y) = device.position
                         device.position = (x + dx, y + dy)
                         # self.debug_text = "oue la cest la device"
