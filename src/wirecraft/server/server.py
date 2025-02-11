@@ -69,3 +69,7 @@ class Server:
 
     def buy_item(self, type: str) -> None:
         return
+
+    def get_task_list(self, level: int) -> list[str]:
+        # Server send task list to client based on level
+        return ["This is the first task", "This is the second task", "This is the third task"]

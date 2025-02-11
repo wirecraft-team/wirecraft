@@ -418,9 +418,10 @@ class Game:
     def show_tasks(self):
         """Task button action."""
         # display a window on the left side taking all the height of the screen
+        nb_task = len(self.server.get_task_list(1))
         self.windows.append(
             Window(
-                (20, 20),
+                (20, nb_task * 20),
                 (self.resolution.width / 5, self.resolution.height / 5),
                 "Tasks",
                 "You have 3 tasks",
