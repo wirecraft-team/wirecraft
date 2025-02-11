@@ -42,6 +42,7 @@ class Game:
         # Example: get the money
         self.server.get_money()
         self.view = view
+        self.click_pos = (6, 9)
         self.devices: list[Device] = []
         self.windows: list[Window] = []
         self.buttons: list[Button] = []
@@ -50,8 +51,9 @@ class Game:
         pygame.display.set_caption("Wirecraft")
 
         # Initialize devices
-        self.devices.append(Device((0, 0), "switch"))
-        self.devices.append(Device((-200, -200), "switch"))
+        self.devices.append(Device((100, 100), "switch1"))
+        self.devices.append(Device((-200, -200), "switch2"))
+        self.devices.append(Device((-300, 200), "switch3"))
 
         # Initialize inventory button
         self.buttons.append(
@@ -62,6 +64,8 @@ class Game:
                 INVENTORY_BUTTON,
             )
         )
+
+        self.debug_text = ""
 
         # For camera panning
         self.dragging = False
@@ -184,7 +188,7 @@ class Game:
             case pygame.MOUSEBUTTONDOWN:
                 self.handle_mousebuttondown(event, camera)
             case pygame.MOUSEBUTTONUP:
-                self.handle_mousebuttonup(event)
+                self.handle_mousebuttonup(event, camera)
             case pygame.MOUSEMOTION:
                 self.handle_mousemotion(event, camera)
             case _:
@@ -220,6 +224,22 @@ class Game:
             case _:
                 pass
 
+    def handle_mousebuttonup(self, event: pygame.event.Event, camera: Camera) -> None:
+        """Handle mouse button up events."""
+
+        if event.button == MouseButtons.LEFT.value:
+            self.dragging = False
+            if self.click_pos == pygame.mouse.get_pos():
+                # button released on the same position as it was clicked
+                if not self.is_placing_cable:
+                    self.start_cable_connection(camera)
+                else:
+                    self.end_cable_connection(camera)
+            self.last_mouse_pos = None
+            self.click_handled = False
+            self.handle_window_close()
+            self.handle_button_click()
+
     def adjust_zoom(self, amount: float, camera: Camera) -> None:
         """Adjust the camera zoom."""
         camera.adjust_zoom(amount, pygame.mouse.get_pos(), self.resolution.size)
@@ -230,10 +250,7 @@ class Game:
 
     def handle_left_click(self, camera: Camera) -> None:
         """Handle left mouse button click."""
-        if not self.is_placing_cable:
-            self.start_cable_connection(camera)
-        else:
-            self.end_cable_connection(camera)
+        self.click_pos = pygame.mouse.get_pos()
         self.dragging = True
         self.last_mouse_pos = pygame.mouse.get_pos()
         for device in self.devices:
@@ -263,16 +280,6 @@ class Game:
                 self.cables[-1].ended = True
                 self.cables[-1].end = camera.world_to_screen(device.world_pos, self.resolution.size)
                 break
-
-    def handle_mousebuttonup(self, event: pygame.event.Event) -> None:
-        """Handle mouse button up events."""
-
-        if event.button == MouseButtons.LEFT.value:
-            self.dragging = False
-            self.last_mouse_pos = None
-            self.click_handled = False
-            self.handle_window_close()
-            self.handle_button_click()
 
     def handle_right_click(self) -> None:
         """Handle right mouse button click."""
@@ -304,11 +311,22 @@ class Game:
         """Handle mouse motion events."""
         if self.dragging and self.view == Gamestate.GAME:
             current_pos = pygame.mouse.get_pos()
+
             if self.last_mouse_pos:
                 dx = (current_pos[0] - self.last_mouse_pos[0]) / camera.zoom
                 dy = (current_pos[1] - self.last_mouse_pos[1]) / camera.zoom
-                camera.x -= dx
-                camera.y -= dy
+                self.debug_text = f"{self.devices=}"
+                for device in self.devices:  # si on clique sur un device, on ne bouge pas la camera
+                    if device.rect.collidepoint(current_pos):
+                        (x, y) = device.world_pos
+                        device.world_pos = (x + dx, y + dy)
+                        # self.debug_text = "oue la cest la device"
+                        break
+                    else:
+                        camera.x -= dx
+                        camera.y -= dy
+                        # self.debug_text = "oue la cest la cam"
+                        break
             self.last_mouse_pos = current_pos
 
     def game(self) -> None:
@@ -340,13 +358,17 @@ class Game:
         debug_text = pygame.font.Font(None, 30).render(f"Placing Cable: {self.is_placing_cable}", True, BLACK)
         self.displaysurf.blit(debug_text, (10, 10))
 
+        debug_text_surf = pygame.font.Font(None, 30).render(f"{self.debug_text=}", True, BLACK)
+        self.displaysurf.blit(debug_text_surf, (10, 40))
+
     def updateview(self) -> None:
-        if self.view == Gamestate.MENU:
-            self.menu()
-        elif self.view == Gamestate.GAME:
-            self.game()
-        elif self.view == Gamestate.SETTINGS:
-            self.settings()
+        match self.view:
+            case Gamestate.GAME:
+                self.game()
+            case Gamestate.MENU:
+                self.menu()
+            case Gamestate.SETTINGS:
+                self.settings()
 
     def start(self):
         """main game loop."""
