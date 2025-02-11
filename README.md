@@ -7,13 +7,20 @@ The WireCraft project!
 > [!IMPORTANT]
 > The project requires Python >= 3.12 !
 
-> [!WARNING]
-> This installation method doesn't work for now.
-
+Using pip:
 ```bash
 pip install git+https://github.com/wirecraft-team/wirecraft.git -U
 wirecraft
 ```
+
+Using uvx:
+```bash
+uvx --from https://github.com/wirecraft-team/wirecraft.git wirecraft
+```
+
+### Debug options
+
+- `show_center`: add a red square at position 0,0 in the map
 
 ## Development instructions
 

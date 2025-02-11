@@ -6,7 +6,7 @@ from typing import Literal
 
 import pygame
 
-from wirecraft.shared_context import server_var
+from wirecraft.shared_context import ctx, server_var
 
 from .constants import BLACK, FLAGS, FPS, GREY, PADDING, RED, RES_LIST, WHITE
 from .server_interface import ServerInterface
@@ -352,14 +352,14 @@ class Game:
         debug_text = pygame.font.Font(None, 30).render(f"Placing Cable: {self.is_placing_cable}", True, BLACK)
         self.displaysurf.blit(debug_text, (10, 10))
 
-        rect = pygame.Rect(0, 0, 10, 10)
-        rect.center = self.camera.world_to_screen((0, 0), self.resolution.size)
-
-        pygame.draw.rect(
-            self.displaysurf,
-            RED,
-            rect,
-        )
+        if "show_center" in ctx.debug_options:
+            rect = pygame.Rect(0, 0, 10, 10)
+            rect.center = self.camera.world_to_screen((0, 0), self.resolution.size)
+            pygame.draw.rect(
+                self.displaysurf,
+                RED,
+                rect,
+            )
 
     def updateview(self) -> None:
         if self.view == Gamestate.MENU:
