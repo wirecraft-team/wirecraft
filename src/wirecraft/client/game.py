@@ -47,7 +47,7 @@ class Game:
         pygame.display.set_caption("Wirecraft")
 
         # Initialize devices  # TODO: remove (debug)
-        self.devices.append(Device(self, (1000, 500), "switch"))
+        self.devices.append(Device(self, (0, 0), "switch"))
         # self.devices.append(Device(self, (-200, -200), "switch"))
 
         # Initialize inventory button

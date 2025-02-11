@@ -107,8 +107,8 @@ class Camera:
 
     @property
     def zoom(self):
-        return 1
-        # return self.zoom_value / 100
+        # return 1
+        return self.zoom_value / 100
 
     @property
     def zoom_value(self):
@@ -116,7 +116,7 @@ class Camera:
 
     @zoom_value.setter
     def zoom_value(self, value: int):
-        self._zoom_value = max(3, min(1000, value))
+        self._zoom_value = max(3, min(100, value))
 
     def zoom_out(self, mouse_pos: tuple[int, int], screen_size: tuple[int, int]):
         return self._tick_zoom("out", mouse_pos, screen_size)

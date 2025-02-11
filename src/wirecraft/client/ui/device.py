@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 
 import pygame
 
-from ..constants import BLACK
 from .assets import SWITCH_DEVICE
 from .camera import WorldObjectBounds
 
@@ -82,15 +81,18 @@ class Device(pygame.sprite.Sprite):
             return
         screen_position = self.game.camera.world_to_screen(self.position, self.game.resolution.size)
 
-        self.crop_left = max(0, camera.world_view[0] - self.world_bounds[0])
-        self.crop_right = max(0, self.world_bounds[1] - camera.world_view[1])
-        self.crop_top = max(0, camera.world_view[2] - self.world_bounds[2])
-        self.crop_bottom = max(0, self.world_bounds[3] - camera.world_view[3])
+        # TODO: cropping to improve perfs
+        # self.crop_left = max(0, camera.world_view[0] - self.world_bounds[0])
+        # self.crop_right = max(0, self.world_bounds[1] - camera.world_view[1])
+        # self.crop_top = max(0, camera.world_view[2] - self.world_bounds[2])
+        # self.crop_bottom = max(0, self.world_bounds[3] - camera.world_view[3])
 
-        cropped_width = self.size[0] - (self.crop_left + self.crop_right)
-        cropped_height = self.size[1] - (self.crop_top + self.crop_bottom)
+        # cropped_width = self.size[0] - (self.crop_left + self.crop_right)
+        # cropped_height = self.size[1] - (self.crop_top + self.crop_bottom)
 
-        subsurface = self.base_image.subsurface((self.crop_left, self.crop_top, cropped_width, cropped_height))
+        # subsurface = self.base_image.subsurface((self.crop_left, self.crop_top, cropped_width, cropped_height))
+
+        subsurface = pygame.transform.scale_by(self.base_image, self.game.camera.zoom)
         self.image = subsurface
         self.rect = self.base_image.get_rect()
         self.rect.center = screen_position
@@ -109,27 +111,10 @@ class Device(pygame.sprite.Sprite):
         )
 
     def draw(self, surface: pygame.Surface) -> None:
-        # draw the rect in red so we can see it
-        # if not self.inside_screen:
-        # return
-        # if True or os.environ.get(
-        #     "DEBUG"
-        # ):  # for now, nothing has been decided about a "DEBUG" mode. Could be discussed later.
-
-        debug_text = pygame.font.Font(None, 30).render(f"time: {self.update_time}", True, BLACK)
-        surface.blit(debug_text, (10, 50))
-        debug_text = pygame.font.Font(None, 30).render(
-            f"rendered_size: {self.get_surface().get_width()}x{self.get_surface().get_height()}", True, BLACK
-        )
-        surface.blit(debug_text, (10, 70))
         if not self.is_inside_screen:
             return
-        # pygame.draw.rect(surface, RED, self.get_rect())
-        # debug_text = pygame.font.Font(None, 300).render(f"inside: {self.is_inside_screen}", True, BLACK)
-        # surface.blit(debug_text, (10, 50))
-        start = time.perf_counter()
-        surface.blit(self.get_surface(), (max(self.get_rect()[0], 0), max(self.get_rect()[1], 0)))
-        end = time.perf_counter()
-        self.draw_time = end - start
-        debug_text = pygame.font.Font(None, 30).render(f"draw_time: {self.draw_time}", True, BLACK)
-        surface.blit(debug_text, (10, 90))
+
+        # surface.blit(self.get_surface(), (max(self.get_rect()[0], 0), max(self.get_rect()[1], 0)))
+        position = self.game.camera.world_to_screen(self.position, self.game.resolution.size)
+        rect = self.get_rect().scale_by(self.game.camera.zoom)
+        surface.blit(self.get_surface(), (position[0] - rect.width // 2, position[1] - rect.height // 2))
