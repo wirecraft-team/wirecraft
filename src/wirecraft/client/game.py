@@ -51,9 +51,9 @@ class Game:
         pygame.display.set_caption("Wirecraft")
 
         # Initialize devices
-        self.devices.append(Device((100, 100), "switch1"))
-        self.devices.append(Device((-200, -200), "switch2"))
-        self.devices.append(Device((-300, 200), "switch3"))
+        self.devices.append(Device((0, 300), "switch3"))
+        self.devices.append(Device((0, 200), "switch2"))
+        self.devices.append(Device((0, 100), "switch1"))
 
         # Initialize inventory button
         self.buttons.append(
@@ -316,17 +316,18 @@ class Game:
                 dx = (current_pos[0] - self.last_mouse_pos[0]) / camera.zoom
                 dy = (current_pos[1] - self.last_mouse_pos[1]) / camera.zoom
                 self.debug_text = f"{self.devices=}"
+
                 for device in self.devices:  # si on clique sur un device, on ne bouge pas la camera
                     if device.rect.collidepoint(current_pos):
                         (x, y) = device.world_pos
                         device.world_pos = (x + dx, y + dy)
                         # self.debug_text = "oue la cest la device"
                         break
-                    else:
-                        camera.x -= dx
-                        camera.y -= dy
-                        # self.debug_text = "oue la cest la cam"
-                        break
+                else:
+                    camera.x -= dx
+                    camera.y -= dy
+                    # self.debug_text = "oue la cest la cam"
+
             self.last_mouse_pos = current_pos
 
     def game(self) -> None:
