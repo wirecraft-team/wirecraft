@@ -172,12 +172,15 @@ class Game:
             or window_pos[1] > self.resolution.height - window_size[1] - 20
         ):
             return
-        self.windows.append(Window(
-            window_pos,
-            window_size,
-            "Device properties",
-            f"Switch {device.world_pos}",
-            WindowType.DEVICE_PROPERTIES))
+        self.windows.append(
+            Window(
+                window_pos,
+                window_size,
+                "Device properties",
+                f"Switch {device.world_pos}",
+                WindowType.POPUP,
+            )
+        )
 
     def drawmenu(self, device: Device) -> None:
         """display a window on the top right side of the screen with the device's properties"""
@@ -338,7 +341,7 @@ class Game:
         # Update and draw windows
         for i, window in enumerate(self.windows):
             # Check if the window is a popup window and if it should be removed
-            if window.type.value != 1:
+            if window.type.value == 1:
                 window.update_pos(i, self.resolution)
                 window.time -= 1
                 if window.time == 0:
@@ -357,8 +360,8 @@ class Game:
             cable.draw(self.displaysurf, self.camera, resolution=self.resolution)
 
         # add a debug text for self.is_placing_cable
-        debug_text = pygame.font.Font(None, 30).render(f"Placing Cable: {self.is_placing_cable}", True, BLACK)
-        self.displaysurf.blit(debug_text, (10, 10))
+        debug_text = pygame.font.Font(None, 40).render(f"Placing Cable: {self.is_placing_cable}", True, BLACK)
+        self.displaysurf.blit(debug_text, (150, self.resolution.height - 25))
 
     def updateview(self) -> None:
         if self.view == Gamestate.MENU:
@@ -390,13 +393,14 @@ class Game:
                 WindowType.INVENTORY,
             )
         )
+
     def show_tasks(self):
         """Task button action."""
         # display a window on the left side taking all the height of the screen
         self.windows.append(
             Window(
-                (200,200),
-                (self.resolution.width / 5, self.resolution.height - 40),
+                (20, 20),
+                (self.resolution.width / 5, self.resolution.height / 5),
                 "Tasks",
                 "You have 3 tasks",
                 WindowType.TASK,

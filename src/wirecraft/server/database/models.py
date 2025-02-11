@@ -19,9 +19,11 @@ class Device(SQLModel, table=True):
     x: int
     y: int
 
+
 class Level(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     completed: bool = False
+
 
 class Task(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
