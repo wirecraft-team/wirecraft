@@ -27,20 +27,23 @@ class Cable:
         updated using world coordinates. If the cable is being placed, only the start
         point should be updated (end point follows mouse).
         """
-        screen_size = resolution.size  # Get the tuple from Resolution object
+        # screen_size = resolution.size  # Get the tuple from Resolution object
 
         # First time update: calculate and store world coordinates
         if self.start_world is None:
-            self.start_world = camera.screen_to_world(self.start, screen_size)
+            # self.start_world = camera.screen_to_world(self.start, screen_size)  # TODO: use int
+            pass
         if self.ended and self.end_world is None:
-            self.end_world = camera.screen_to_world(self.end, screen_size)
+            # self.end_world = camera.screen_to_world(self.end, screen_size)  # TODO: use int
+            pass
 
         # Update start point screen position
-        self.start = camera.world_to_screen(self.start_world, screen_size)
+        # self.start = camera.world_to_screen(self.start_world, screen_size)  # TODO: use int
 
         # Update end point screen position only if cable is complete
         if self.ended and self.end_world is not None:
-            self.end = camera.world_to_screen(self.end_world, screen_size)
+            # self.end = camera.world_to_screen(self.end_world, screen_size)  # TODO: use int
+            pass
 
     def update_zoom(self, camera: Camera) -> None:
         pass
