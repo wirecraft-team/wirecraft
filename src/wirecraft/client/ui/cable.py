@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING
 import pygame
 
 from ..constants import RED
-from ..game import Game
 
 if TYPE_CHECKING:
+    from ..game import Game
     from .camera import Camera
     from .window import Resolution
 
@@ -58,8 +58,8 @@ class Cable:
         start_x = dev_1_pos[0] + port_1_pos[0]
         start_y = dev_1_pos[1] + port_1_pos[1]
         if self.id_device2 > 0:
-            dev_2_pos = self.game.server.get_device_pos(self.id_device1)
-            port_2_pos = self.game.server.get_port_pos(self.port_device1, self.id_device1)
+            dev_2_pos = self.game.server.get_device_pos(self.id_device2)
+            port_2_pos = self.game.server.get_port_pos(self.port_device2, self.id_device2)
 
             end_x = dev_2_pos[0] + port_2_pos[0]
             end_y = dev_2_pos[1] + port_2_pos[1]
