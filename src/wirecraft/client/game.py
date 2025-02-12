@@ -11,7 +11,7 @@ from wirecraft.shared_context import server_var
 from .constants import BLACK, DEBUG, FLAGS, FPS, GREY, LEVEL, PADDING, RED, RES_LIST, WHITE
 from .server_interface import ServerInterface
 from .ui import Button, Cable, Camera, Device, Resolution, Window
-from .ui.assets import INVENTORY_BUTTON
+from .ui.assets import INVENTORY_BUTTON, SWITCH_MASK
 
 
 class Gamestate(Enum):
@@ -275,17 +275,37 @@ class Game:
         """Start a cable connection."""
         for device in self.devices:
             if device.screen_rect.collidepoint(pygame.mouse.get_pos()):
-                self.is_placing_cable = True
-                self.server.add_cable(device.db_id, 0, -1, -1, LEVEL)
-                break
+                port_id = self.get_port_id(device)
+                if port_id is not None:
+                    self.is_placing_cable = True
+                    self.server.add_cable(device.db_id, port_id, -1, -1, LEVEL)
+                    break
 
     def end_cable_connection(self, camera: Camera) -> None:
         """End a cable connection."""
         for device in self.devices:
             if device.screen_rect.collidepoint(pygame.mouse.get_pos()) and device.db_id != self.cables[-1].id_device1:
-                self.is_placing_cable = False
-                self.server.end_cable(self.cables[-1].db_id, device.db_id, 0)
-                break
+                port_id = self.get_port_id(device)
+                if port_id is not None:
+                    self.is_placing_cable = False
+                    self.server.end_cable(self.cables[-1].db_id, device.db_id, port_id)
+                    break
+
+    def get_port_id(self, device: Device):
+        mask = SWITCH_MASK
+        mask_rect = mask.get_rect()
+        mask_rect.center = device.screen_rect.center
+        on_device_mouse_pos_x = (
+            self.camera.screen_to_world(pygame.mouse.get_pos(), self.resolution.size)[0] - device.world_rect[0]
+        )
+        on_device_mouse_pos_y = (
+            self.camera.screen_to_world(pygame.mouse.get_pos(), self.resolution.size)[1] - device.world_rect[1]
+        )
+        colors = mask.get_at((int(on_device_mouse_pos_x), int(on_device_mouse_pos_y)))
+        port_id = colors[0]
+        if colors[1] != 0 or colors[2] != 0:
+            return
+        return port_id
 
     def handle_mousebuttonup(self, event: pygame.event.Event) -> None:
         """Handle mouse button up events."""

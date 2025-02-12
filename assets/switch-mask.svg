@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 147.13 22">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #050000;
+      }
+
+      .cls-2 {
+        fill: #030000;
+      }
+
+      .cls-3 {
+        fill: #020000;
+      }
+
+      .cls-4 {
+        fill: #010000;
+      }
+
+      .cls-5 {
+        fill: #f0f;
+      }
+
+      .cls-6 {
+        fill: #060000;
+      }
+
+      .cls-7 {
+        fill: #040000;
+      }
+
+      .cls-8 {
+        fill: #070000;
+      }
+    </style>
+  </defs>
+  <rect class="cls-5" y="0" width="147" height="22"/>
+  <rect x="41" y="4" width="11" height="10"/>
+  <rect class="cls-4" x="54" y="4" width="11" height="10"/>
+  <rect class="cls-3" x="67" y="4" width="11" height="10"/>
+  <rect class="cls-2" x="80" y="4" width="11" height="10"/>
+  <rect class="cls-7" x="93" y="4" width="11" height="10"/>
+  <rect class="cls-1" x="106" y="4" width="11" height="10"/>
+  <rect class="cls-6" x="119" y="4" width="11" height="10"/>
+  <rect class="cls-8" x="132" y="4" width="11" height="10"/>
+</svg>
