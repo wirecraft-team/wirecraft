@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from sqlmodel import (
     Field,  # type: ignore
     Session,
@@ -16,7 +18,7 @@ class Cable(SQLModel, table=True):
     port_1: int
     id_device_2: int = Field(default=None, foreign_key="device.id")
     port_2: int
-    id_level: int | None = Field(default=None, foreign_key="level.id")
+    id_level: int = Field(default=None, foreign_key="level.id")
 
 
 class Device(SQLModel, table=True):
@@ -25,7 +27,7 @@ class Device(SQLModel, table=True):
     type: str
     x: int
     y: int
-    id_level: int | None = Field(default=None, foreign_key="level.id")
+    id_level: int = Field(default=None, foreign_key="level.id")
 
 
 class Level(SQLModel, table=True):
@@ -35,7 +37,7 @@ class Level(SQLModel, table=True):
 
 class Task(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    id_level: int | None = Field(default=None, foreign_key="level.id")
+    id_level: int = Field(default=None, foreign_key="level.id")
     name: str
     completed: bool = False
 
@@ -49,7 +51,8 @@ def init():
             session.add(level_dev)
             session.commit()
             session.refresh(level_dev)
-
+            if TYPE_CHECKING:
+                assert isinstance(level_dev.id, int)
             switch1 = Device(name="Switch 1", type="switch", x=0, y=0, id_level=level_dev.id)
             switch2 = Device(name="pc 1", type="pc", x=200, y=200, id_level=level_dev.id)
             session.add(switch1)

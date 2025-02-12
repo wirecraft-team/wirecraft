@@ -8,7 +8,7 @@ import pygame
 
 from wirecraft.shared_context import ctx, server_var
 
-from .constants import BLACK, DEBUG, FLAGS, FPS, GREY, LEVEL, PADDING, RED, RES_LIST, WHITE
+from .constants import BLACK, FLAGS, FPS, GREY, LEVEL, PADDING, RED, RES_LIST, WHITE
 from .server_interface import ServerInterface
 from .ui import Button, Cable, Camera, Device, Resolution, Window
 from .ui.assets import INVENTORY_BUTTON, SWITCH_MASK
@@ -381,7 +381,7 @@ class Game:
             cable.draw(self.displaysurf, self.camera, resolution=self.resolution)
 
         # add a debug text for self.is_placing_cable and a red square at (0, 0)
-        if DEBUG:
+        if "debug_text" in ctx.debug_options:
             debug_text = pygame.font.Font(None, 30).render(f"Placing Cable: {self.is_placing_cable}", True, BLACK)
             self.displaysurf.blit(debug_text, (10, 30))
 
