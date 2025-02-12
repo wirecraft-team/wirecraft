@@ -55,7 +55,7 @@ class Game:
         self.cables = []
         cables = self.server.get_level_cables(LEVEL)
         for cable in cables:
-            self.cables.append(Cable(cable.id_device_1, cable.port_1, cable.id_device_2, cable.port_2, cable.id))
+            self.cables.append(Cable(cable.id_device_1, cable.port_1, cable.id_device_2, cable.port_2, cable.id, self))
 
         # Initialize inventory button
         self.buttons.append(
@@ -87,7 +87,7 @@ class Game:
         self.cables = []
         cables = self.server.get_level_cables(LEVEL)
         for cable in cables:
-            self.cables.append(Cable(cable.id_device_1, cable.port_1, cable.id_device_2, cable.port_2, cable.id))
+            self.cables.append(Cable(cable.id_device_1, cable.port_1, cable.id_device_2, cable.port_2, cable.id, self))
         return self.cables
 
     def settings(self) -> None:

@@ -1,32 +1,26 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import pygame
 
 from ..constants import RED
+from ..game import Game
 
 if TYPE_CHECKING:
     from .camera import Camera
     from .window import Resolution
 
-from wirecraft.shared_context import server_var
 
-
+@dataclass
 class Cable:
-    def __init__(
-        self,
-        id_device1: int,
-        port_device1: int,
-        id_device2: int,
-        port_device2: int,
-        db_id: int,
-    ) -> None:
-        self.id_device1 = id_device1
-        self.port_device1 = port_device1
-        self.id_device2 = id_device2
-        self.port_device2 = port_device2
-        self.db_id = db_id
+    id_device1: int
+    port_device1: int
+    id_device2: int
+    port_device2: int
+    db_id: int
+    game: Game
 
     def update_position(self, camera: Camera, resolution: Resolution) -> None:
         """Update cable position based on camera movement
@@ -59,25 +53,27 @@ class Cable:
 
     def draw(self, surface: pygame.Surface, camera: Camera, resolution: Resolution) -> None:
         # TODO fix position of the cable
+        dev_1_pos = self.game.server.get_device_pos(self.id_device1)
+        port_1_pos = self.game.server.get_port_pos(self.port_device1, self.id_device1)
+        start_x = dev_1_pos[0] + port_1_pos[0]
+        start_y = dev_1_pos[1] + port_1_pos[1]
+        if self.id_device2 > 0:
+            dev_2_pos = self.game.server.get_device_pos(self.id_device1)
+            port_2_pos = self.game.server.get_port_pos(self.port_device1, self.id_device1)
+
+            end_x = dev_2_pos[0] + port_2_pos[0]
+            end_y = dev_2_pos[1] + port_2_pos[1]
+        else:
+            end_x, end_y = pygame.mouse.get_pos()
         pygame.draw.line(
             surface,
             RED,
             camera.world_to_screen(
-                (
-                    server_var.get().get_device_pos(self.id_device1)[0]
-                    + server_var.get().get_port_pos(self.port_device1, self.id_device1)[0],
-                    server_var.get().get_device_pos(self.id_device1)[1]
-                    + server_var.get().get_port_pos(self.port_device1, self.id_device1)[1],
-                ),
+                (start_x, start_y),
                 resolution.size,
             ),
             camera.world_to_screen(
-                (
-                    server_var.get().get_device_pos(self.id_device2)[0]
-                    + server_var.get().get_port_pos(self.port_device2, self.id_device2)[0],
-                    server_var.get().get_device_pos(self.id_device2)[1]
-                    + server_var.get().get_port_pos(self.port_device2, self.id_device2)[1],
-                ),
+                (end_x, end_y),
                 resolution.size,
             )
             if self.id_device2 > 0
