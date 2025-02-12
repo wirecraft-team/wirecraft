@@ -57,6 +57,7 @@ class Cable:
 
     def draw(self, surface: pygame.Surface, camera: Camera, resolution: Resolution) -> None:
         # TODO use a map to get pos from id
+        # TODO don't compute this every frame
         dev_1_pos = next(device.world_rect for device in self.game.devices if device.db_id == self.id_device1)
         port_1_pos = self.get_center_of_red(self.port_device1)
         start_x = dev_1_pos[0] + port_1_pos[0]
