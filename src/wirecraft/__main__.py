@@ -2,10 +2,12 @@ import ctypes
 import json
 import platform
 
+import click
+
 from wirecraft.client.game import Game, Gamestate
 from wirecraft.client.ui import Resolution
 from wirecraft.server import Server
-from wirecraft.shared_context import server_var
+from wirecraft.shared_context import ctx, server_var
 
 
 def init_game():
@@ -31,7 +33,13 @@ def init_server():
     return server
 
 
-def main():
+@click.command()
+@click.option(
+    "--debug", "-d", "debug_options", multiple=True, default=[], envvar="DEBUG", help="Enable debug mode options."
+)
+def main(debug_options: list[str]):
+    ctx.set(debug_options=debug_options)
+
     server = init_server()
     server.start()
     server_var.set(server)
