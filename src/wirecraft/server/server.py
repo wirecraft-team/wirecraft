@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import threading
 import time
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Self
 
 from sqlmodel import Session, select
@@ -82,7 +83,6 @@ class Server:
         with Session(engine) as session:
             session.add(statement)
             session.commit()
-            print("Cable added")
 
     def end_cable(self, cable_id: int, device_id: int, port_id: int) -> None:
         statement = select(Cable).where(Cable.id == cable_id)
@@ -93,15 +93,15 @@ class Server:
             session.add(cable)
             session.commit()
 
-    def get_level_cables(self, id_level: int) -> list[Cable]:
+    def get_level_cables(self, id_level: int) -> Sequence[Cable]:
         statement = select(Cable).where(Cable.id_level == id_level)
         with Session(engine) as session:
-            return list(session.exec(statement).all())
+            return session.exec(statement).all()
 
-    def get_level_devices(self, id_level: int) -> list[Device]:
+    def get_level_devices(self, id_level: int) -> Sequence[Device]:
         statement = select(Device).where(Device.id_level == id_level)
         with Session(engine) as session:
-            return list(session.exec(statement).all())
+            return session.exec(statement).all()
 
     def get_device_pos(self, device_id: int):
         statement = select(Device.x, Device.y).where(Device.id == device_id)

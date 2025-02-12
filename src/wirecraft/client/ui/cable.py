@@ -3,18 +3,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+import numpy as np
 import pygame
 
 from ..constants import RED
+from ..ui.assets import SWITCH_MASK
 
 if TYPE_CHECKING:
     from ..game import Game
     from .camera import Camera
     from .window import Resolution
-
-import numpy as np
-
-from ..ui.assets import SWITCH_MASK
 
 
 @dataclass
