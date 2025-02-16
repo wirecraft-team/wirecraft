@@ -4,6 +4,22 @@ from wirecraft.client.ui.camera import ObjectBounds
 
 
 class SingletonMeta(type):
+    """
+    This is a Metaclass to transform a class into a Singleton.
+
+    A Singleton is a class that can only have one instance at a time.
+
+    For example:
+    ```py
+    class MyClass(metaclass=SingletonMeta):
+        pass
+
+    a = MyClass()
+    b = MyClass()
+    assert a is b  # True
+    ```
+    """
+
     def __call__(cls, *args: Any, **kwargs: Any):
         if not hasattr(cls, "_instance"):
             cls._instance = super().__call__(*args, **kwargs)
