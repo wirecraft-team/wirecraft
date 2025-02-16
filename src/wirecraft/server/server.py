@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import threading
 import time
 from typing import TYPE_CHECKING, Self
@@ -9,6 +10,8 @@ if TYPE_CHECKING:
 
 
 REFRESH_RATE = 30
+
+logger = logging.getLogger(__name__)
 
 
 class Server:
@@ -26,7 +29,7 @@ class Server:
         self._setup_thread()
 
     def _setup_thread(self):
-        print("Setup the backend in a separated thread...")
+        logger.debug("Setup the backend in a separated thread...")
         self._thread = threading.Thread(target=self._run)
         self._stop = threading.Event()
 
@@ -37,7 +40,7 @@ class Server:
         _wait = _next - _now
         if _wait < 0:
             # TODO: implement server slow down (increase delay in case of poor performances)
-            print(f"WARNING: can't keep up ! {_wait}s behind the normal refresh")
+            logger.warning("Can't keep up ! %ss behind the normal refresh", -round(_wait, 3))
             self._last_refresh = _now
             return self._stop.is_set()
 
@@ -52,7 +55,7 @@ class Server:
         self.client_connexions.remove(interface)
 
     def start(self):
-        print("Server started!")
+        logger.info("Server started!")
         self._thread.start()
 
     def stop(self):
@@ -61,7 +64,7 @@ class Server:
     def _run(self):
         while not self._stop.is_set():
             if self._wait_next_refresh():
-                print("Server stopped!")
+                logger.info("Server stopped!")
                 break
 
     def get_money(self) -> int:

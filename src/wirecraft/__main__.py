@@ -4,6 +4,7 @@ import platform
 
 import click
 
+from wirecraft._logger import init_logger
 from wirecraft.client.game import Game, Gamestate
 from wirecraft.client.ui import Resolution
 from wirecraft.server import Server
@@ -39,6 +40,7 @@ def init_server():
 )
 def main(debug_options: list[str]):
     ctx.set(debug_options=debug_options)
+    init_logger()
 
     server = init_server()
     server.start()

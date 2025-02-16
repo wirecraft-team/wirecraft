@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import logging
 from enum import Enum
 from typing import Literal
 
@@ -12,6 +12,8 @@ from .constants import BLACK, FLAGS, FPS, GREY, PADDING, RED, RES_LIST, WHITE
 from .server_interface import ServerInterface
 from .ui import Button, Cable, Camera, Device, Resolution, Window
 from .ui.assets import INVENTORY_BUTTON
+
+logger = logging.getLogger(__name__)
 
 
 class Gamestate(Enum):
@@ -147,9 +149,7 @@ class Game:
         exit_rect = exit.get_rect(center=(self.resolution.width / 2, self.resolution.height / 1.5))
         self.displaysurf.blit(exit, exit_rect)
         if exit_rect.collidepoint(mouse_pos) and mouse_clicked:
-            pygame.quit()
-            server_var.get().stop()
-            raise SystemExit(0)
+            self.quit_game()
 
     def add_device_window(self, device: Device) -> None:
         """Add a window displaying the properties of a device."""
@@ -194,9 +194,10 @@ class Game:
 
     def quit_game(self) -> None:
         """Quit the game."""
+        logger.info("Game closed.")
         server_var.get().stop()
         pygame.quit()
-        sys.exit()
+        raise SystemExit(0)
 
     def handle_keydown(self, event: pygame.event.Event) -> None:
         """Handle keydown events."""
