@@ -1,6 +1,6 @@
-# WireCraft
+# Wirecraft
 
-The WireCraft project!
+The Wirecraft project!
 
 ## Installation instructions
 
