@@ -23,44 +23,42 @@ class Cable:
     port_device2: int
     db_id: int
     game: Game
+    start_offset: tuple[int, int] = (0, 0)
+    end_offset: tuple[int, int] = (0, 0)
 
     def update_zoom(self, camera: Camera) -> None:
         pass
 
+    def initiate_position(self, camera: Camera):
+        self.start_offset = self.get_center_of_red(self.port_device1)
+        self.end_offset = self.get_center_of_red(self.port_device2)
+
     def draw(self, surface: pygame.Surface, camera: Camera, resolution: Resolution) -> None:
         # TODO use a map to get pos from id
-        # TODO don't compute this every frame
-        if not self.game.view_changed and self.port_device2 == 0:
-            return
         dev_1_pos = next(device.world_rect for device in self.game.devices if device.db_id == self.id_device1)
-        port_1_pos = self.get_center_of_red(self.port_device1)
-        start_x = dev_1_pos[0] + port_1_pos[0]
-        start_y = dev_1_pos[1] + port_1_pos[1]
-        if self.id_device2 > 0 and self.port_device2 > 0:
-            dev_2_pos = next(device.world_rect for device in self.game.devices if device.db_id == self.id_device2)
-            port_2_pos = self.get_center_of_red(self.port_device2)
-
-            end_x = dev_2_pos[0] + port_2_pos[0]
-            end_y = dev_2_pos[1] + port_2_pos[1]
+        port_1_pos = (dev_1_pos[0] + self.start_offset[0], dev_1_pos[1] + self.start_offset[1])
+        if self.port_device2 <= 0:
+            port_2_pos = camera.screen_to_world(pygame.mouse.get_pos(), resolution.size)
         else:
-            end_x, end_y = pygame.mouse.get_pos()
+            dev_2_pos = next(device.world_rect for device in self.game.devices if device.db_id == self.id_device2)
+            port_2_pos = (dev_2_pos[0] + self.end_offset[0], dev_2_pos[1] + self.end_offset[1])
         pygame.draw.line(
             surface,
             RED,
             camera.world_to_screen(
-                (start_x, start_y),
+                port_1_pos,
                 resolution.size,
             ),
             camera.world_to_screen(
-                (end_x, end_y),
+                port_2_pos,
                 resolution.size,
-            )
-            if self.id_device2 > 0 and self.port_device2 > 0
-            else (end_x, end_y),
+            ),
             width=5,
         )
 
     def get_center_of_red(self, port_id: int) -> tuple[int, int]:
+        if port_id <= 0:
+            return (0, 0)
         pixel_array = pygame.surfarray.pixels3d(SWITCH_MASK)  # type: ignore
         # Extract the red channel
         red_channel: np.ndarray = pixel_array[:, :, 0]  # type: ignore

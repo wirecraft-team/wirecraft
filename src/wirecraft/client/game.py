@@ -44,7 +44,6 @@ class Game:
         self.buttons: list[Button] = []
         self.cables: list[Cable] = []
         self.is_placing_cable = False
-        self.view_changed = True
         pygame.display.set_caption("Wirecraft")
 
         # Initialize devices
@@ -56,7 +55,9 @@ class Game:
         self.cables = []
         cables = self.server.get_level_cables(LEVEL)
         for cable in cables:
-            self.cables.append(Cable(cable.id_device_1, cable.port_1, cable.id_device_2, cable.port_2, cable.id, self))
+            cable = Cable(cable.id_device_1, cable.port_1, cable.id_device_2, cable.port_2, cable.id, self)
+            cable.initiate_position(self.camera)
+            self.cables.append(cable)
 
         # Initialize inventory button
         self.buttons.append(
@@ -89,6 +90,8 @@ class Game:
         cables = self.server.get_level_cables(LEVEL)
         for cable in cables:
             self.cables.append(Cable(cable.id_device_1, cable.port_1, cable.id_device_2, cable.port_2, cable.id, self))
+            if self.cables[-1].start_offset == (0, 0):
+                self.cables[-1].initiate_position(self.camera)
         return self.cables
 
     def settings(self) -> None:
@@ -247,13 +250,11 @@ class Game:
         strategy = self.camera.zoom_out if amount == "out" else self.camera.zoom_in
         changed = strategy(pygame.mouse.get_pos(), self.resolution.size)
         if changed:
-            self.view_changed = True
             self.update_zoom()
 
     def set_zoom(self, zoom_value: int):
         changed = self.camera.set_zoom(zoom_value, (0, 0), self.resolution.size)
         if changed:
-            self.view_changed = True
             self.update_zoom()
 
     def update_zoom(self):
@@ -270,7 +271,6 @@ class Game:
             self.end_cable_connection(camera)
         self.dragging = True
         self.last_mouse_pos = pygame.mouse.get_pos()
-        self.view_changed = True
         for device in self.devices:
             device.update_position(camera, self.resolution.size)
 
@@ -356,7 +356,6 @@ class Game:
                 camera.x -= dx
                 camera.y -= dy
             self.last_mouse_pos = current_pos
-            self.view_changed = True
 
     def game(self) -> None:
         self.displaysurf.fill(WHITE)
@@ -382,8 +381,6 @@ class Game:
         # Draw cables
         for cable in self.cables:
             cable.draw(self.displaysurf, self.camera, resolution=self.resolution)
-
-        self.view_changed = False
 
         # add a debug text for self.is_placing_cable and a red square at (0, 0)
         if "debug_text" in ctx.debug_options:
