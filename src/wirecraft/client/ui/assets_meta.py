@@ -8,9 +8,10 @@ verbose explanations.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from importlib.resources import files
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
 import pygame
 
@@ -18,6 +19,8 @@ from ..utils import SingletonMeta
 
 if TYPE_CHECKING:
     from .assets import Assets
+
+    type PortsMap = dict[Any, tuple[int, int, int]]
 
 # Check for assets in the package if installed
 assets_dir = Path(str(files("wirecraft").joinpath("assets")))
@@ -45,7 +48,21 @@ class AssetsMeta(SingletonMeta):
             asset_loader.load()
 
 
-class Asset:
+@dataclass
+class SimpleAsset:
+    surface: pygame.Surface
+    mask: None = None
+    ports: None = None
+
+
+@dataclass
+class MaskedAsset:
+    surface: pygame.Surface
+    mask: pygame.Surface
+    ports: PortsMap
+
+
+class Asset[M]:
     """
     An Asset is a descriptor that will lazy-load the asset on access-time.
     That means that the asset is not loaded at definition time but when it is accessed for the first time
@@ -54,9 +71,17 @@ class Asset:
     You should use the AssetsMeta.load_assets() method to load all the assets at once.
     """
 
-    def __init__(self, filename: str):
+    @overload
+    def __init__(self: Asset[SimpleAsset], filename: str, mask: Literal[False] = False, ports: None = None) -> None: ...
+    @overload
+    def __init__(self: Asset[MaskedAsset], filename: str, mask: Literal[True], ports: PortsMap) -> None: ...
+
+    def __init__(self, filename: str, mask: bool = False, ports: PortsMap | None = None):
         self.filename = filename
         self._loaded_asset: pygame.Surface | None = None
+        self.mask = mask
+        self._loaded_mask: pygame.Surface | None = None
+        self.ports = ports
 
     def __set_name__(self, owner: Assets, name: str):
         getattr(owner, "__assets_loaders__").append(self)
@@ -68,32 +93,57 @@ class Asset:
     def load(self):
         if not self.is_loaded:
             self._loaded_asset = pygame.image.load(assets_dir / self.filename).convert_alpha()
+            if self.mask:
+                self._loaded_mask = pygame.image.load(assets_dir / f"mask_{self.filename}")
+                # TODO: load the ports positions
             print(f"Loaded {self.filename}")
         else:
             print(f"{self.filename} is already loaded !")
 
-    def __get__(self, instance: Assets | None, owner: type[Assets]) -> pygame.Surface:
+    def __get__(self, instance: Assets | None, owner: type[Assets]) -> M:
         if not self.is_loaded:
             self.load()
 
         if TYPE_CHECKING:
             assert self._loaded_asset is not None
 
-        return self._loaded_asset
+        if self.mask:
+            if TYPE_CHECKING:
+                assert self._loaded_mask is not None
+                assert self.ports is not None
+
+            return cast(M, MaskedAsset(self._loaded_asset, self._loaded_mask, self.ports))
+        return cast(M, SimpleAsset(self._loaded_asset))
 
 
-class SvgAsset(Asset):
+class SvgAsset[M](Asset[M]):
     """
     Same as Asset but to load SVG files (with a specific size).
     """
 
-    def __init__(self, filename: str, size: tuple[int, int]):
-        super().__init__(filename)
+    @overload
+    def __init__(
+        self: SvgAsset[SimpleAsset],
+        filename: str,
+        size: tuple[int, int],
+        mask: Literal[False] = False,
+        ports: None = None,
+    ) -> None: ...
+    @overload
+    def __init__(
+        self: SvgAsset[MaskedAsset], filename: str, size: tuple[int, int], mask: Literal[True], ports: PortsMap
+    ) -> None: ...
+
+    def __init__(self, filename: str, size: tuple[int, int], mask: bool = False, ports: PortsMap | None = None):
+        super().__init__(filename, mask, ports)  # type: ignore  # TODO
         self.size = size
 
     def load(self):
         if not self.is_loaded:
             self._loaded_asset = pygame.image.load_sized_svg(assets_dir / self.filename, self.size).convert_alpha()
+            if self.mask:
+                self._loaded_mask = pygame.image.load_sized_svg(assets_dir / f"mask_{self.filename}", self.size)
+                # TODO: load the ports positions
             print(f"Loaded {self.filename}")
         else:
             print(f"{self.filename} is already loaded !")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pygame
@@ -59,11 +59,11 @@ class Cable:
     def get_center_of_red(self, port_id: int) -> tuple[int, int]:
         if port_id <= 0:
             return (0, 0)
-        pixel_array = pygame.surfarray.pixels3d(Assets.SWITCH_MASK)  # type: ignore
+        pixel_array = pygame.surfarray.pixels3d(Assets.SWITCH_DEVICE.mask)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
         # Extract the red channel
-        red_channel: np.ndarray = pixel_array[:, :, 0]  # type: ignore
-        blue_channel: np.ndarray = pixel_array[:, :, 2]  # type: ignore
-        green_channel: np.ndarray = pixel_array[:, :, 1]  # type: ignore
+        red_channel: np.ndarray[Any, Any] = pixel_array[:, :, 0]
+        blue_channel: np.ndarray[Any, Any] = pixel_array[:, :, 2]
+        green_channel: np.ndarray[Any, Any] = pixel_array[:, :, 1]
 
         # Find where red channel equals target_value
         x_coords, y_coords = np.where((red_channel == port_id) & (blue_channel == 0) & (green_channel == 0))
