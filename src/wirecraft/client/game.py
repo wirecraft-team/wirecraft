@@ -10,8 +10,7 @@ from wirecraft.shared_context import ctx, server_var
 
 from .constants import BLACK, FLAGS, FPS, GREY, PADDING, RED, RES_LIST, WHITE
 from .server_interface import ServerInterface
-from .ui import Button, Cable, Camera, Device, Resolution, Window
-from .ui.assets import INVENTORY_BUTTON
+from .ui import Assets, Button, Cable, Camera, Device, Resolution, Window
 
 
 class Gamestate(Enum):
@@ -35,6 +34,7 @@ class Game:
         self.server = ServerInterface(self)
         self.resolution = resolution
         self.displaysurf = pygame.display.set_mode(self.resolution.size, FLAGS)
+        Assets.load_assets()
         self.camera = Camera(self)
         # Example: get the money
         self.server.get_money()
@@ -57,7 +57,7 @@ class Game:
                 (0 + PADDING, self.resolution.height - 100 - PADDING),
                 (100, 100),
                 self.show_inventory,
-                INVENTORY_BUTTON,
+                Assets.INVENTORY_BUTTON,
             )
         )
 
