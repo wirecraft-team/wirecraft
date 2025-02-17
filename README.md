@@ -1,4 +1,4 @@
-# WireCraft
+# Wirecraft
 
 The WireCraft project!
 
