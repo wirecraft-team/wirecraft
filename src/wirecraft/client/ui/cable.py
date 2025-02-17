@@ -7,7 +7,7 @@ import numpy as np
 import pygame
 
 from ..constants import RED
-from ..ui.assets import SWITCH_MASK
+from ..ui import Assets
 
 if TYPE_CHECKING:
     from ..game import Game
@@ -59,7 +59,7 @@ class Cable:
     def get_center_of_red(self, port_id: int) -> tuple[int, int]:
         if port_id <= 0:
             return (0, 0)
-        pixel_array = pygame.surfarray.pixels3d(SWITCH_MASK)  # type: ignore
+        pixel_array = pygame.surfarray.pixels3d(Assets.SWITCH_MASK)  # type: ignore
         # Extract the red channel
         red_channel: np.ndarray = pixel_array[:, :, 0]  # type: ignore
         blue_channel: np.ndarray = pixel_array[:, :, 2]  # type: ignore
