@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-import numpy as np
 import pygame
 
 from ..constants import RED
@@ -30,8 +29,8 @@ class Cable:
         pass
 
     def initiate_position(self, camera: Camera):
-        self.start_offset = self.get_center_of_red(self.port_device1)
-        self.end_offset = self.get_center_of_red(self.port_device2)
+        self.start_offset = Assets.SWITCH_DEVICE.positions[self.port_device1]
+        self.end_offset = Assets.SWITCH_DEVICE.positions[self.port_device2] if self.port_device2 > 0 else (0, 0)
 
     def draw(self, surface: pygame.Surface, camera: Camera, resolution: Resolution) -> None:
         # TODO use a map to get pos from id
@@ -55,23 +54,3 @@ class Cable:
             ),
             width=5,
         )
-
-    def get_center_of_red(self, port_id: int) -> tuple[int, int]:
-        if port_id <= 0:
-            return (0, 0)
-        pixel_array = pygame.surfarray.pixels3d(Assets.SWITCH_DEVICE.mask)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
-        # Extract the red channel
-        red_channel: np.ndarray[Any, Any] = pixel_array[:, :, 0]
-        blue_channel: np.ndarray[Any, Any] = pixel_array[:, :, 2]
-        green_channel: np.ndarray[Any, Any] = pixel_array[:, :, 1]
-
-        # Find where red channel equals target_value
-        x_coords, y_coords = np.where((red_channel == port_id) & (blue_channel == 0) & (green_channel == 0))
-
-        # Find the bounding box and calculate the center
-        x_min, x_max = x_coords.min(), x_coords.max()
-        y_min, y_max = y_coords.min(), y_coords.max()
-
-        center_x = (x_min + x_max) // 2
-        center_y = (y_min + y_max) // 2
-        return (int(center_x), int(center_y))
