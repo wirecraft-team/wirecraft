@@ -15,5 +15,12 @@ class Device(ExtendedSprite):
         """
         Position is the point in the world map that refer to the center of the device.
         """
-        super().__init__(game, position, Assets.SWITCH_DEVICE.surface)
+        match device_type:
+            case "switch":
+                asset = Assets.SWITCH_DEVICE
+            case "pc":
+                asset = Assets.PC_DEVICE
+            case _:
+                raise ValueError(f"Unknown device type: {device_type}")
+        super().__init__(game, position, asset.surface)
         self.db_id = db_id

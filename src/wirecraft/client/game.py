@@ -293,24 +293,26 @@ class Game:
         for device in self.devices:
             if device.screen_rect.collidepoint(pygame.mouse.get_pos()):
                 port_id = self.get_port_id(device)
-                if port_id is not None and self.server.add_cable(device.db_id, port_id, -1, -1, LEVEL):
-                    self.is_placing_cable = True
-                    break
-                else:
-                    # TODO: Use popup when avalaible
-                    print("Port already in use")
+                if port_id is not None:
+                    if self.server.add_cable(device.db_id, port_id, -1, -1, LEVEL):
+                        self.is_placing_cable = True
+                    else:
+                        # TODO: Use popup when avalaible
+                        print("Port already in use")
+                break
 
     def end_cable_connection(self, camera: Camera) -> None:
         """End a cable connection."""
         for device in self.devices:
             if device.screen_rect.collidepoint(pygame.mouse.get_pos()) and device.db_id != self.cables[-1].id_device1:
                 port_id = self.get_port_id(device)
-                if port_id is not None and self.server.end_cable(self.cables[-1].db_id, device.db_id, port_id):
-                    self.is_placing_cable = False
-                    break
-                else:
-                    # TODO: Use popup when avalaible
-                    print("Port already in use")
+                if port_id is not None:
+                    if self.server.end_cable(self.cables[-1].db_id, device.db_id, port_id):
+                        self.is_placing_cable = False
+                    else:
+                        # TODO: Use popup when avalaible
+                        print("Port already in use")
+                break
 
     def get_port_id(self, device: Device):
         mask = Assets.SWITCH_DEVICE.mask
