@@ -324,6 +324,8 @@ class Game:
         on_device_mouse_pos_y = (
             self.camera.screen_to_world(pygame.mouse.get_pos(), self.resolution.size)[1] - device.world_rect[1]
         )
+        print(on_device_mouse_pos_x, on_device_mouse_pos_y)
+        input()
         colors = mask.get_at((int(on_device_mouse_pos_x), int(on_device_mouse_pos_y)))
         port_id = colors[0]
         if colors[1] != 0 or colors[2] != 0:
@@ -403,7 +405,7 @@ class Game:
 
         # add a debug text for self.is_placing_cable and a red square at (0, 0)
         if "debug_text" in ctx.debug_options:
-            debug_text = pygame.font.Font(None, 30).render(f"FPS: {int(self.clock.get_fps())}", True, BLACK)
+            debug_text = pygame.font.Font(None, 30).render(f"FPS: {pygame.mouse.get_pos()}", True, BLACK)
             self.displaysurf.blit(debug_text, (10, 30))
 
         if "show_center" in ctx.debug_options:

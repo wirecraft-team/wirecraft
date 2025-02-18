@@ -85,7 +85,7 @@ class Asset[M: AssetT]:
     ) -> None: ...
 
     def __init__(self, filename: str, mask: bool = False, positions: PositionsColorsMapT | None = None):
-        self.filename = filename
+        self.filename = Path(filename)
         self._loaded_asset: pygame.Surface | None = None
         self.mask = mask
         self._loaded_mask: pygame.Surface | None = None
@@ -106,7 +106,9 @@ class Asset[M: AssetT]:
         if not self.is_loaded:
             self._loaded_asset = self._load_method(assets_dir / self.filename).convert_alpha()
             if self.mask and self._positions is not None:
-                self._loaded_mask = self._load_method(assets_dir / f"mask_{self.filename}")
+                self._loaded_mask = self._load_method(
+                    Path(f"{assets_dir}/{self.filename.name.split('.')[0]}_mask{self.filename.suffix}")
+                )
                 self._computed_positions = {
                     key: self._get_center_from_color(color) for key, color in self._positions.items()
                 }
