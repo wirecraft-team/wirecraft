@@ -73,11 +73,9 @@ class _ColorFormatter(logging.Formatter):
         return output
 
 
-def init_logger(level: int = logging.INFO) -> None:
+def init_logger(level: int | str = logging.INFO) -> None:
     """
     Initialize the logger with the given level.
-
-    :param level: The logging level to use.
     """
     handler = logging.StreamHandler()
     if stream_supports_color(handler.stream):
