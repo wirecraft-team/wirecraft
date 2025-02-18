@@ -45,7 +45,7 @@ class Window:
         """Draws a windows according to the position and size attributes. Coordinates are screen coordinates. (top left corner is (0, 0))"""
         window = pygame.Surface(self.size)
         window.fill(GREY)
-        close_button = pygame.transform.scale(Assets.CLOSE_BUTTON, (25, 25))
+        close_button = pygame.transform.scale(Assets.CLOSE_BUTTON.surface, (25, 25))
         pygame.draw.rect(window, BLACK, (0, 0, self.size[0], self.size[1]), 5)
         surface.blit(window, self.position)
         surface.blit(close_button, (self.position[0] + self.size[0] - 40, self.position[1] + 10))

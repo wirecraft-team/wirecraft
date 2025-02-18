@@ -11,8 +11,17 @@ if TYPE_CHECKING:
 
 
 class Device(ExtendedSprite):
-    def __init__(self, game: Game, position: tuple[int, int], device_type: str):
+    def __init__(self, game: Game, position: tuple[int, int], device_type: str, db_id: int):
         """
         Position is the point in the world map that refer to the center of the device.
         """
-        super().__init__(game, position, Assets.SWITCH_DEVICE)
+        match device_type:
+            case "switch":
+                asset = Assets.SWITCH_DEVICE
+            case "pc":
+                asset = Assets.PC_DEVICE
+            case _:
+                raise ValueError(f"Unknown device type: {device_type}")
+        super().__init__(game, position, asset.surface)
+        self.asset = asset
+        self.db_id = db_id

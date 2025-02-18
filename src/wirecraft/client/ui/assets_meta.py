@@ -8,16 +8,24 @@ verbose explanations.
 
 from __future__ import annotations
 
+import logging
+from dataclasses import dataclass
 from importlib.resources import files
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
+import numpy as np
 import pygame
 
 from ..utils import SingletonMeta
 
 if TYPE_CHECKING:
     from .assets import Assets
+
+    type PositionsColorsMapT = dict[Any, tuple[int, int, int]]
+    type ComputedPositionsT = dict[Any, tuple[int, int]]
+
+logger = logging.getLogger(__name__)
 
 # Check for assets in the package if installed
 assets_dir = Path(str(files("wirecraft").joinpath("assets")))
@@ -45,7 +53,20 @@ class AssetsMeta(SingletonMeta):
             asset_loader.load()
 
 
-class Asset:
+@dataclass
+class _AssetBase[M: None | pygame.Surface, P: None | ComputedPositionsT]:
+    surface: pygame.Surface
+    mask: M
+    positions: P
+
+
+SimpleAsset = _AssetBase[None, None]
+MaskedAsset = _AssetBase[pygame.Surface, "ComputedPositionsT"]
+
+type AssetT = SimpleAsset | MaskedAsset
+
+
+class Asset[M: AssetT]:
     """
     An Asset is a descriptor that will lazy-load the asset on access-time.
     That means that the asset is not loaded at definition time but when it is accessed for the first time
@@ -54,9 +75,23 @@ class Asset:
     You should use the AssetsMeta.load_assets() method to load all the assets at once.
     """
 
-    def __init__(self, filename: str):
-        self.filename = filename
+    @overload
+    def __init__(
+        self: Asset[SimpleAsset], filename: str, mask: Literal[False] = False, positions: None = None
+    ) -> None: ...
+    @overload
+    def __init__(
+        self: Asset[MaskedAsset], filename: str, mask: Literal[True], positions: PositionsColorsMapT
+    ) -> None: ...
+
+    def __init__(self, filename: str, mask: bool = False, positions: PositionsColorsMapT | None = None):
+        self.filename = Path(filename)
+        self.filename = Path(filename)
         self._loaded_asset: pygame.Surface | None = None
+        self.mask = mask
+        self._loaded_mask: pygame.Surface | None = None
+        self._positions = positions
+        self._computed_positions: ComputedPositionsT | None = None
 
     def __set_name__(self, owner: Assets, name: str):
         getattr(owner, "__assets_loaders__").append(self)
@@ -65,35 +100,93 @@ class Asset:
     def is_loaded(self):
         return self._loaded_asset is not None
 
+    def _load_method(self, path: Path) -> pygame.Surface:
+        return pygame.image.load(path)
+
     def load(self):
         if not self.is_loaded:
-            self._loaded_asset = pygame.image.load(assets_dir / self.filename).convert_alpha()
+            self._loaded_asset = self._load_method(assets_dir / self.filename).convert_alpha()
+            if self.mask and self._positions is not None:
+                self._loaded_mask = self._load_method(
+                    Path(f"{assets_dir}/{self.filename.name.split('.')[0]}_mask{self.filename.suffix}")
+                )
+                self._computed_positions = {
+                    key: self._get_center_from_color(color) for key, color in self._positions.items()
+                }
             print(f"Loaded {self.filename}")
         else:
             print(f"{self.filename} is already loaded !")
 
-    def __get__(self, instance: Assets | None, owner: type[Assets]) -> pygame.Surface:
+    def _get_center_from_color(self, color: tuple[int, int, int]) -> tuple[int, int]:
+        if TYPE_CHECKING:
+            assert self._loaded_mask is not None
+
+        pixel_array = pygame.surfarray.pixels3d(self._loaded_mask)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
+
+        # Extract the channels
+        red_channel: np.ndarray[Any, Any] = pixel_array[:, :, 0]
+        blue_channel: np.ndarray[Any, Any] = pixel_array[:, :, 2]
+        green_channel: np.ndarray[Any, Any] = pixel_array[:, :, 1]
+
+        # Find where all the channels match the color
+        x_coords, y_coords = np.where(
+            (red_channel == color[0]) & (blue_channel == color[1]) & (green_channel == color[2])
+        )
+        if len(x_coords) == 0 or len(y_coords) == 0:
+            logger.warning("Color %s not found in the mask", color)
+            return (0, 0)
+
+        # Find the bounding box and calculate the center
+        x_min, x_max = x_coords.min(), x_coords.max()
+        y_min, y_max = y_coords.min(), y_coords.max()
+
+        center_x = (x_min + x_max) // 2
+        center_y = (y_min + y_max) // 2
+        return (int(center_x), int(center_y))
+
+    def __get__(self, instance: Assets | None, owner: type[Assets]) -> M:
         if not self.is_loaded:
             self.load()
 
         if TYPE_CHECKING:
             assert self._loaded_asset is not None
 
-        return self._loaded_asset
+        if self.mask:
+            if TYPE_CHECKING:
+                assert self._loaded_mask is not None
+                assert self._computed_positions is not None
+
+            return cast(M, MaskedAsset(self._loaded_asset, self._loaded_mask, self._computed_positions))
+        return cast(M, SimpleAsset(self._loaded_asset, None, None))
 
 
-class SvgAsset(Asset):
+class SvgAsset[M: AssetT](Asset[M]):
     """
     Same as Asset but to load SVG files (with a specific size).
     """
 
-    def __init__(self, filename: str, size: tuple[int, int]):
-        super().__init__(filename)
+    @overload
+    def __init__(
+        self: SvgAsset[SimpleAsset],
+        filename: str,
+        size: tuple[int, int],
+        mask: Literal[False] = False,
+        positions: None = None,
+    ) -> None: ...
+    @overload
+    def __init__(
+        self: SvgAsset[MaskedAsset],
+        filename: str,
+        size: tuple[int, int],
+        mask: Literal[True],
+        positions: PositionsColorsMapT,
+    ) -> None: ...
+
+    def __init__(
+        self, filename: str, size: tuple[int, int], mask: bool = False, positions: PositionsColorsMapT | None = None
+    ):
+        super().__init__(filename, mask, positions)  # type: ignore
         self.size = size
 
-    def load(self):
-        if not self.is_loaded:
-            self._loaded_asset = pygame.image.load_sized_svg(assets_dir / self.filename, self.size).convert_alpha()
-            print(f"Loaded {self.filename}")
-        else:
-            print(f"{self.filename} is already loaded !")
+    def _load_method(self, path: Path) -> pygame.Surface:
+        return pygame.image.load_sized_svg(path, self.size)

@@ -95,9 +95,15 @@ class ExtendedSprite(pygame.sprite.Sprite):
          ▲
          └ globale map
         """
+
+        self.rect = self.base_image.get_rect().scale_by(self.game.camera.zoom)
+        self.rect.center = self.screen_position
+
         if not self.is_inside_screen:
             return
 
+        subsurface = pygame.transform.scale_by(self.base_image, self.game.camera.zoom)
+        self.image = subsurface
         # TODO: cropping to improve perfs
         # self.crop_left = max(0, camera.world_view[0] - self.world_bounds[0])
         # self.crop_right = max(0, self.world_bounds[1] - camera.world_view[1])
@@ -108,11 +114,6 @@ class ExtendedSprite(pygame.sprite.Sprite):
         # cropped_height = self.size[1] - (self.crop_top + self.crop_bottom)
 
         # subsurface = self.base_image.subsurface((self.crop_left, self.crop_top, cropped_width, cropped_height))
-
-        subsurface = pygame.transform.scale_by(self.base_image, self.game.camera.zoom)
-        self.image = subsurface
-        self.rect = self.base_image.get_rect().scale_by(self.game.camera.zoom)
-        self.rect.center = self.screen_position
 
     @property
     def is_inside_screen(self) -> bool:
