@@ -54,7 +54,7 @@ def init():
             if TYPE_CHECKING:
                 assert isinstance(level_dev.id, int)
             switch1 = Device(name="Switch 1", type="switch", x=0, y=0, id_level=level_dev.id)
-            switch2 = Device(name="pc 1", type="pc", x=2000, y=2000, id_level=level_dev.id)
+            switch2 = Device(name="Switch 2", type="pc", x=2000, y=2000, id_level=level_dev.id)
             session.add(switch1)
             session.add(switch2)
             session.commit()

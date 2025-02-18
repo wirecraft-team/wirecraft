@@ -23,4 +23,5 @@ class Device(ExtendedSprite):
             case _:
                 raise ValueError(f"Unknown device type: {device_type}")
         super().__init__(game, position, asset.surface)
+        self.asset = asset
         self.db_id = db_id

@@ -86,6 +86,7 @@ class Asset[M: AssetT]:
 
     def __init__(self, filename: str, mask: bool = False, positions: PositionsColorsMapT | None = None):
         self.filename = Path(filename)
+        self.filename = Path(filename)
         self._loaded_asset: pygame.Surface | None = None
         self.mask = mask
         self._loaded_mask: pygame.Surface | None = None

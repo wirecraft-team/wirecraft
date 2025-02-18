@@ -57,7 +57,7 @@ class Game:
         cables = self.server.get_level_cables(LEVEL)
         for cable in cables:
             cable = Cable(cable.id_device_1, cable.port_1, cable.id_device_2, cable.port_2, cable.id, self)
-            cable.initiate_position(self.camera)
+            cable.initiate_position()
             self.cables.append(cable)
 
         # Initialize inventory button
@@ -79,8 +79,6 @@ class Game:
         # For menu interaction
         self.click_handled = False
 
-        self.update_zoom()
-
     def update_devices(self):
         self.devices = []
         devices = self.server.get_level_devices(LEVEL)
@@ -94,7 +92,7 @@ class Game:
         for cable in cables:
             self.cables.append(Cable(cable.id_device_1, cable.port_1, cable.id_device_2, cable.port_2, cable.id, self))
             if self.cables[-1].start_offset == (0, 0):
-                self.cables[-1].initiate_position(self.camera)
+                self.cables[-1].initiate_position()
         return self.cables
 
     def settings(self) -> None:
@@ -261,20 +259,10 @@ class Game:
     def adjust_zoom(self, amount: Literal["in", "out"]) -> None:
         """Adjust the camera zoom."""
         strategy = self.camera.zoom_out if amount == "out" else self.camera.zoom_in
-        changed = strategy(pygame.mouse.get_pos(), self.resolution.size)
-        if changed:
-            self.update_zoom()
+        strategy(pygame.mouse.get_pos(), self.resolution.size)
 
     def set_zoom(self, zoom_value: int):
-        changed = self.camera.set_zoom(zoom_value, (0, 0), self.resolution.size)
-        if changed:
-            self.update_zoom()
-
-    def update_zoom(self):
-        # for device in self.devices:
-        # device.update_zoom(self.camera)
-        for cable in self.cables:
-            cable.update_zoom(self.camera)
+        self.camera.set_zoom(zoom_value, (0, 0), self.resolution.size)
 
     def handle_left_click(self, camera: Camera) -> None:
         """Handle left mouse button click."""
@@ -325,7 +313,6 @@ class Game:
             self.camera.screen_to_world(pygame.mouse.get_pos(), self.resolution.size)[1] - device.world_rect[1]
         )
         print(on_device_mouse_pos_x, on_device_mouse_pos_y)
-        input()
         colors = mask.get_at((int(on_device_mouse_pos_x), int(on_device_mouse_pos_y)))
         port_id = colors[0]
         if colors[1] != 0 or colors[2] != 0:
