@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import sys
 from enum import Enum
 from typing import Literal
@@ -11,6 +12,8 @@ from wirecraft.shared_context import ctx, server_var
 from .constants import BLACK, FLAGS, FPS, GREY, LEVEL, PADDING, RED, RES_LIST, WHITE
 from .server_interface import ServerInterface
 from .ui import Assets, Button, Cable, Camera, Device, Resolution, Window
+
+logger = logging.getLogger(__name__)
 
 
 class Gamestate(Enum):
@@ -286,7 +289,7 @@ class Game:
                         self.is_placing_cable = True
                     else:
                         # TODO: Use popup when avalaible
-                        print("Port already in use")
+                        logger.debug("Port already in use")
                 break
 
     def end_cable_connection(self, camera: Camera) -> None:
@@ -299,7 +302,7 @@ class Game:
                         self.is_placing_cable = False
                     else:
                         # TODO: Use popup when avalaible
-                        print("Port already in use")
+                        logger.debug("Port already in use")
                 break
 
     def get_port_id(self, device: Device):
@@ -312,7 +315,6 @@ class Game:
         on_device_mouse_pos_y = (
             self.camera.screen_to_world(pygame.mouse.get_pos(), self.resolution.size)[1] - device.world_rect[1]
         )
-        print(on_device_mouse_pos_x, on_device_mouse_pos_y)
         colors = mask.get_at((int(on_device_mouse_pos_x), int(on_device_mouse_pos_y)))
         port_id = colors[0]
         if colors[1] != 0 or colors[2] != 0:
