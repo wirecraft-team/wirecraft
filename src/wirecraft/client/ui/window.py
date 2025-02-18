@@ -1,3 +1,4 @@
+import datetime as dt
 from dataclasses import dataclass
 from enum import Enum
 
@@ -32,7 +33,7 @@ class Window:
         self.title = title
         self.data = data
         self.type = type
-        self.time = 300
+        self.expiration = dt.datetime.now() + dt.timedelta(seconds=5)
 
     def update_pos(self, index: int, resolution: Resolution) -> None:
         """This function should only be called for device properties windows, and should be modified when they are properly implemented"""

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import sys
 from enum import Enum
 from typing import Literal
@@ -78,7 +79,6 @@ class Game:
         self.click_handled = False
 
         self.update_zoom()
-        self.debug_text = ""
 
     def settings(self) -> None:
         self.view = Gamestate.SETTINGS
@@ -333,8 +333,7 @@ class Game:
             # Check if the window is a popup window and if it should be removed
             if window.type.value == 1:
                 window.update_pos(i, self.resolution)
-                window.time -= 1
-                if window.time == 0:
+                if datetime.datetime.now() > window.expiration:
                     self.windows.remove(window)
             window.draw(self.displaysurf)
 
@@ -348,10 +347,6 @@ class Game:
                 cable.end = pygame.mouse.get_pos()
             cable.update_position(self.camera, self.resolution)
             cable.draw(self.displaysurf, self.camera, resolution=self.resolution)
-
-        # add a debug text for self.is_placing_cable
-        debug_text = pygame.font.Font(None, 40).render(f"Placing Cable: {self.is_placing_cable}", True, BLACK)
-        self.displaysurf.blit(debug_text, (150, self.resolution.height - 25))
 
         if "show_center" in ctx.debug_options:
             rect = pygame.Rect(0, 0, 10, 10)
@@ -396,7 +391,7 @@ class Game:
 
     def show_tasks(self):
         """Task button action."""
-        # display a window on the left side taking all the height of the screen
+        # display a window on the top left corner
         nb_task = len(self.server.get_task_list(1))
         self.windows.append(
             Window(

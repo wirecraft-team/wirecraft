@@ -27,6 +27,6 @@ class Level(SQLModel, table=True):
 
 class Task(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    id_level: int = Field(default=None, foreign_key="Level.id")
+    id_level: int = Field(default=None, foreign_key="level.id")
     name: str
     completed: bool = False
