@@ -308,7 +308,7 @@ class Game:
     def handle_right_click(self) -> None:
         """Handle right mouse button click."""
         for device in self.devices:
-            if device.get_rect().collidepoint(pygame.mouse.get_pos()):
+            if device.screen_rect.collidepoint(pygame.mouse.get_pos()):
                 self.add_device_window(device)
 
     def handle_window_close(self) -> None:
