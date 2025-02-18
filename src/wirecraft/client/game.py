@@ -303,7 +303,7 @@ class Game:
                 break
 
     def get_port_id(self, device: Device):
-        mask = Assets.SWITCH_DEVICE.mask
+        mask = device.asset.mask
         mask_rect = mask.get_rect()
         mask_rect.center = device.screen_rect.center
         on_device_mouse_pos_x = (
