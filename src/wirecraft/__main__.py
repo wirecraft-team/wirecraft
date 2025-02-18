@@ -1,6 +1,5 @@
 import ctypes
 import json
-import pathlib
 import platform
 
 import click
@@ -24,7 +23,6 @@ def init_game():
             resolution = Resolution(settings["resolution"]["width"], settings["resolution"]["height"])
     except FileNotFoundError:
         resolution = Resolution(1920, 1080)
-    pathlib.Path("database.db").unlink(missing_ok=True)
     game = Game(Gamestate.MENU, resolution)
     return game
 

@@ -43,6 +43,7 @@ class Task(SQLModel, table=True):
 
 
 def init():
+    SQLModel.metadata.drop_all(engine)
     SQLModel.metadata.create_all(engine)
     level_dev = Level(completed=False)
     # Add level first to get an ID before assigning it to devices
