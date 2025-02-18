@@ -7,3 +7,4 @@ class Assets(metaclass=AssetsMeta):
     PC_DEVICE = SvgAsset("pc.svg", (940, 1570), mask=True, positions={i: (i, 0, 0) for i in range(1, 2)})
     CLOSE_BUTTON = Asset("close.png")
     INVENTORY_BUTTON = Asset("inventory.png")
+    TASK_BUTTON = Asset("task.png")

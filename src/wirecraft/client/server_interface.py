@@ -80,3 +80,6 @@ class ServerInterface:
 
     def delete_cable(self, db_id: int):
         return self.connection.delete_cable(db_id)
+
+    def get_task_list(self, level: int) -> list[str]:
+        return self.connection.get_task_list(level)
