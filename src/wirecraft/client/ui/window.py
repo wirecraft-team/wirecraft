@@ -1,4 +1,6 @@
+import datetime as dt
 from dataclasses import dataclass
+from enum import Enum
 
 import pygame
 
@@ -16,12 +18,22 @@ class Resolution:
         return (self.width, self.height)
 
 
+class WindowType(Enum):
+    POPUP = 1
+    TASK = 2
+    INVENTORY = 3
+
+
 class Window:
-    def __init__(self, position: tuple[float, float], size: tuple[float, float], title: str, data: str) -> None:
+    def __init__(
+        self, position: tuple[float, float], size: tuple[float, float], title: str, data: str, type: WindowType
+    ) -> None:
         self.position = position
         self.size = size
         self.title = title
         self.data = data
+        self.type = type
+        self.expiration = dt.datetime.now() + dt.timedelta(seconds=5)
 
     def update_pos(self, index: int, resolution: Resolution) -> None:
         """This function should only be called for device properties windows, and should be modified when they are properly implemented"""

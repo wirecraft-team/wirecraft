@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import sys
 from enum import Enum
 from typing import Literal
@@ -10,7 +11,7 @@ from wirecraft.shared_context import ctx, server_var
 
 from .constants import BLACK, FLAGS, FPS, GREY, PADDING, RED, RES_LIST, WHITE
 from .server_interface import ServerInterface
-from .ui import Assets, Button, Cable, Camera, Device, Resolution, Window
+from .ui import Assets, Button, Cable, Camera, Device, Resolution, Window, WindowType
 
 
 class Gamestate(Enum):
@@ -60,8 +61,15 @@ class Game:
                 Assets.INVENTORY_BUTTON,
             )
         )
-
-        self.debug_text = ""
+        # Initialize task button
+        self.buttons.append(
+            Button(
+                (0 + PADDING, self.resolution.height - 200 - PADDING),
+                (100, 100),
+                self.show_tasks,
+                Assets.TASK_BUTTON,
+            )
+        )
 
         # For camera panning
         self.dragging = False
@@ -163,7 +171,15 @@ class Game:
             or window_pos[1] > self.resolution.height - window_size[1] - 20
         ):
             return
-        self.windows.append(Window(window_pos, window_size, "Device properties", "Switch"))
+        self.windows.append(
+            Window(
+                window_pos,
+                window_size,
+                "Device properties",
+                f"Switch {device.position}",
+                WindowType.POPUP,
+            )
+        )
 
     def drawmenu(self, device: Device) -> None:
         """display a window on the top right side of the screen with the device's properties"""
@@ -314,8 +330,11 @@ class Game:
 
         # Update and draw windows
         for i, window in enumerate(self.windows):
-            if window.title != "Inventory":
+            # Check if the window is a popup window and if it should be removed
+            if window.type.value == 1:
                 window.update_pos(i, self.resolution)
+                if datetime.datetime.now() > window.expiration:
+                    self.windows.remove(window)
             window.draw(self.displaysurf)
 
         # Draw buttons
@@ -328,10 +347,6 @@ class Game:
                 cable.end = pygame.mouse.get_pos()
             cable.update_position(self.camera, self.resolution)
             cable.draw(self.displaysurf, self.camera, resolution=self.resolution)
-
-        # add a debug text for self.is_placing_cable
-        debug_text = pygame.font.Font(None, 30).render(f"Placing Cable: {self.is_placing_cable}", True, BLACK)
-        self.displaysurf.blit(debug_text, (10, 10))
 
         if "show_center" in ctx.debug_options:
             rect = pygame.Rect(0, 0, 10, 10)
@@ -370,5 +385,20 @@ class Game:
                 (self.resolution.width / 5, self.resolution.height - 40),
                 "Inventory",
                 "You have 10 switches",
+                WindowType.INVENTORY,
+            )
+        )
+
+    def show_tasks(self):
+        """Task button action."""
+        # display a window on the top left corner
+        nb_task = len(self.server.get_task_list(1))
+        self.windows.append(
+            Window(
+                (20, nb_task * 20),
+                (self.resolution.width / 5, self.resolution.height / 5),
+                "Tasks",
+                "You have 3 tasks",
+                WindowType.TASK,
             )
         )

@@ -6,3 +6,4 @@ class Assets(metaclass=AssetsMeta):
     PC_DEVICE = Asset("pc.png")
     CLOSE_BUTTON = Asset("close.png")
     INVENTORY_BUTTON = Asset("inventory.png")
+    TASK_BUTTON = Asset("task.png")

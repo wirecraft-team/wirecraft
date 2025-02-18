@@ -59,3 +59,6 @@ class ServerInterface:
     def money_update(self) -> None:
         # the server side can send event to client
         print("money updated")
+
+    def get_task_list(self, level: int) -> list[str]:
+        return self.connection.get_task_list(level)
