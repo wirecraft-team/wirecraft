@@ -293,20 +293,24 @@ class Game:
         for device in self.devices:
             if device.screen_rect.collidepoint(pygame.mouse.get_pos()):
                 port_id = self.get_port_id(device)
-                if port_id is not None:
+                if port_id is not None and self.server.add_cable(device.db_id, port_id, -1, -1, LEVEL):
                     self.is_placing_cable = True
-                    self.server.add_cable(device.db_id, port_id, -1, -1, LEVEL)
                     break
+                else:
+                    # TODO: Use popup when avalaible
+                    print("Port already in use")
 
     def end_cable_connection(self, camera: Camera) -> None:
         """End a cable connection."""
         for device in self.devices:
             if device.screen_rect.collidepoint(pygame.mouse.get_pos()) and device.db_id != self.cables[-1].id_device1:
                 port_id = self.get_port_id(device)
-                if port_id is not None:
+                if port_id is not None and self.server.end_cable(self.cables[-1].db_id, device.db_id, port_id):
                     self.is_placing_cable = False
-                    self.server.end_cable(self.cables[-1].db_id, device.db_id, port_id)
                     break
+                else:
+                    # TODO: Use popup when avalaible
+                    print("Port already in use")
 
     def get_port_id(self, device: Device):
         mask = Assets.SWITCH_DEVICE.mask
@@ -397,7 +401,7 @@ class Game:
 
         # add a debug text for self.is_placing_cable and a red square at (0, 0)
         if "debug_text" in ctx.debug_options:
-            debug_text = pygame.font.Font(None, 30).render(f"Placing Cable: {self.is_placing_cable}", True, BLACK)
+            debug_text = pygame.font.Font(None, 30).render(f"FPS: {int(self.clock.get_fps())}", True, BLACK)
             self.displaysurf.blit(debug_text, (10, 30))
 
         if "show_center" in ctx.debug_options:

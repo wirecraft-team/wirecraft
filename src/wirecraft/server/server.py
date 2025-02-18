@@ -76,22 +76,50 @@ class Server:
     def buy_item(self, type: str) -> None:
         return
 
-    def add_cable(self, id_device_1: int, port_1: int, id_device_2: int, port_2: int, level: int) -> None:
-        statement = Cable(
-            id_device_1=id_device_1, port_1=port_1, id_device_2=id_device_2, port_2=port_2, id_level=level
-        )
+    def add_cable(self, id_device_1: int, port_1: int, id_device_2: int, port_2: int, level: int) -> bool:
+        # check if port is available
         with Session(engine) as session:
+            statement = select(Cable).where(
+                Cable.id_device_1 == id_device_1, Cable.port_1 == port_1, Cable.id_level == level
+            )
+            if session.exec(statement).first():
+                return False
+            # Next line is strange to read but trust me, it works
+            statement = select(Cable).where(
+                Cable.id_device_2 == id_device_1, Cable.port_2 == port_1, Cable.id_level == level
+            )
+            if session.exec(statement).first():
+                return False
+            statement = Cable(
+                id_device_1=id_device_1, port_1=port_1, id_device_2=id_device_2, port_2=port_2, id_level=level
+            )
             session.add(statement)
             session.commit()
+        return True
 
-    def end_cable(self, cable_id: int, device_id: int, port_id: int) -> None:
-        statement = select(Cable).where(Cable.id == cable_id)
+    def end_cable(self, cable_id: int, device_id: int, port_id: int) -> bool:
+        # check if port is available
         with Session(engine) as session:
+            level = select(Device.id_level).where(Device.id == device_id)
+            level = session.exec(level).one()
+            statement = select(Cable).where(
+                Cable.id_device_2 == device_id, Cable.port_2 == port_id, Cable.id_level == level
+            )
+            if session.exec(statement).first():
+                return False
+            # Again, strange to read but works
+            statement = select(Cable).where(
+                Cable.id_device_1 == device_id, Cable.port_1 == port_id, Cable.id_level == level
+            )
+            if session.exec(statement).first():
+                return False
+            statement = select(Cable).where(Cable.id == cable_id)
             cable = session.exec(statement).one()
             cable.id_device_2 = device_id
             cable.port_2 = port_id
             session.add(cable)
             session.commit()
+        return True
 
     def get_level_cables(self, id_level: int) -> Sequence[Cable]:
         statement = select(Cable).where(Cable.id_level == id_level)
