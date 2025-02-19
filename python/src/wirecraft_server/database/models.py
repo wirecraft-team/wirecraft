@@ -1,15 +1,15 @@
 from typing import TYPE_CHECKING
 
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import (
     Field,  # type: ignore
-    Session,
     SQLModel,
-    create_engine,
     select,
 )
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-db = "sqlite:///database.db"
-engine = create_engine(db)
+db = "sqlite+aiosqlite:///database.db"
+engine = create_async_engine(db)
 
 
 class Cable(SQLModel, table=True):
@@ -42,30 +42,29 @@ class Task(SQLModel, table=True):
     completed: bool = False
 
 
-def init():
-    SQLModel.metadata.drop_all(engine)
-    SQLModel.metadata.create_all(engine)
+async def init():
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.drop_all)
+        await conn.run_sync(SQLModel.metadata.create_all)
+
     level_dev = Level(completed=False)
     # Add level first to get an ID before assigning it to devices
-    with Session(engine) as session:
-        if not session.exec(select(Level)).first():
+    async with AsyncSession(engine) as session:
+        if not (await session.exec(select(Level))).first():
             session.add(level_dev)
-            session.commit()
-            session.refresh(level_dev)
+            await session.commit()
+            await session.refresh(level_dev)
             if TYPE_CHECKING:
                 assert isinstance(level_dev.id, int)
             switch1 = Device(name="Switch 1", type="switch", x=0, y=0, id_level=level_dev.id)
             switch2 = Device(name="Switch 2", type="pc", x=2000, y=2000, id_level=level_dev.id)
             session.add(switch1)
             session.add(switch2)
-            session.commit()
+            await session.commit()
     # if there are cables with devices id that are < 0 then delete them as they were in a placing state when the game closed
-    with Session(engine) as session:
-        cables = session.exec(select(Cable)).all()
+    async with AsyncSession(engine) as session:
+        cables = (await session.exec(select(Cable))).all()
         for cable in cables:
             if cable.id_device_1 < 0:
-                session.delete(cable)
-        session.commit()
-
-
-init()
+                await session.delete(cable)
+        await session.commit()
