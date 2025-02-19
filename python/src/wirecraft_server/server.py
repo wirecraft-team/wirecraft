@@ -1,21 +1,15 @@
 from __future__ import annotations
 
 import logging
-import threading
 import time
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Self
+from typing import Any, Self
 
 from sqlmodel import Session, select
 
 from .database.models import Cable, Device, engine
 
-if TYPE_CHECKING:
-    from wirecraft.client.server_interface import ServerInterface
-
-
 REFRESH_RATE = 30
-# TODO: implement error checking
 
 logger = logging.getLogger(__name__)
 
@@ -29,17 +23,17 @@ class Server:
     """
 
     def __init__(self) -> None:
-        self.client_connexions: list[ServerInterface] = []
+        self.client_connexions: list[Any] = []  # TODO
         self._last_refresh: float = time.perf_counter()
 
-        self._setup_thread()
+        # self._setup_thread()
 
-    def _setup_thread(self):
-        logger.debug("Setup the backend in a separated thread...")
-        self._thread = threading.Thread(target=self._run)
-        self._stop = threading.Event()
+    # def _setup_thread(self):
+    #     logger.debug("Setup the backend in a separated thread...")
+    #     self._thread = threading.Thread(target=self._run)
+    #     self._stop = threading.Event()
 
-    def _wait_next_refresh(self) -> bool:
+    def _wait_next_refresh(self):
         delay = 1 / REFRESH_RATE
         _next = self._last_refresh + delay
         _now = time.perf_counter()
@@ -48,30 +42,35 @@ class Server:
             # TODO: implement server slow down (increase delay in case of poor performances)
             logger.warning("Can't keep up ! %ss behind the normal refresh", -round(_wait, 3))
             self._last_refresh = _now
-            return self._stop.is_set()
+            # return self._stop.is_set()
 
         self._last_refresh = _next
-        return self._stop.wait(_wait)
+        time.sleep(_wait)
+        # return self._stop.wait(_wait)
 
-    def new_connection(self, interface: ServerInterface) -> Self:
+    def new_connection(self, interface: Any) -> Self:  # TODO
         self.client_connexions.append(interface)
         return self
 
-    def disconnect(self, interface: ServerInterface):
+    def disconnect(self, interface: Any):  # TODO
         self.client_connexions.remove(interface)
 
     def start(self):
         logger.info("Server started!")
-        self._thread.start()
+        self._run()
+        # self._thread.start()
 
-    def stop(self):
-        self._stop.set()
+    # def stop(self):
+    # self._stop.set()
 
     def _run(self):
-        while not self._stop.is_set():
-            if self._wait_next_refresh():
-                logger.info("Server stopped!")
-                break
+        while True:
+            self._wait_next_refresh()
+
+        # while not self._stop.is_set():
+        # if self._wait_next_refresh():
+        # logger.info("Server stopped!")
+        # break
 
     def get_money(self) -> int:
         return 1000

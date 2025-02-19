@@ -1,13 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from contextvars import ContextVar
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from wirecraft.server.server import Server
-
-server_var: ContextVar[Server] = ContextVar("server")
+from typing import Any
 
 
 class Context:
