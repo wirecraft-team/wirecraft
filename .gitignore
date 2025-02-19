@@ -6,6 +6,7 @@ __pycache__/
 .DS_Store
 settings.json
 .ruff_cache
+database.db
 
 # C extensions
 *.so
