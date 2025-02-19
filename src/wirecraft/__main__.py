@@ -4,6 +4,7 @@ import platform
 
 import click
 
+from wirecraft._logger import init_logger
 from wirecraft.client.game import Game, Gamestate
 from wirecraft.client.ui import Resolution
 from wirecraft.server import Server
@@ -36,8 +37,10 @@ def init_server():
 @click.option(
     "--debug", "-d", "debug_options", multiple=True, default=[], envvar="DEBUG", help="Enable debug mode options."
 )
-def main(debug_options: list[str]):
+@click.option("--log-level", "-l", "log_level", default="INFO", envvar="LOG_LEVEL", help="Set the log level.")
+def main(debug_options: list[str], log_level: str):
     ctx.set(debug_options=debug_options)
+    init_logger(log_level)
 
     server = init_server()
     server.start()
