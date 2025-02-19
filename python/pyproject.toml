@@ -24,16 +24,15 @@ only-include = ["src"]
 "src/wirecraft_server" = "wirecraft_server"
 
 
-[tool.uv]
-dev-dependencies = [
-    # "uv",
+[dependency-groups]
+dev = [
+    { include-group = "lint" },
+    { include-group = "tox" },
+    "pytest",
     "pre-commit",
-    "pyright",
-    "debugpy",
-    "ruff",
-    "tox",
-    "tox-uv",
 ]
+lint = ["pyright", "ruff"]
+tox = ["tox", "tox-uv"]
 
 
 [tool.pyright]
