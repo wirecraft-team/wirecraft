@@ -2,15 +2,19 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import json
 import logging
 import time
 from collections.abc import Sequence
 from typing import Any, Self
 
+from aiohttp import WSMessage, WSMsgType, web
+from pydantic_core import from_json
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from .database.models import Cable, Device, engine
+from .handlers import CablesHandler
 
 REFRESH_RATE = 30
 
@@ -26,9 +30,12 @@ class Server:
     """
 
     def __init__(self) -> None:
-        self.client_connexions: list[Any] = []  # TODO(airopi): WS
+        self._current_tick = 0
+        self.client_connexions: set[Any] = set()
         self._last_refresh: float = time.perf_counter()
         self._stop = asyncio.Event()
+
+        self.handlers = [CablesHandler(self)]
 
     def start(self):
         logger.info("Server started!")
@@ -50,16 +57,69 @@ class Server:
             await asyncio.wait_for(self._stop.wait(), _wait)
         return self._stop.is_set()
 
-    def new_connection(self, interface: Any) -> Self:  # TODO(airopi): WS
-        self.client_connexions.append(interface)
+    def _connect(self, ws: web.WebSocketResponse) -> Self:
+        self.client_connexions.add(ws)
+        logger.debug("New client connected")
         return self
 
-    def disconnect(self, interface: Any):  # TODO(airopi): WS
-        self.client_connexions.remove(interface)
+    def _disconnect(self, ws: web.WebSocketResponse):
+        self.client_connexions.remove(ws)
+        logger.debug("Client disconnected")
+
+    async def _websocket_handler(self, request: web.Request):
+        """
+        Il y a une tâche "websocket_handler" par client connecté.
+        Cette tâche maintient la connection et reçoit les messages du client.
+        """
+        ws = web.WebSocketResponse()
+        await ws.prepare(request)
+
+        self._connect(ws)
+        try:
+            async for msg in ws:
+                if msg.type == WSMsgType.TEXT:
+                    data = json.loads(msg.data)
+                    logger.debug("Received: %s", data)
+                    await self._handle_message(msg)
+        except Exception:
+            logger.exception("Client error")
+        finally:
+            self._disconnect(ws)
+        return ws
+
+    async def _handle_message(self, msg: WSMessage):
+        data = from_json(msg.data)
+        logger.debug("Received: %s", data)
+        for handler in self.handlers:
+            for event in handler.__handler_events__:
+                if event.type == data["t"]:
+                    await event(data["d"])
 
     async def _run(self):
+        self.app = web.Application()
+        self.app.router.add_get("/", self._websocket_handler)
+        self.runner = web.AppRunner(self.app)
+        await self.runner.setup()
+        self.site = web.TCPSite(self.runner, "localhost", 8765)
+        await self.site.start()
+
+        logger.info("WebSocket server started on ws://localhost:8765")
+
         while True:
             await self._wait_next_refresh()
+            await self._tick()
+
+    async def broadcast(self, message: str):
+        """
+        Send message to all connected clients.
+        """
+        if self.client_connexions:
+            await asyncio.gather(*[ws.send_str(message) for ws in self.client_connexions])
+
+    async def _tick(self):
+        self._current_tick += 1
+        if self._current_tick % 60 == 0:
+            await self.broadcast(json.dumps({"t": "TICK_EVENT", "d": self._current_tick}))
 
     async def add_cable(self, id_device_1: int, port_1: int, id_device_2: int, port_2: int, level: int) -> bool:
         # check if port is available
