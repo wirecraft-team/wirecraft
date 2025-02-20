@@ -13,10 +13,10 @@ from pydantic_core import from_json
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .database.models import Cable, Device, engine
+from .database.models import Cable, Device, engine, init
 from .handlers import CablesHandler
 
-REFRESH_RATE = 30
+TICK_RATE = 20
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class Server:
         asyncio.run(self._run())
 
     async def _wait_next_refresh(self):
-        delay = 1 / REFRESH_RATE
+        delay = 1 / TICK_RATE
         _next = self._last_refresh + delay
         _now = time.perf_counter()
         _wait = _next - _now
@@ -90,12 +90,19 @@ class Server:
     async def _handle_message(self, msg: WSMessage):
         data = from_json(msg.data)
         logger.debug("Received: %s", data)
+        handled: bool = False
         for handler in self.handlers:
             for event in handler.__handler_events__:
                 if event.type == data["t"]:
                     await event(data["d"])
+                    handled = True
+
+        if not handled:
+            logger.warning("Unhandled event: %s", data)
 
     async def _run(self):
+        await init()
+
         self.app = web.Application()
         self.app.router.add_get("/", self._websocket_handler)
         self.runner = web.AppRunner(self.app)
@@ -175,12 +182,6 @@ class Server:
             session.add(cable)
             await session.commit()
         return True
-
-    async def get_level_cables(self, id_level: int) -> Sequence[Cable]:
-        statement = select(Cable).where(Cable.id_level == id_level)
-        async with AsyncSession(engine) as session:
-            result = await session.exec(statement)
-            return result.all()
 
     async def get_level_devices(self, id_level: int) -> Sequence[Device]:
         statement = select(Device).where(Device.id_level == id_level)
