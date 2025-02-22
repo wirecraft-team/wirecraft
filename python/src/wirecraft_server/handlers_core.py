@@ -1,4 +1,43 @@
-# TODO(airopi): add comments & documentation
+"""
+This is all the magic behind the handlers system.
+
+I will not explain *how it works* but *how to use it*. (The explanation requires knowledge about metaclass and advanced
+typing.)
+
+So basically, a "handler" is a class that contains events. An event is a function that is decorated with the `@event`
+decorator.
+
+For example:
+
+```python
+from pydantic import BaseModel
+
+from wirecraft_server.handlers_core import Handler, event
+
+
+class MyDataModel(BaseModel):
+    content: str
+
+class PingHandler(Handler):
+    @event
+    async def ping(self, data: MyDataModel):
+        print(data.content)
+```
+
+This will create a "ping" event that receive a dict with a "content" key.
+When a client send through the websocket a json object like this:
+```json
+{
+    "t": "PING",
+    "d": {
+        "content": "Hello, World!"
+    }
+}
+```
+The `ping` function will be called with the `MyDataModel` instance as argument.
+
+That's all you need to do to create a new event.
+"""
 
 from __future__ import annotations
 
