@@ -32,7 +32,14 @@ class Server:
 
     def start(self):
         logger.info("Server started!")
-        asyncio.run(self._run())
+        try:
+            asyncio.run(self._run())
+        except KeyboardInterrupt:
+            logger.info("Server stopped!")
+            self._stop.set()
+        except Exception:
+            logger.exception("Server crashed!")
+            raise SystemExit(1)
 
     async def _wait_next_refresh(self):
         delay = 1 / REFRESH_RATE
@@ -59,7 +66,10 @@ class Server:
 
     async def _run(self):
         while True:
-            await self._wait_next_refresh()
+            stopped = await self._wait_next_refresh()
+            if stopped:
+                logger.info("Server stopped!")
+                break
 
     async def add_cable(self, id_device_1: int, port_1: int, id_device_2: int, port_2: int, level: int) -> bool:
         # check if port is available
