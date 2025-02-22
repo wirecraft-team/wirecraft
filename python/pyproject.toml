@@ -7,6 +7,7 @@ dependencies = [ #
     "click>=8.1.8",
     "pygame-ce>=2.5.2",
     "sqlmodel",
+    "aiosqlite>=0.21.0",
 ]
 
 [project.scripts]
@@ -47,8 +48,6 @@ envlist = py312
 [testenv]
 runner = uv-venv-lock-runner
 description = run all checks on the code
-extras = 
-    dev
 commands =
     ruff format --check src
     ruff check src
@@ -90,6 +89,7 @@ select = [
     "RUF",   # Ruff-specific-rules
     # "ERA",   # locate commented codes
     # "FIX",   # locate TODOs and FIXME
+    "TD002",
     # "PTH",   # flake8-use-pathlib (maybe todo ?)
     # "TID",   # flake8-tidy-imports (maybe todo ?)
     # "SLF",   # flake8-self  (managed by pyright)
