@@ -1,8 +1,8 @@
 [project]
-name = "wirecraft"
-version = "0.1b0"
+name = "wirecraft_server"
+version = "0.1b1"
 requires-python = ">=3.12"
-dependencies = [
+dependencies = [ #
     "numpy>=2.2.2",
     "click>=8.1.8",
     "pygame-ce>=2.5.2",
@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.scripts]
-wirecraft = "wirecraft.__main__:main"
+wirecraft-server = "wirecraft_server.__main__:main"
 
 
 [build-system]
@@ -18,28 +18,26 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-only-include = ["src", "assets"]
+only-include = ["src"]
 
 [tool.hatch.build.targets.wheel.sources]
-"src/wirecraft" = "wirecraft"
-"assets" = "wirecraft/assets"
+"src/wirecraft_server" = "wirecraft_server"
 
 
-[tool.uv]
-dev-dependencies = [
-    # "uv",
+[dependency-groups]
+dev = [
+    { include-group = "lint" },
+    { include-group = "tox" },
+    "pytest",
     "pre-commit",
-    "pyright",
-    "debugpy",
-    "ruff",
-    "tox",
-    "tox-uv",
 ]
+lint = ["pyright", "ruff"]
+tox = ["tox", "tox-uv"]
 
 
 [tool.pyright]
 typeCheckingMode = "strict"
-
+include = ["src"]
 
 [tool.tox]
 legacy_tox_ini = """
@@ -63,7 +61,6 @@ line-length = 120
 indent-width = 4
 target-version = "py312"
 src = ["src"]
-exclude = ["bin"]
 
 [tool.ruff.lint]
 select = [
@@ -102,7 +99,6 @@ select = [
     # "DTZ",   # flake8-datetimez (TODO)
     # "B",     # flake8-bugbear
 ]
-
 ignore = [
     "E501", # line too long (we relate on the formater)
     "N818", # Error suffix for exceptions names

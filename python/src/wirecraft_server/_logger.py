@@ -40,22 +40,13 @@ class _ColorFormatter(logging.Formatter):
 
     FORMATS: ClassVar = {
         level: logging.Formatter(
-            f"\x1b[30;1m%(asctime)s\x1b[0m {colour}%(levelname)-8s\x1b[0m \x1b[35m[{{category}}]\x1b[0m \x1b[35m%(name)s\x1b[0m %(message)s",
+            f"\x1b[30;1m%(asctime)s\x1b[0m {colour}%(levelname)-8s\x1b[0m \x1b[35m%(name)s\x1b[0m %(message)s",
             dt_fmt,
         )
         for level, colour in LEVEL_COLOURS
     }
 
     def format(self, record: logging.LogRecord) -> str:
-        if record.name.startswith("wirecraft.server"):
-            record.name = record.name[17:]
-            category = "SERVER"
-        elif record.name.startswith("wirecraft.client"):
-            record.name = record.name[17:]
-            category = "CLIENT"
-        else:
-            category = "OTHER "
-
         formatter = self.FORMATS.get(record.levelno)
         if formatter is None:
             formatter = self.FORMATS[logging.DEBUG]
@@ -66,7 +57,6 @@ class _ColorFormatter(logging.Formatter):
             record.exc_text = f"\x1b[31m{text}\x1b[0m"
 
         output = formatter.format(record)
-        output = output.format(category=category)
 
         # Remove the cache layer
         record.exc_text = None
