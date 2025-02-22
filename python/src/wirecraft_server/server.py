@@ -26,13 +26,6 @@ class Server:
         self.client_connexions: list[Any] = []  # TODO
         self._last_refresh: float = time.perf_counter()
 
-        # self._setup_thread()
-
-    # def _setup_thread(self):
-    #     logger.debug("Setup the backend in a separated thread...")
-    #     self._thread = threading.Thread(target=self._run)
-    #     self._stop = threading.Event()
-
     def _wait_next_refresh(self):
         delay = 1 / REFRESH_RATE
         _next = self._last_refresh + delay
@@ -42,11 +35,9 @@ class Server:
             # TODO: implement server slow down (increase delay in case of poor performances)
             logger.warning("Can't keep up ! %ss behind the normal refresh", -round(_wait, 3))
             self._last_refresh = _now
-            # return self._stop.is_set()
 
         self._last_refresh = _next
         time.sleep(_wait)
-        # return self._stop.wait(_wait)
 
     def new_connection(self, interface: Any) -> Self:  # TODO
         self.client_connexions.append(interface)
@@ -57,20 +48,18 @@ class Server:
 
     def start(self):
         logger.info("Server started!")
-        self._run()
-        # self._thread.start()
-
-    # def stop(self):
-    # self._stop.set()
+        try:
+            self._run()
+        except KeyboardInterrupt:
+            logger.info("Server stopped!")
+            raise SystemExit(0)
+        except Exception:
+            logger.exception("Server crashed!")
+            raise SystemExit(1)
 
     def _run(self):
         while True:
             self._wait_next_refresh()
-
-        # while not self._stop.is_set():
-        # if self._wait_next_refresh():
-        # logger.info("Server stopped!")
-        # break
 
     def get_money(self) -> int:
         return 1000
