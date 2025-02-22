@@ -39,7 +39,14 @@ class Server:
 
     def start(self):
         logger.info("Server started!")
-        asyncio.run(self._run())
+        try:
+            asyncio.run(self._run())
+        except KeyboardInterrupt:
+            logger.info("Server stopped!")
+            self._stop.set()
+        except Exception:
+            logger.exception("Server crashed!")
+            raise SystemExit(1)
 
     async def _wait_next_refresh(self):
         delay = 1 / TICK_RATE
@@ -113,7 +120,10 @@ class Server:
         logger.info("WebSocket server started on ws://localhost:8765")
 
         while True:
-            await self._wait_next_refresh()
+            stopped = await self._wait_next_refresh()
+            if stopped:
+                logger.info("Server stopped!")
+                break
             await self._tick()
 
     async def broadcast(self, message: str):
