@@ -33,6 +33,11 @@ class Server:
         self._current_tick = 0
         self.client_connexions: set[Any] = set()
         self._last_refresh: float = time.perf_counter()
+
+        # nb: if this event is set, the server will stop
+        # This is used if we *need* to stop the server in any other way than CTRL+C
+        # Or if we have tasks that need to finish properly before stopping, so they know they should stop without having
+        # to cancel them.
         self._stop = asyncio.Event()
 
         self.handlers = [CablesHandler(self)]
@@ -43,7 +48,7 @@ class Server:
             asyncio.run(self._run())
         except KeyboardInterrupt:
             logger.info("Server stopped!")
-            self._stop.set()
+            self._stop.set()  # if some tasks depends on this event
         except Exception:
             logger.exception("Server crashed!")
             raise SystemExit(1)
