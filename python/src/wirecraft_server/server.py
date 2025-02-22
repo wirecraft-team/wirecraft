@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from typing import Any, Self
 
 from aiohttp import WSMessage, WSMsgType, web
-from pydantic_core import from_json
+from pydantic_core import from_json, to_json
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -31,7 +31,7 @@ class Server:
 
     def __init__(self) -> None:
         self._current_tick = 0
-        self.client_connexions: set[Any] = set()
+        self.client_connexions: set[web.WebSocketResponse] = set()
         self._last_refresh: float = time.perf_counter()
 
         # nb: if this event is set, the server will stop
@@ -131,17 +131,20 @@ class Server:
                 break
             await self._tick()
 
-    async def broadcast(self, message: str):
+    async def broadcast_json(self, data: Any):
+        await self.broadcast(to_json(data))
+
+    async def broadcast(self, message: bytes):
         """
         Send message to all connected clients.
         """
         if self.client_connexions:
-            await asyncio.gather(*[ws.send_str(message) for ws in self.client_connexions])
+            await asyncio.gather(*[ws.send_bytes(message) for ws in self.client_connexions])
 
     async def _tick(self):
         self._current_tick += 1
         if self._current_tick % 60 == 0:
-            await self.broadcast(json.dumps({"t": "TICK_EVENT", "d": self._current_tick}))
+            await self.broadcast_json({"t": "TICK_EVENT", "d": self._current_tick})
 
     async def add_cable(self, id_device_1: int, port_1: int, id_device_2: int, port_2: int, level: int) -> bool:
         # check if port is available

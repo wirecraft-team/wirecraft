@@ -18,6 +18,7 @@ from wirecraft_server.handlers_core import Handler, event
 class MyDataModel(BaseModel):
     content: str
 
+
 class PingHandler(Handler):
     @event
     async def ping(self, data: MyDataModel):
@@ -68,10 +69,15 @@ class Event[H: Handler, T: BaseModel]:
             raise ValueError("Event handler not set.")
 
         if self.data_type is None:
-            return await self.callback(self.handler)  # pyright: ignore[reportCallIssue]
+            response = await self.callback(self.handler)  # pyright: ignore[reportCallIssue]
         else:
             parsed_data = self.data_type.model_validate(data)  # TODO(airopi): add error handling
-            return await self.callback(self.handler, parsed_data)  # pyright: ignore[reportCallIssue]
+            response = await self.callback(self.handler, parsed_data)  # pyright: ignore[reportCallIssue]
+
+        if response is None:
+            return
+
+        await self.handler.server.broadcast_json({"t": self.type + "_RESPONSE", "d": response})
 
 
 class HandlerMeta(type):

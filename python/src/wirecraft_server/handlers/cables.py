@@ -9,21 +9,15 @@ from ..database.models import Cable, async_session
 from ..handlers_core import Handler, event
 
 
-class PingData(BaseModel):
-    content: str
-
-
 class GetLevelCablesData(BaseModel):
     level_id: int
 
 
 class CablesHandler(Handler):
     @event
-    async def ping(self, data: PingData):
-        print(self)
-        print(data)
-        print(data.content)
+    async def ping(self):
         print("pinged")
+        return "pong"
 
     @event
     async def get_level_cables(self, data: GetLevelCablesData) -> Sequence[Cable]:
