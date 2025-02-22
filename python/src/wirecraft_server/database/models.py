@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlmodel import (
     Field,  # type: ignore
     SQLModel,
@@ -10,6 +10,9 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 db = "sqlite+aiosqlite:///database.db"
 engine = create_async_engine(db)
+
+
+async_session = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 
 class Cable(SQLModel, table=True):
@@ -49,7 +52,7 @@ async def init():
 
     level_dev = Level(completed=False)
     # Add level first to get an ID before assigning it to devices
-    async with AsyncSession(engine) as session:
+    async with async_session() as session:
         if not (await session.exec(select(Level))).first():
             session.add(level_dev)
             await session.commit()
@@ -61,8 +64,11 @@ async def init():
             session.add(switch1)
             session.add(switch2)
             await session.commit()
+            cable = Cable(id_device_1=switch1.id, port_1=1, id_device_2=switch2.id, port_2=1, id_level=level_dev.id)
+            session.add(cable)
+            await session.commit()
     # if there are cables with devices id that are < 0 then delete them as they were in a placing state when the game closed
-    async with AsyncSession(engine) as session:
+    async with async_session() as session:
         cables = (await session.exec(select(Cable))).all()
         for cable in cables:
             if cable.id_device_1 < 0:
