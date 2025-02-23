@@ -1,0 +1,76 @@
+[gd_scene load_steps=4 format=3 uid="uid://cmf21da7li458"]
+
+[ext_resource type="Texture2D" uid="uid://ciux1dp7c7ya5" path="res://assets/PT-Link-1.png" id="1_xsf7h"]
+[ext_resource type="Script" path="res://scripts/device.gd" id="2_bnp0q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w1e0p"]
+size = Vector2(10.5, 10)
+
+[node name="switch" type="Sprite2D"]
+texture = ExtResource("1_xsf7h")
+script = ExtResource("2_bnp0q")
+
+[node name="Port1" type="Area2D" parent="."]
+position = Vector2(-108, -8)
+scale = Vector2(4, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Port1"]
+shape = SubResource("RectangleShape2D_w1e0p")
+
+[node name="Port2" type="Area2D" parent="."]
+position = Vector2(-56, -8)
+scale = Vector2(4, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Port2"]
+shape = SubResource("RectangleShape2D_w1e0p")
+
+[node name="Port3" type="Area2D" parent="."]
+position = Vector2(-4, -8)
+scale = Vector2(4, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Port3"]
+shape = SubResource("RectangleShape2D_w1e0p")
+
+[node name="Port4" type="Area2D" parent="."]
+position = Vector2(48, -8)
+scale = Vector2(4, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Port4"]
+shape = SubResource("RectangleShape2D_w1e0p")
+
+[node name="Port5" type="Area2D" parent="."]
+position = Vector2(100, -8)
+scale = Vector2(4, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Port5"]
+shape = SubResource("RectangleShape2D_w1e0p")
+
+[node name="Port6" type="Area2D" parent="."]
+position = Vector2(152, -8)
+scale = Vector2(4, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Port6"]
+shape = SubResource("RectangleShape2D_w1e0p")
+
+[node name="Port7" type="Area2D" parent="."]
+position = Vector2(204, -8)
+scale = Vector2(4, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Port7"]
+shape = SubResource("RectangleShape2D_w1e0p")
+
+[node name="Port8" type="Area2D" parent="."]
+position = Vector2(256, -8)
+scale = Vector2(4, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Port8"]
+shape = SubResource("RectangleShape2D_w1e0p")
+
+[connection signal="input_event" from="Port1" to="." method="_on_port_1_input_event"]
+[connection signal="input_event" from="Port2" to="." method="_on_port_2_input_event"]
+[connection signal="input_event" from="Port3" to="." method="_on_port_3_input_event"]
+[connection signal="input_event" from="Port4" to="." method="_on_port_4_input_event"]
+[connection signal="input_event" from="Port5" to="." method="_on_port_5_input_event"]
+[connection signal="input_event" from="Port6" to="." method="_on_port_6_input_event"]
+[connection signal="input_event" from="Port7" to="." method="_on_port_7_input_event"]
+[connection signal="input_event" from="Port8" to="." method="_on_port_8_input_event"]
