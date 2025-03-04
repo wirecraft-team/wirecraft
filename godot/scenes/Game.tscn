@@ -16,7 +16,7 @@ anchor_right = 0.000208338
 offset_right = 0.599991
 metadata/_edit_use_anchors_ = true
 
-[node name="Node" type="Node" parent="."]
+[node name="ws" type="Node" parent="."]
 script = ExtResource("9_dv77h")
 
 [node name="Camera2D" type="Camera2D" parent="."]

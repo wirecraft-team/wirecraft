@@ -47,11 +47,7 @@ func finish_cable(port_number: int, device_id: int, port_pos:Vector2):
 	definitive_cable.end_switch = device_id
 	definitive_cable.end_port = port_number
 	# Send cable information to the server
-	send_cable_to_server(definitive_cable.start_switch, definitive_cable.start_port, definitive_cable.end_switch, definitive_cable.end_port)
-
-func send_cable_to_server(start_id:int, start_port:int, end_id:int, end_port:int):
-	# Send cable information to the server
-	pass
+	get_node("../ws").send_cable(definitive_cable.start_switch, definitive_cable.start_port, definitive_cable.end_switch, definitive_cable.end_port)
 
 func _process(_delta):
 	if is_placing_cable and Input.is_action_just_released("ui_cancel"):
