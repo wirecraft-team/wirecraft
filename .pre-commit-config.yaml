@@ -2,8 +2,8 @@ repos:
   - repo: local
     hooks:
       - id: uv-run-tox
-        name: Run UV Run Tox
-        entry: uv run tox
+        name: Run Tox
+        entry: uv run --directory python tox
         language: system
         always_run: true
         pass_filenames: false

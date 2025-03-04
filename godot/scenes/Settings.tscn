@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://buvysotufmnp6"]
+
+[ext_resource type="Script" path="res://scripts/option_button.gd" id="1_1lh4h"]
+
+[node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OptionButton" type="OptionButton" parent="."]
+layout_mode = 0
+offset_left = 806.0
+offset_top = 604.0
+offset_right = 1176.0
+offset_bottom = 676.0
+script = ExtResource("1_1lh4h")
+
+[connection signal="item_selected" from="OptionButton" to="OptionButton" method="_on_item_selected"]
