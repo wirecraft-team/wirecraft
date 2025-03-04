@@ -36,14 +36,7 @@ class CablesHandler(Handler):
         return cables
 
     @event
-    async def add_cable(self, data: AddCableData):
-        cable = Cable(
-            id_device_1=data.id_device_1,
-            port_1=data.port_1,
-            id_device_2=data.id_device_2,
-            port_2=data.port_2,
-            id_level=data.id_level,
-        )
+    async def add_cable(self, data: Cable):
         async with async_session() as session:
-            session.add(cable)
+            session.add(data)
             await session.commit()
