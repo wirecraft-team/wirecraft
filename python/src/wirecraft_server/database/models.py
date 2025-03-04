@@ -59,12 +59,14 @@ async def init():
             await session.refresh(level_dev)
             if TYPE_CHECKING:
                 assert isinstance(level_dev.id, int)
-            switch1 = Device(name="Switch 1", type="switch", x=0, y=0, id_level=level_dev.id)
-            switch2 = Device(name="Switch 2", type="pc", x=2000, y=2000, id_level=level_dev.id)
+            switch1 = Device(name="sw1", type="switch", x=0, y=0, id_level=level_dev.id)
+            pc1 = Device(name="pc1", type="pc", x=400, y=-400, id_level=level_dev.id)
+            pc2 = Device(name="pc2", type="pc", x=-400, y=-400, id_level=level_dev.id)
             session.add(switch1)
-            session.add(switch2)
+            session.add(pc1)
+            session.add(pc2)
             await session.commit()
-            cable = Cable(id_device_1=switch1.id, port_1=1, id_device_2=switch2.id, port_2=1, id_level=level_dev.id)
+            cable = Cable(id_device_1=switch1.id, port_1=1, id_device_2=pc1.id, port_2=1, id_level=level_dev.id)
             session.add(cable)
             await session.commit()
     # if there are cables with devices id that are < 0 then delete them as they were in a placing state when the game closed

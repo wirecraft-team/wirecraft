@@ -17,7 +17,9 @@ func _ready():
 		# Wait for the socket to connect.
 		await get_tree().create_timer(0.07).timeout
 		# Send data.
+		socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id": 1}}')
 		socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id": 1}}')
+
 
 func _process(_delta):
 	# Call this in _process or _physthisics_process. Data transfer and state updates
@@ -41,6 +43,10 @@ func _process(_delta):
 				if data_received.t == "GET_LEVEL_CABLES_RESPONSE":
 					#call update_cable function in CableControler
 					get_node("../CableController").update_cables(data_received.d)
+				if data_received.t == "GET_LEVEL_DEVICES_RESPONSE":
+					#call update_devices function in CableControler
+					get_node("../DeviceController").update_devices(data_received.d)
+					get_node("../CableController").update_device_signal()
 			else:
 				print("Error ", error)
 
