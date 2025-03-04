@@ -120,10 +120,10 @@ class Server:
         self.app.router.add_get("/", self._websocket_handler)
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
-        self.site = web.TCPSite(self.runner, "localhost", 8765)
+        self.site = web.TCPSite(self.runner, "0.0.0.0", 8765)  # noqa: S104
         await self.site.start()
 
-        logger.info("WebSocket server started on ws://localhost:8765")
+        logger.info("WebSocket server started on ws://0.0.0.0:8765")
 
         while True:
             stopped = await self._wait_next_refresh()
