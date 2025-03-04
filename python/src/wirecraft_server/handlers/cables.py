@@ -13,6 +13,14 @@ class GetLevelCablesData(BaseModel):
     level_id: int
 
 
+class AddCableData(BaseModel):
+    id_device_1: int
+    port_1: int
+    id_device_2: int
+    port_2: int
+    id_level: int
+
+
 class CablesHandler(Handler):
     @event
     async def ping(self):
@@ -26,3 +34,9 @@ class CablesHandler(Handler):
             result = await session.exec(statement)
             cables = result.all()
         return cables
+
+    @event
+    async def add_cable(self, data: Cable):
+        async with async_session() as session:
+            session.add(data)
+            await session.commit()
