@@ -19,6 +19,13 @@ The project is divided into two parts: Godot for the client, python for the serv
     0. Change your OS 🤢
     1. extract wirecraft.zip
     2. Run the .app
+    3. Your system will say that the app can't be opened, and you should move it to bin. DON'T DO THIS 😭
+    4. Go to your System Settings -> Privacy & Security -> Security -> "Open Anyway"
+    32. Buy us a certificate
+
+> [!IMPORTANT]
+> Don't forget to launch the server before starting the client
+
 ### Install the server
 
 > [!IMPORTANT]
