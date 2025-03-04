@@ -8,18 +8,17 @@ The project is divided into two parts: Godot for the client, python for the serv
 
 ### Install the client
 
-#TODO!
-Download the distributed build in the release section at https://github.com/wirecraft-team/wirecraft/releases
+(#TODO) Download the distributed build in the release section at https://github.com/wirecraft-team/wirecraft/releases
 
 ### Install the server
 
 > [!IMPORTANT]
-> The project requires Python >= 3.12 !
+> The project requires Python >= 3.12 ! (If you use `uv` or Docker, python version isn't an issue).
 
 #### Install from git
 
-> [!INFO]
-> To install the project at a specific version, you can specify a commit ID / a tag name / a branch
+> [!NOTE]
+> To install the project at a specific version, you can specify a commit ID / a tag name / a branch.  
 > Replace `@main` by `@ee0d809` or `@vx.x.x` or `@branch` in the URL.
 
 Using pip:
