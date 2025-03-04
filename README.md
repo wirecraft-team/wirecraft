@@ -9,7 +9,16 @@ The project is divided into two parts: Godot for the client, python for the serv
 ### Install the client
 
 (#TODO) Download the distributed build in the release section at https://github.com/wirecraft-team/wirecraft/releases
-
+(for now use the build in /build of the zip)
+#### Windows:
+    1. run wirecraft.exe
+#### Linux:
+    1. chmod +x wirecraftx86_64
+    2. ./wirecraftx86_64
+#### MacOs:
+    0. Change your OS 🤢
+    1. extract wirecraft.zip
+    2. Run the .app
 ### Install the server
 
 > [!IMPORTANT]
