@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://scripts/device_controller.gd" id="3_yc75h"]
 [ext_resource type="PackedScene" uid="uid://da5ysd60i7shm" path="res://scenes/pc.tscn" id="4_li3nh"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="6_kac4m"]
-[ext_resource type="Texture2D" uid="uid://csx2iq3v0v4kf" path="res://assets/inventory.png" id="6_tacyi"]
+[ext_resource type="Texture2D" uid="uid://cwgl6oq7d1yw1" path="res://assets/inventory.png" id="6_tacyi"]
 [ext_resource type="Script" path="res://scripts/window.gd" id="8_22p52"]
 [ext_resource type="Script" path="res://scripts/ws.gd" id="9_dv77h"]
 
