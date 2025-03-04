@@ -13,7 +13,7 @@ from pydantic_core import from_json, to_json
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .database.models import Cable, Device, engine, init
+from .database.models import Cable, Device, Task, engine, init
 from .handlers import CablesHandler
 
 TICK_RATE = 20
@@ -225,4 +225,8 @@ class Server:
 
     async def get_task_list(self, level: int) -> list[str]:
         # Server send task list to client based on level
-        return ["This is the first task", "This is the second task", "This is the third task"]
+        statement = select(Task.name).where(Task.id_level == level)
+        async with AsyncSession(engine) as session:
+            result = await session.exec(statement)
+            tasks = result.all()
+        return list(tasks)

@@ -34,14 +34,15 @@ class Device(SQLModel, table=True):
 
 
 class Level(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: int = Field(default=None, primary_key=True)
     completed: bool = False
 
 
 class Task(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: int = Field(default=None, primary_key=True)
     id_level: int = Field(default=None, foreign_key="level.id")
     name: str
+    description: str
     completed: bool = False
 
 
