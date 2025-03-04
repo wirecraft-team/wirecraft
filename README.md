@@ -4,19 +4,77 @@ The Wirecraft project!
 
 ## Installation instructions
 
+The project is divided into two parts: Godot for the client, python for the server.
+
+### Install the client
+
+(#TODO) Download the distributed build in the release section at https://github.com/wirecraft-team/wirecraft/releases
+(for now use the build in /godot/build of the zip)
+#### Windows:
+    1. run wirecraft.exe
+#### Linux:
+    1. chmod +x wirecraftx86_64
+    2. ./wirecraftx86_64
+#### MacOs:
+    0. Change your OS 🤢
+    1. extract wirecraft.zip
+    2. Run the .app
+    3. Your system will say that the app can't be opened, and you should move it to bin. DON'T DO THIS 😭
+    4. Go to your System Settings -> Privacy & Security -> Security -> "Open Anyway"
+    32. Buy us a certificate
+
 > [!IMPORTANT]
-> The project requires Python >= 3.12 !
+> Don't forget to launch the server before starting the client
+
+### Install the server
+
+> [!IMPORTANT]
+> The project requires Python >= 3.12 ! (If you use `uv` or Docker, python version isn't an issue).
+
+#### Install from git
+
+> [!NOTE]
+> To install the project at a specific version, you can specify a commit ID / a tag name / a branch.  
+> Replace `@main` by `@ee0d809` or `@vx.x.x` or `@branch` in the URL.
 
 Using pip:
 ```bash
-pip install git+https://github.com/wirecraft-team/wirecraft.git -U
-wirecraft
+pip install git+https://github.com/wirecraft-team/wirecraft.git@main#subdirectory=python -U
+wirecraft-server
 ```
 
 Using uvx:
 ```bash
-uvx --from https://github.com/wirecraft-team/wirecraft.git wirecraft
+uvx --from uvx --from git+https://github.com/wirecraft-team/wirecraft.git@main#subdirectory=python wirecraft-server
 ```
+
+Using pipx: should be possible.
+
+#### Install from sources
+
+Clone the repo / download a zip.
+
+Using uv:
+```bash
+cd python
+uv sync --no-dev
+uv run wirecraft-server
+```
+nb: `uv run wirecraft-server` install dev deps, I don't know why. (#TODO)  
+Instead of using `uv run`, you can also activate the venv at `.venv` and run `wirecraft-server`.
+
+Using pip:
+```bash
+cd python
+python -m venv venv
+source venv/bin/activate
+pip install .
+wirecraft-server
+```
+
+#### Install with Docker
+
+#TODO (soon)
 
 ### Debug options
 
