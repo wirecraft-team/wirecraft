@@ -46,6 +46,7 @@ func _process(_delta):
 				if data_received.t == "GET_LEVEL_DEVICES_RESPONSE":
 					#call update_devices function in CableControler
 					get_node("../DeviceController").update_devices(data_received.d)
+					get_node("../CableController").update_device_signal()
 			else:
 				print("Error ", error)
 
