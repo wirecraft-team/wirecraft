@@ -5,9 +5,9 @@ from collections.abc import Sequence
 from pydantic import BaseModel
 from sqlmodel import select
 
+from ..database.base import device_dict
 from ..database.models import Device, async_session
 from ..handlers_core import Handler, event
-from ..database.base import device_dict
 
 
 class GetLevelDevicesData(BaseModel):
