@@ -32,6 +32,7 @@ func _process(_delta):
 	# WebSocketPeer.STATE_OPEN means the socket is connected and ready
 	# to send and receive data.
 	if state == WebSocketPeer.STATE_OPEN:
+		get_node("../CanvasLayer/ServerText").visible = false
 		while socket.get_available_packet_count():
 			var packet_data = socket.get_packet().get_string_from_utf8()
 			print("Got data from server: ", )
