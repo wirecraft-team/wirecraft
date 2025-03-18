@@ -67,4 +67,4 @@ func _process(_delta):
 func send_cable(start_id:int, start_port:int, end_id:int, end_port:int):
 	# Send cable information to the server
 	#TODO: Don't hardcode level_id
-	socket.send_text('{"t": "ADD_CABLE", "d": {"id_device_1": %d, "port_1": %d, "id_device_2": %d, "port_2": %d, "id_level": 1}}' % [start_id, start_port, end_id, end_port])
+	socket.send_text('{"t": "ADD_CABLE", "d": {"device_id_1": %d, "port_1": %d, "device_id_2": %d, "port_2": %d, "level_id": 1}}' % [start_id, start_port, end_id, end_port])
