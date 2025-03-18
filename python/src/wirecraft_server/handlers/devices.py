@@ -27,6 +27,11 @@ class DeviceId(BaseModel):
     id: int
 
 
+class UpdateDevicePositionData(BaseModel):
+    device_id: int
+    x: int
+    y: int
+
 class DevicesHandler(Handler):
     @event
     async def ping(self):
@@ -54,3 +59,14 @@ class DevicesHandler(Handler):
             result = await session.exec(statement)
             device_name = result.one()
             return device_dict[device_name]
+    
+    @event
+    async def update_device_position(self,data:UpdateDevicePositionData):
+        async with async_session() as session:
+            statement = select(Device).where(Device.id == data.device_id)
+            result = await session.exec(statement)
+            device = result.one()
+            device.x = data.x
+            device.y = data.y
+            await session.commit()
+        return device
