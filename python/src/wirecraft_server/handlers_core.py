@@ -81,16 +81,16 @@ class Event[H: Handler, T: BaseModel]:
 
 
 class HandlerMeta(type):
-    __handler_events__: set[Event[Any, Any]]
+    __handler_events__: dict[str, Event[Any, Any]]
 
     def __new__(cls, *args: Any, **kwargs: Any) -> HandlerMeta:
         name, bases, attrs = args
         new_cls = super().__new__(cls, name, bases, attrs, **kwargs)
-        new_cls.__handler_events__ = set()
+        new_cls.__handler_events__ = {}
         for base in reversed(new_cls.__mro__):
             for value in base.__dict__.values():
                 if isinstance(value, Event):
-                    new_cls.__handler_events__.add(value)  # pyright: ignore[reportUnknownArgumentType]
+                    new_cls.__handler_events__[value.type] = value
         return new_cls
 
 
@@ -100,7 +100,7 @@ class Handler(metaclass=HandlerMeta):
     def __new__(cls, *args: Any, **kwargs: Any) -> Self:
         self = super().__new__(cls)
         self.__handler_events__ = cls.__handler_events__
-        for event in self.__handler_events__:
+        for event in self.__handler_events__.values():
             event.handler = self
         return self
 

@@ -10,26 +10,17 @@ from ..handlers_core import Handler, event
 
 
 class GetLevelCablesData(BaseModel):
+    """
+    Payload for the get_level_cables ws method.
+    """
+
     level_id: int
-
-
-class AddCableData(BaseModel):
-    id_device_1: int
-    port_1: int
-    id_device_2: int
-    port_2: int
-    id_level: int
 
 
 class CablesHandler(Handler):
     @event
-    async def ping(self):
-        print("pinged")
-        return "pong"
-
-    @event
     async def get_level_cables(self, data: GetLevelCablesData) -> Sequence[Cable]:
-        statement = select(Cable).where(Cable.id_level == data.level_id)
+        statement = select(Cable).where(Cable.level_id == data.level_id)
         async with async_session() as session:
             result = await session.exec(statement)
             cables = result.all()
