@@ -40,9 +40,8 @@ expand_icon = true
 
 [node name="Window" type="Window" parent="CanvasLayer"]
 title = "Inventory"
-position = Vector2i(1501, 46)
+position = Vector2i(927, 36)
 size = Vector2i(395, 1010)
-visible = false
 script = ExtResource("8_22p52")
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
