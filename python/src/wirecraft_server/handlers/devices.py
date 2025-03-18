@@ -35,6 +35,7 @@ class UpdateDevicePositionData(BaseModel):
     x: int
     y: int
 
+
 class DevicesHandler(Handler):
     @event
     async def get_level_devices(self, data: GetLevelDevicesData) -> Sequence[Device]:
@@ -57,9 +58,9 @@ class DevicesHandler(Handler):
             result = await session.exec(statement)
             device_name = result.one()
             return device_dict[device_name]
-    
+
     @event
-    async def update_device_position(self,data:UpdateDevicePositionData):
+    async def update_device_position(self, data: UpdateDevicePositionData):
         async with async_session() as session:
             statement = select(Device).where(Device.id == data.device_id)
             result = await session.exec(statement)

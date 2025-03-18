@@ -16,7 +16,7 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if dragging:
 			dragging = false
-		else:
+		elif not get_node("../../CableController").is_placing_cable:
 			dragging = true
 
 func _handle_port_input(_viewport: Node, event: InputEvent, _shape_idx: int, port_number: int):
