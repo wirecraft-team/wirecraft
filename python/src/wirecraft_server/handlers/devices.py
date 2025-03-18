@@ -27,6 +27,10 @@ class GetDevicePropsData(BaseModel):
 
 
 class UpdateDevicePositionData(BaseModel):
+    """
+    Payload for the update_device_position ws method.
+    """
+
     device_id: int
     x: int
     y: int
