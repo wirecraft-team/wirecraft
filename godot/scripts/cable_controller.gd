@@ -8,6 +8,9 @@ var start_port: int = -1
 var cable_scene = preload("res://scenes/cable.tscn")
 
 func _ready():
+	update_device_signal()
+
+func update_device_signal():
 	for device in get_node("../DeviceController").get_children():
 		device.connect("port_pressed", Callable(self, "_on_port_pressed"))
 

@@ -14,7 +14,8 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from .database.models import Cable, Device, Task, engine, init
-from .handlers import CablesHandler
+from .handlers import CablesHandler, DevicesHandler
+from .handlers_core import Handler
 
 TICK_RATE = 20
 
@@ -40,7 +41,7 @@ class Server:
         # to cancel them.
         self._stop = asyncio.Event()
 
-        self.handlers = [CablesHandler(self)]
+        self.handlers: list[Handler] = [CablesHandler(self), DevicesHandler(self)]
 
     def start(self):
         logger.info("Server started!")

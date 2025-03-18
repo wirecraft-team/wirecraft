@@ -19,7 +19,8 @@ func _process(_delta: float) -> void:
 
 
 func _on_item_selected(index: int) -> void:
-	get_viewport().size = res[get_item_text(index)]
+	get_tree().root.content_scale_size = res[get_item_text(index)]
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
