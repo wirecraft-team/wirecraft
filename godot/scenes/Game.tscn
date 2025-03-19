@@ -30,10 +30,9 @@ script = ExtResource("3_yc75h")
 script = ExtResource("6_kac4m")
 
 [node name="InventoryButton" type="Button" parent="CanvasLayer"]
-offset_left = 80.0
-offset_top = 1028.0
-offset_right = 130.0
-offset_bottom = 1078.0
+offset_top = 1030.0
+offset_right = 50.0
+offset_bottom = 1080.0
 focus_mode = 0
 icon = ExtResource("6_tacyi")
 flat = true
@@ -41,10 +40,9 @@ expand_icon = true
 
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
 title = "Inventory"
-position = Vector2i(1407, 36)
-size = Vector2i(500, 885)
+position = Vector2i(1412, 36)
+size = Vector2i(500, 890)
 unresizable = true
-unfocusable = true
 
 [node name="TaskButton" type="Button" parent="CanvasLayer"]
 offset_left = -12.0
@@ -58,10 +56,9 @@ expand_icon = true
 
 [node name="TaskWindow" type="Window" parent="CanvasLayer"]
 title = "Task"
-position = Vector2i(15, 36)
-size = Vector2i(390, 485)
+position = Vector2i(8, 36)
+size = Vector2i(400, 502)
 unresizable = true
-unfocusable = true
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
 offset_left = 460.0

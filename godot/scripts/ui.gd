@@ -7,7 +7,7 @@ func _ready() -> void:
 	inventory_window = get_node("./InventoryWindow")
 	inventory_window.visible = false
 	task_window = get_node("./TaskWindow")
-	task_window.visible = true
+	task_window.visible = false
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
