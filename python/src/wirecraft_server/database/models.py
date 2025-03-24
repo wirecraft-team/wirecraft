@@ -33,16 +33,8 @@ class Device(SQLModel, table=True):
     level_id: int = Field(default=None, foreign_key="level.id")
 
 
-class Level(SQLModel, table=True):
+class LevelState(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    completed: bool = False
-
-
-class Task(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    level_id: int = Field(default=None, foreign_key="level.id")
-    name: str
-    description: str
     completed: bool = False
 
 
@@ -51,10 +43,10 @@ async def init():
         await conn.run_sync(SQLModel.metadata.drop_all)
         await conn.run_sync(SQLModel.metadata.create_all)
 
-    level_dev = Level(completed=False)
+    level_dev = LevelState(completed=False)
     # Add level first to get an ID before assigning it to devices
     async with async_session() as session:
-        if not (await session.exec(select(Level))).first():
+        if not (await session.exec(select(LevelState))).first():
             session.add(level_dev)
             await session.commit()
             await session.refresh(level_dev)
