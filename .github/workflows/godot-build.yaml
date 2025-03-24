@@ -7,14 +7,11 @@ on:
 jobs:
   Godot:
     runs-on: ubuntu-latest
-    defaults:
-        run:
-          working-directory: ./godot
     strategy:
       matrix:
         platform: [linux, windows, mac]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
         with:
           lfs: true
       - name: Build
@@ -24,9 +21,9 @@ jobs:
           name: example
           preset: ${{ matrix.platform }}
           debugMode: "true"
-          projectDir: ${{ github.workspace }}/godot
+          projectDir: "./godot"
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v2
         with:
           name: Client - ${{ matrix.platform }}
           path: ${{ github.workspace }}/${{ steps.build.outputs.build }}
