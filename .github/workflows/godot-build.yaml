@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: [Linux, Windows Desktop , macOS]
+        platform: [Linux, "Windows Desktop", macOS]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,4 +26,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Client - ${{ matrix.platform }}
-          path: ${{ github.workspace }}/${{ steps.build.outputs.build }}
+          path: ${{ steps.build.outputs.build }}
