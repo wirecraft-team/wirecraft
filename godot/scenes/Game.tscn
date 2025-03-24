@@ -43,10 +43,123 @@ expand_icon = true
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
 title = "Inventory"
 position = Vector2i(1507, 38)
-size = Vector2i(400, 1030)
+size = Vector2i(400, 1000)
 unresizable = true
 always_on_top = true
 unfocusable = true
+
+[node name="Control" type="Control" parent="CanvasLayer/InventoryWindow"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 10.0
+offset_right = 190.0
+offset_bottom = 110.0
+grow_horizontal = 2
+icon = ExtResource("7_400sg")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Button2" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 120.0
+offset_right = 190.0
+offset_bottom = 220.0
+grow_horizontal = 2
+icon = ExtResource("8_g4kob")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Button3" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 230.0
+offset_right = 190.0
+offset_bottom = 330.0
+grow_horizontal = 2
+
+[node name="Button4" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 340.0
+offset_right = 190.0
+offset_bottom = 440.0
+grow_horizontal = 2
+
+[node name="Button5" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 450.0
+offset_right = 190.0
+offset_bottom = 550.0
+grow_horizontal = 2
+
+[node name="Button6" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 560.0
+offset_right = 190.0
+offset_bottom = 660.0
+grow_horizontal = 2
+
+[node name="Button7" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 670.0
+offset_right = 190.0
+offset_bottom = 770.0
+grow_horizontal = 2
+
+[node name="Button8" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 780.0
+offset_right = 190.0
+offset_bottom = 880.0
+grow_horizontal = 2
+
+[node name="Button9" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 890.0
+offset_right = 190.0
+offset_bottom = 990.0
+grow_horizontal = 2
 
 [node name="TaskButton" type="Button" parent="CanvasLayer"]
 anchors_preset = 2
