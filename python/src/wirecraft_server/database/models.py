@@ -21,7 +21,7 @@ class Cable(SQLModel, table=True):
     port_1: int
     device_id_2: int = Field(default=None, foreign_key="device.id")
     port_2: int
-    level_id: int = Field(default=None, foreign_key="level.id")
+    level_id: int = Field(default=None, foreign_key="levelstate.id")
 
 
 class Device(SQLModel, table=True):
@@ -30,7 +30,7 @@ class Device(SQLModel, table=True):
     type: str
     x: int
     y: int
-    level_id: int = Field(default=None, foreign_key="level.id")
+    level_id: int = Field(default=None, foreign_key="levelstate.id")
 
 
 class LevelState(SQLModel, table=True):
