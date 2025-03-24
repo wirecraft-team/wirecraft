@@ -24,7 +24,7 @@ jobs:
           name: example
           preset: ${{ matrix.platform }}
           debugMode: "true"
-          projectDir: "./godot" #
+          projectDir: ${{ github.workspace }}/godot
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
