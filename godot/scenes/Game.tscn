@@ -1,11 +1,13 @@
-[gd_scene load_steps=8 format=3 uid="uid://wthmy25ja53i"]
+[gd_scene load_steps=10 format=3 uid="uid://wthmy25ja53i"]
 
-[ext_resource type="Script" uid="uid://xoknux2anugx" path="res://scripts/camera.gd" id="1_bfat1"]
+[ext_resource type="Script" uid="uid://bg2dis4o5gwcs" path="res://scripts/camera.gd" id="1_bfat1"]
 [ext_resource type="Script" path="res://scripts/cable_controller.gd" id="3_aycay"]
-[ext_resource type="Script" path="res://scripts/device_controller.gd" id="3_yc75h"]
+[ext_resource type="Script" uid="uid://byesf7mk38tl" path="res://scripts/device_controller.gd" id="3_yc75h"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="6_kac4m"]
 [ext_resource type="Texture2D" uid="uid://cwgl6oq7d1yw1" path="res://assets/inventory.png" id="6_tacyi"]
+[ext_resource type="Texture2D" uid="uid://btghaq4rnl1a8" path="res://assets/PT-Link-1.png" id="7_g4kob"]
 [ext_resource type="Texture2D" uid="uid://jqr6dy6nw7uv" path="res://assets/task.png" id="8_400sg"]
+[ext_resource type="Texture2D" uid="uid://dhtj8x5akisiy" path="res://assets/PC-1.png" id="8_qy1jj"]
 [ext_resource type="Script" path="res://scripts/ws.gd" id="9_dv77h"]
 
 [node name="Control" type="Control"]
@@ -30,9 +32,11 @@ script = ExtResource("3_yc75h")
 script = ExtResource("6_kac4m")
 
 [node name="InventoryButton" type="Button" parent="CanvasLayer"]
-offset_top = 1030.0
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -50.0
 offset_right = 50.0
-offset_bottom = 1080.0
 focus_mode = 0
 icon = ExtResource("6_tacyi")
 flat = true
@@ -40,15 +44,133 @@ expand_icon = true
 
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
 title = "Inventory"
-position = Vector2i(1412, 36)
-size = Vector2i(500, 890)
+position = Vector2i(1507, 38)
+size = Vector2i(400, 1000)
 unresizable = true
+always_on_top = true
+unfocusable = true
+
+[node name="Control" type="Control" parent="CanvasLayer/InventoryWindow"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 10.0
+offset_right = 190.0
+offset_bottom = 110.0
+grow_horizontal = 2
+icon = ExtResource("7_g4kob")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Button2" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 120.0
+offset_right = 190.0
+offset_bottom = 220.0
+grow_horizontal = 2
+icon = ExtResource("8_qy1jj")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Button3" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 230.0
+offset_right = 190.0
+offset_bottom = 330.0
+grow_horizontal = 2
+
+[node name="Button4" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 340.0
+offset_right = 190.0
+offset_bottom = 440.0
+grow_horizontal = 2
+
+[node name="Button5" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 450.0
+offset_right = 190.0
+offset_bottom = 550.0
+grow_horizontal = 2
+
+[node name="Button6" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 560.0
+offset_right = 190.0
+offset_bottom = 660.0
+grow_horizontal = 2
+
+[node name="Button7" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 670.0
+offset_right = 190.0
+offset_bottom = 770.0
+grow_horizontal = 2
+
+[node name="Button8" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 780.0
+offset_right = 190.0
+offset_bottom = 880.0
+grow_horizontal = 2
+
+[node name="Button9" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 890.0
+offset_right = 190.0
+offset_bottom = 990.0
+grow_horizontal = 2
 
 [node name="TaskButton" type="Button" parent="CanvasLayer"]
-offset_left = -12.0
-offset_top = 974.0
-offset_right = 61.0
-offset_bottom = 1029.0
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = -100.0
+offset_right = 50.0
+offset_bottom = -50.0
 focus_mode = 0
 icon = ExtResource("8_400sg")
 flat = true
@@ -56,17 +178,26 @@ expand_icon = true
 
 [node name="TaskWindow" type="Window" parent="CanvasLayer"]
 title = "Task"
-position = Vector2i(8, 36)
+position = Vector2i(18, 36)
 size = Vector2i(335, 502)
 unresizable = true
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
-offset_left = 460.0
-offset_top = 2.0
-offset_right = 659.0
-offset_bottom = 42.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -98.5
+offset_top = -18.5
+offset_right = 98.5
+offset_bottom = 18.5
+grow_horizontal = 2
+grow_vertical = 2
 bbcode_enabled = true
 text = "[color=#ff0000]Please start the server[/color]"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="pressed" from="CanvasLayer/InventoryButton" to="CanvasLayer" method="_on_inventory_button_pressed"]
 [connection signal="close_requested" from="CanvasLayer/InventoryWindow" to="CanvasLayer" method="_on_inventory_window_close_requested"]
