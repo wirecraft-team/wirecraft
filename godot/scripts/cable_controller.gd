@@ -8,6 +8,9 @@ var start_port: int = -1
 var cable_scene = preload("res://scenes/cable.tscn")
 
 func _ready():
+	update_device_signal()
+
+func update_device_signal():
 	for device in get_node("../DeviceController").get_children():
 		device.connect("port_pressed", Callable(self, "_on_port_pressed"))
 
@@ -47,11 +50,7 @@ func finish_cable(port_number: int, device_id: int, port_pos:Vector2):
 	definitive_cable.end_switch = device_id
 	definitive_cable.end_port = port_number
 	# Send cable information to the server
-	send_cable_to_server(definitive_cable.start_switch, definitive_cable.start_port, definitive_cable.end_switch, definitive_cable.end_port)
-
-func send_cable_to_server(start_id:int, start_port:int, end_id:int, end_port:int):
-	# Send cable information to the server
-	pass
+	get_node("../ws").send_cable(definitive_cable.start_switch, definitive_cable.start_port, definitive_cable.end_switch, definitive_cable.end_port)
 
 func _process(_delta):
 	if is_placing_cable and Input.is_action_just_released("ui_cancel"):
@@ -76,16 +75,16 @@ func update_cables(cables: Array):
 	#removes all cables
 	for cable in get_children():
 		cable.queue_free()
-	#cables is like [{ "id_device_1": 1, "id": 1, "port_2": 1, "port_1": 1, "id_device_2": 2, "id_level": 1 }]
+	#cables is like [{ "device_id_1": 1, "id": 1, "port_2": 1, "port_1": 1, "device_id_2": 2, "level_id": 1 }]
 	print("cables are",cables)
 	# Update cables based on the data received from the server
 	for cable in cables:
 		var new_cable = cable_scene.instantiate()
-		new_cable.start_switch = cable.id_device_1
+		new_cable.start_switch = cable.device_id_1
 		new_cable.start_port = cable.port_1
-		new_cable.end_switch = cable.id_device_2
+		new_cable.end_switch = cable.device_id_2
 		new_cable.end_port = cable.port_2
 		new_cable.z_index = 1
-		new_cable.add_point(get_node("../DeviceController").get_device_port_position(cable.id_device_1, cable.port_1))
-		new_cable.add_point(get_node("../DeviceController").get_device_port_position(cable.id_device_2, cable.port_2))
+		new_cable.add_point(get_node("../DeviceController").get_device_port_position(cable.device_id_1, cable.port_1))
+		new_cable.add_point(get_node("../DeviceController").get_device_port_position(cable.device_id_2, cable.port_2))
 		add_child(new_cable)
