@@ -17,11 +17,11 @@ async_session = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_c
 
 class Cable(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    id_device_1: int = Field(default=None, foreign_key="device.id")
+    device_id_1: int = Field(default=None, foreign_key="device.id")
     port_1: int
-    id_device_2: int = Field(default=None, foreign_key="device.id")
+    device_id_2: int = Field(default=None, foreign_key="device.id")
     port_2: int
-    id_level: int = Field(default=None, foreign_key="level.id")
+    level_id: int = Field(default=None, foreign_key="level.id")
 
 
 class Device(SQLModel, table=True):
@@ -30,7 +30,7 @@ class Device(SQLModel, table=True):
     type: str
     x: int
     y: int
-    id_level: int = Field(default=None, foreign_key="level.id")
+    level_id: int = Field(default=None, foreign_key="level.id")
 
 
 class Level(SQLModel, table=True):
@@ -39,8 +39,8 @@ class Level(SQLModel, table=True):
 
 
 class Task(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
-    id_level: int = Field(default=None, foreign_key="level.id")
+    id: int | None = Field(default=None, primary_key=True)
+    level_id: int = Field(default=None, foreign_key="level.id")
     name: str
     description: str
     completed: bool = False
@@ -60,20 +60,20 @@ async def init():
             await session.refresh(level_dev)
             if TYPE_CHECKING:
                 assert isinstance(level_dev.id, int)
-            switch1 = Device(name="sw1", type="switch", x=0, y=0, id_level=level_dev.id)
-            pc1 = Device(name="pc1", type="pc", x=400, y=-400, id_level=level_dev.id)
-            pc2 = Device(name="pc2", type="pc", x=-400, y=-400, id_level=level_dev.id)
+            switch1 = Device(name="sw1", type="switch", x=0, y=0, level_id=level_dev.id)
+            pc1 = Device(name="pc1", type="pc", x=400, y=-400, level_id=level_dev.id)
+            pc2 = Device(name="pc2", type="pc", x=-400, y=-400, level_id=level_dev.id)
             session.add(switch1)
             session.add(pc1)
             session.add(pc2)
             await session.commit()
-            cable = Cable(id_device_1=switch1.id, port_1=1, id_device_2=pc1.id, port_2=1, id_level=level_dev.id)
+            cable = Cable(device_id_1=switch1.id, port_1=1, device_id_2=pc1.id, port_2=1, level_id=level_dev.id)
             session.add(cable)
             await session.commit()
     # if there are cables with devices id that are < 0 then delete them as they were in a placing state when the game closed
     async with async_session() as session:
         cables = (await session.exec(select(Cable))).all()
         for cable in cables:
-            if cable.id_device_1 < 0:
+            if cable.device_id_1 < 0:
                 await session.delete(cable)
         await session.commit()
