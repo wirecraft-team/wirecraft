@@ -26,4 +26,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Client - ${{ matrix.platform }}
-          path: ${{ steps.build.outputs.build }}
+          path: ${{ github.workspace }}/${{ steps.build.outputs.build }}
