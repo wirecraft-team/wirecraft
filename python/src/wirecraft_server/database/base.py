@@ -47,12 +47,11 @@ class Cable(BaseModel):
 
 class Level(BaseModel):
     id: int
-    tasks: list[Task] = []
 
 
 class Task(BaseModel):
     ref: str
-    level_id: int
+    level_id: int  # Foreign key to Level.id
     name: str
     description: str
 
@@ -110,15 +109,6 @@ task1_3 = Task(
 )
 
 
-level0 = Level(
-    id=0,
-    tasks=[task0_1, task0_2],
-)
-level1 = Level(
-    id=1,
-    tasks=[task1_1, task1_2, task1_3],
-)
-level2 = Level(
-    id=2,
-    tasks=[],
-)
+level0 = Level(id=0)
+level1 = Level(id=1)
+level2 = Level(id=2)
