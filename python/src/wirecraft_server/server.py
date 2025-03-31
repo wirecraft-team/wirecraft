@@ -10,6 +10,8 @@ from typing import Any, Self
 from aiohttp import WSMessage, WSMsgType, web
 from pydantic_core import from_json, to_json
 
+from wirecraft_server.context import ctx
+
 from .database.models import init
 from .handlers import CablesHandler, DevicesHandler
 from .handlers_core import Handler
@@ -118,10 +120,10 @@ class Server:
         self.app.router.add_get("/", self._websocket_handler)
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
-        self.site = web.TCPSite(self.runner, "localhost", 8765)
+        self.site = web.TCPSite(self.runner, ctx.bind, 8765)
         await self.site.start()
 
-        logger.info("WebSocket server started on ws://localhost:8765")
+        logger.info("WebSocket server started on ws://%s0:8765", ctx.bind)
 
         while True:
             stopped = await self._wait_next_refresh()
