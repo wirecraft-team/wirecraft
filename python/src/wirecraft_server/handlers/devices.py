@@ -11,31 +11,25 @@ from ..handlers_core import Handler, event
 
 
 class GetLevelDevicesData(BaseModel):
+    """
+    Payload for the get_level_devices event.
+    """
+
     level_id: int
 
 
-class AddDevicesData(BaseModel):
-    id: int
-    name: str
-    type: str
-    x: int
-    y: int
-    id_level: int
+class GetDevicePropsData(BaseModel):
+    """
+    Payload for the get_device_props ws method.
+    """
 
-
-class DeviceId(BaseModel):
-    id: int
+    device_id: int
 
 
 class DevicesHandler(Handler):
     @event
-    async def ping(self):
-        print("pinged")
-        return "pong"
-
-    @event
     async def get_level_devices(self, data: GetLevelDevicesData) -> Sequence[Device]:
-        statement = select(Device).where(Device.id_level == data.level_id)
+        statement = select(Device).where(Device.level_id == data.level_id)
         async with async_session() as session:
             result = await session.exec(statement)
             devices = result.all()
@@ -48,9 +42,9 @@ class DevicesHandler(Handler):
             await session.commit()
 
     @event
-    async def get_device_props(self, data: DeviceId):
+    async def get_device_props(self, data: GetDevicePropsData):
         async with async_session() as session:
-            statement = select(Device.name).where(Device.id == data.id)
+            statement = select(Device.name).where(Device.id == data.device_id)
             result = await session.exec(statement)
             device_name = result.one()
             return device_dict[device_name]

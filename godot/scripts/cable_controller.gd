@@ -75,16 +75,16 @@ func update_cables(cables: Array):
 	#removes all cables
 	for cable in get_children():
 		cable.queue_free()
-	#cables is like [{ "id_device_1": 1, "id": 1, "port_2": 1, "port_1": 1, "id_device_2": 2, "id_level": 1 }]
+	#cables is like [{ "device_id_1": 1, "id": 1, "port_2": 1, "port_1": 1, "device_id_2": 2, "level_id": 1 }]
 	print("cables are",cables)
 	# Update cables based on the data received from the server
 	for cable in cables:
 		var new_cable = cable_scene.instantiate()
-		new_cable.start_switch = cable.id_device_1
+		new_cable.start_switch = cable.device_id_1
 		new_cable.start_port = cable.port_1
-		new_cable.end_switch = cable.id_device_2
+		new_cable.end_switch = cable.device_id_2
 		new_cable.end_port = cable.port_2
 		new_cable.z_index = 1
-		new_cable.add_point(get_node("../DeviceController").get_device_port_position(cable.id_device_1, cable.port_1))
-		new_cable.add_point(get_node("../DeviceController").get_device_port_position(cable.id_device_2, cable.port_2))
+		new_cable.add_point(get_node("../DeviceController").get_device_port_position(cable.device_id_1, cable.port_1))
+		new_cable.add_point(get_node("../DeviceController").get_device_port_position(cable.device_id_2, cable.port_2))
 		add_child(new_cable)

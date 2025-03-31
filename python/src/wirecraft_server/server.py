@@ -5,15 +5,12 @@ import contextlib
 import json
 import logging
 import time
-from collections.abc import Sequence
 from typing import Any, Self
 
 from aiohttp import WSMessage, WSMsgType, web
 from pydantic_core import from_json, to_json
-from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .database.models import Cable, Device, engine, init
+from .database.models import init
 from .handlers import CablesHandler, DevicesHandler
 from .handlers_core import Handler
 
@@ -105,10 +102,11 @@ class Server:
         logger.debug("Received: %s", data)
         handled: bool = False
         for handler in self.handlers:
-            for event in handler.__handler_events__:
-                if event.type == data["t"]:
-                    await event(data["d"])
-                    handled = True
+            # t for type and d for data
+            # inspired by https://discord.com/developers/docs/events/gateway-events#payload-structure
+            if event := handler.__handler_events__.get(data["t"]):
+                await event(data["d"])
+                handled = True
 
         if not handled:
             logger.warning("Unhandled event: %s", data)
@@ -145,85 +143,5 @@ class Server:
     async def _tick(self):
         self._current_tick += 1
         if self._current_tick % 60 == 0:
-            await self.broadcast_json({"t": "TICK_EVENT", "d": self._current_tick})
-
-    async def add_cable(self, id_device_1: int, port_1: int, id_device_2: int, port_2: int, level: int) -> bool:
-        # check if port is available
-        async with AsyncSession(engine) as session:
-            statement = select(Cable).where(
-                Cable.id_device_1 == id_device_1, Cable.port_1 == port_1, Cable.id_level == level
-            )
-            result = await session.exec(statement)
-            if result.first():
-                return False
-            # Next line is strange to read but trust me, it works
-            statement = select(Cable).where(
-                Cable.id_device_2 == id_device_1, Cable.port_2 == port_1, Cable.id_level == level
-            )
-            result = await session.exec(statement)
-            if result.first():
-                return False
-            statement = Cable(
-                id_device_1=id_device_1, port_1=port_1, id_device_2=id_device_2, port_2=port_2, id_level=level
-            )
-            session.add(statement)
-            await session.commit()
-        return True
-
-    async def end_cable(self, cable_id: int, device_id: int, port_id: int) -> bool:
-        # check if port is available
-        async with AsyncSession(engine) as session:
-            level = select(Device.id_level).where(Device.id == device_id)
-            result = await session.exec(level)
-            level = result.one()
-            statement = select(Cable).where(
-                Cable.id_device_2 == device_id, Cable.port_2 == port_id, Cable.id_level == level
-            )
-
-            result = await session.exec(statement)
-            if result.first():
-                return False
-
-            # Again, strange to read but works
-            statement = select(Cable).where(
-                Cable.id_device_1 == device_id, Cable.port_1 == port_id, Cable.id_level == level
-            )
-            result = await session.exec(statement)
-            if result.first():
-                return False
-
-            statement = select(Cable).where(Cable.id == cable_id)
-            result = await session.exec(statement)
-            cable = result.one()
-            cable.id_device_2 = device_id
-            cable.port_2 = port_id
-
-            session.add(cable)
-            await session.commit()
-        return True
-
-    async def get_level_devices(self, id_level: int) -> Sequence[Device]:
-        statement = select(Device).where(Device.id_level == id_level)
-        async with AsyncSession(engine) as session:
-            result = await session.exec(statement)
-            return result.all()
-
-    async def get_device_pos(self, device_id: int):
-        statement = select(Device.x, Device.y).where(Device.id == device_id)
-        async with AsyncSession(engine) as session:
-            result = await session.exec(statement)
-            return result.one()
-
-    async def delete_cable(self, cable_id: int):
-        statement = select(Cable).where(Cable.id == cable_id)
-        async with AsyncSession(engine) as session:
-            result = await session.exec(statement)
-            cable = result.one()
-
-            await session.delete(cable)
-            await session.commit()
-            logger.debug("Cable deleted")
-
-    async def get_task_list(self, level: int) -> list[str]:
-        # Server send task list to client based on level
-        return ["This is the first task", "This is the second task", "This is the third task"]
+            # await self.broadcast_json({"t": "TICK_EVENT", "d": self._current_tick})
+            pass
