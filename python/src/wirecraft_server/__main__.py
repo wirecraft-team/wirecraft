@@ -15,8 +15,9 @@ def init_server():
     "--debug", "-d", "debug_options", multiple=True, default=[], envvar="DEBUG", help="Enable debug mode options."
 )
 @click.option("--log-level", "-l", "log_level", default="INFO", envvar="LOG_LEVEL", help="Set the log level.")
-def main(debug_options: list[str], log_level: str):
-    ctx.set(debug_options=debug_options)
+@click.option("--bind", "-b", "bind", default="localhost", envvar="BIND", help="Set the bind interface.")
+def main(debug_options: list[str], log_level: str, bind: str):
+    ctx.set(debug_options=debug_options, bind=bind)
     init_logger(log_level)
 
     server = init_server()
