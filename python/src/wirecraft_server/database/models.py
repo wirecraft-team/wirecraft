@@ -31,6 +31,7 @@ class Device(SQLModel, table=True):
     x: int
     y: int
     level_id: int = Field(default=None, foreign_key="level.id")
+    ip: str | None = None
 
 
 class Level(SQLModel, table=True):
