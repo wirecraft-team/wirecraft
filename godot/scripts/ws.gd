@@ -15,7 +15,7 @@ func _ready():
 		set_process(false)
 	else:
 		# Wait for the socket to connect.
-		await get_tree().create_timer(0.07).timeout
+		await get_tree().create_timer(0.25).timeout
 		# Send data.
 		socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id": 1}}')
 		socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id": 1}}')
@@ -68,3 +68,9 @@ func send_cable(start_id:int, start_port:int, end_id:int, end_port:int):
 	# Send cable information to the server
 	#TODO: Don't hardcode level_id
 	socket.send_text('{"t": "ADD_CABLE", "d": {"device_id_1": %d, "port_1": %d, "device_id_2": %d, "port_2": %d, "level_id": 1}}' % [start_id, start_port, end_id, end_port])
+
+func add_device(device_name, device_type):
+	printerr("yep, got %s and %s" % [device_name, device_type])
+	socket.send_text('{"t":"ADD_DEVICE", "d":{"name":"%s", "type":"%s", "x":100, "y":100, "level_id":1}}' % [device_name, device_type])
+	socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id": 1}}')
+	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id": 1}}')
