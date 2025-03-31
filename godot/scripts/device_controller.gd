@@ -1,5 +1,5 @@
 extends Node2D
-
+@export var global_drag : bool = false
 var pc_scene = preload("res://scenes/pc.tscn")
 var switch_scene = preload("res://scenes/switch.tscn")
 
