@@ -17,4 +17,5 @@ ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=0
 
 FROM base AS production
+ENV BIND=0.0.0.0
 ENTRYPOINT ["wirecraft-server"]
