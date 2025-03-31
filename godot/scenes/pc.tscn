@@ -1,10 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://da5ysd60i7shm"]
+[gd_scene load_steps=5 format=3 uid="uid://da5ysd60i7shm"]
 
 [ext_resource type="Texture2D" uid="uid://dhtj8x5akisiy" path="res://assets/PC-1.png" id="1_186k2"]
 [ext_resource type="Script" uid="uid://ddkvtncoqdct1" path="res://scripts/device.gd" id="2_y1flb"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_w1e0p"]
 size = Vector2(10.5, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qd3p6"]
+size = Vector2(377, 630)
 
 [node name="switch" type="Sprite2D"]
 texture = ExtResource("1_186k2")
@@ -18,4 +21,10 @@ scale = Vector2(4, 4)
 position = Vector2(0, 0.25)
 shape = SubResource("RectangleShape2D_w1e0p")
 
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_qd3p6")
+
 [connection signal="input_event" from="Port1" to="." method="_on_port_1_input_event"]
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
