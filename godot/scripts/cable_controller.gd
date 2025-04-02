@@ -22,7 +22,7 @@ func _on_port_pressed(port_number: int, device_id: int, port_pos: Vector2):
 
 func start_placing_cable(port_number: int, device_id: int, port_pos: Vector2):
 	port_occupied = get_port_satus(device_id, port_number)
-	if port_occupied:
+	if port_occupied or get_node("../DeviceController").global_drag:
 		return
 	# Start placing a cable
 	is_placing_cable = true

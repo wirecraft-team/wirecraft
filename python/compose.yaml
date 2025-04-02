@@ -1,0 +1,11 @@
+services:
+  wirecraft-server:
+    hostname: wirecraft-server
+    init: true
+    build:
+      context: .
+      target: production
+    ports:
+      - 8765:8765
+    volumes:
+      - $PWD/database.db:/app/database.db
