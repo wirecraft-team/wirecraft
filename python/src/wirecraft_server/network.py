@@ -1,6 +1,8 @@
 from dataclasses import dataclass
-from sqlmodel import select, or_
-from .database.models import async_session, Cable, Device
+
+from sqlmodel import or_, select
+
+from .database.models import Cable, Device, async_session
 
 
 @dataclass
