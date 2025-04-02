@@ -6,6 +6,7 @@ extends Node
 # Our WebSocketClient instance.
 var socket = WebSocketPeer.new()
 var CableControler = preload("res://scripts/cable_controller.gd")
+var Tasks = preload("res://scripts/tasks.gd").new()
 
 func _ready():
 	# Initiate connection to the given URL.
@@ -19,6 +20,7 @@ func _ready():
 		# Send data.
 		socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id": 1}}')
 		socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id": 1}}')
+		socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id": 1}}')
 
 
 func _process(_delta):
@@ -48,6 +50,9 @@ func _process(_delta):
 					#call update_devices function in CableControler
 					get_node("../DeviceController").update_devices(data_received.d)
 					get_node("../CableController").update_device_signal()
+				if data_received.t == "GET_LEVEL_TASKS_RESPONSE":
+					print("Tasks: ", data_received.d)
+					Tasks.update_tasks(data_received.d)
 			else:
 				print("Error ", error)
 
@@ -73,3 +78,6 @@ func send_cable(start_id:int, start_port:int, end_id:int, end_port:int):
 func update_device_position(device_id:int, x:float, y:float):
 	socket.send_text('{"t": "UPDATE_DEVICE_POSITION", "d": {"device_id": %d, "x": %d, "y": %d}}' % [device_id, int(x), int(y)])
 	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id": 1}}')
+
+func update_tasks():
+	socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id": 1}}')

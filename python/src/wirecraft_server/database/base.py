@@ -47,6 +47,7 @@ class Cable(BaseModel):
 
 class Level(BaseModel):
     id: int
+    tasks: list[Task]  # list of tasks in the level
 
 
 class Task(BaseModel):
@@ -108,7 +109,9 @@ task1_3 = Task(
     description="This is task 1_3",
 )
 
+# Level declaration
+level0 = Level(id=0, tasks=[task0_1, task0_2])
+level1 = Level(id=1, tasks=[task1_1, task1_2, task1_3])
+level2 = Level(id=2, tasks=[])
 
-level0 = Level(id=0)
-level1 = Level(id=1)
-level2 = Level(id=2)
+list_level = [level0, level1, level2]
