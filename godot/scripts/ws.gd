@@ -51,7 +51,7 @@ func _process(_delta):
 					get_node("../DeviceController").update_devices(data_received.d)
 					get_node("../CableController").update_device_signal()
 				if data_received.t == "GET_LEVEL_TASKS_RESPONSE":
-					print("Tasks: ", data_received.d)
+					print("tasks are :" , data_received.d)
 					Tasks.update_tasks(data_received.d)
 			else:
 				print("Error ", error)

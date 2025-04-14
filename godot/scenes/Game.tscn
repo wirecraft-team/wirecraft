@@ -44,7 +44,7 @@ expand_icon = true
 
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
 title = "Inventory"
-position = Vector2i(1507, 38)
+position = Vector2i(942, 36)
 size = Vector2i(400, 1000)
 unresizable = true
 always_on_top = true
@@ -181,6 +181,10 @@ title = "Task"
 position = Vector2i(18, 36)
 size = Vector2i(335, 502)
 unresizable = true
+
+[node name="TaskContainer" type="VBoxContainer" parent="CanvasLayer/TaskWindow"]
+offset_right = 339.0
+offset_bottom = 499.0
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
 anchors_preset = 8
