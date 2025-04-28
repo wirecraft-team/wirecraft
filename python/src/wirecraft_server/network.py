@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
-from sqlmodel import or_, select
+import igraph as ig
+from pydantic import BaseModel
+from sqlmodel import select
 
 from ._logger import logging
 from .database.models import Cable, Device, async_session
@@ -10,46 +14,119 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Packet:
-    src_ip: str
-    dst_ip: str
-    src_mac: str
-    dst_mac: str
+    src_ip_adress: str
+    dst_ip_adress: str
+    src_id: int  # mimics the MAC address
+    dst_id: int  # mimics the MAC address
     message: str
+    ttl: int = 64
+
+    def ttl_decrement(self):
+        """
+        Decrease the TTL of the packet
+        """
+        self.ttl -= 1
+        if self.ttl <= 0:
+            logger.debug("Packet TTL expired: %s", self)
+            return False
+        return True
 
 
-async def ping(src_device_id: int, dest_device_ip: str) -> bool:
+class NetworkDevice(BaseModel):
     """
-    Simulate a ping command between two devices
+    A node in the network graph
     """
-    # Get the source device's MAC and IP address
-    sucess = False
-    for cable in await get_cables_from_device_id(src_device_id):
-        next_hop_id = cable.device_id_2 if cable.device_id_1 == src_device_id else cable.device_id_1
-        next_hop = await get_device_by_id(next_hop_id)
-        if next_hop is None:
-            logger.debug("next_hop is None for cable: %s", cable)
-            continue
-        if next_hop.ip == dest_device_ip:
-            sucess = True
-        elif next_hop.type == "switch":
-            return await ping(next_hop_id, dest_device_ip)
-        else:
-            logger.debug("next_hop: %s, dest_device_ip: %s, next_hop.ip: %s", next_hop, dest_device_ip, next_hop.ip)
-    return sucess
+
+    async def __init__(self, device_id: int):
+        self.id = device_id
+        myself = await get_device_by_id(device_id)
+        if myself is None:
+            raise ValueError(f"Device {device_id} not found")
+        self.type = myself.type
+        self.ip = myself.ip
+        self.neighbors: list[NetworkDevice] = []
+        self.table: dict[str, NetworkDevice] = {}  # ip:node
+
+    async def create_routing_table(self, graph: ig.Graph):
+        """
+        Create a routing table for the node
+        """
+        async with async_session() as session:
+            # Get all devices in the network
+            statement = select(Device).where(Device.id != self.id)
+            result = await session.exec(statement)
+            devices = result.all()
+            for device in devices:
+                # Get the shortest path to each device
+                path = graph.get_shortest_path(self.id, to=device.id, output="vpath")
+                if path:
+                    # return already existing device node object of the first device in the path
+                    self.table[device.ip] = self.get_device_by_id(path[1])
+
+    def get_device_by_id(self, device_id: int) -> NetworkDevice:
+        """
+        Get a device by its ID
+        """
+        for device in self.neighbors:
+            if device.id == device_id:
+                return device
+        raise ValueError(f"Device {device_id} not found in neighbors")
+
+    def process_packet(self, packet: Packet) -> bool:
+        """
+        Process a packet
+        """
+        match self.type:
+            case "switch":
+                return self.process_switch(packet)
+            case "router":
+                return self.process_router(packet)
+            case "host":
+                return self.process_host(packet)
+            case _:
+                logger.debug("Unknown device type: %s", self.type)
+                return False
+
+    def process_switch(self, packet: Packet) -> bool:
+        if packet.dst_id == self.id:
+            logger.debug("Packet received by %s: %s", self.id, packet)
+            return True
+        if packet.ttl <= 0:
+            logger.debug("Packet TTL expired: %s", packet)
+            return False
+        return any(neighbor.process_packet(packet) for neighbor in self.neighbors)
+
+    def process_router(self, packet: Packet) -> bool:
+        if packet.dst_id == self.id:
+            logger.debug("Packet received by %s: %s", self.id, packet)
+            return True
+        if packet.ttl <= 0:
+            logger.debug("Packet TTL expired: %s", packet)
+            return False
+        packet.ttl_decrement()
+        return any(neighbor.process_packet(packet) for neighbor in self.neighbors)
+
+    def process_host(self, packet: Packet) -> bool:
+        if packet.dst_id == self.id:
+            logger.debug("Packet received by %s: %s", self.id, packet)
+            return True
+        if packet.ttl <= 0:
+            logger.debug("Packet TTL expired: %s", packet)
+            return False
+        return False
 
 
-async def get_cables_from_device_id(device_id: int):
-    """
-    Get all cables connected to a device
-    """
+async def update_network_graph():
     async with async_session() as session:
-        statement = select(Cable).where(or_(Cable.device_id_1 == device_id, Cable.device_id_2 == device_id))
-        result = await session.exec(statement)
-        cables = result.all()
-    return list(cables)
+        devices = await session.exec(select(Device.id))
+        devices = list(devices.all())
+        cables = await session.exec(select(Cable.device_id_1, Cable.device_id_2))
+        cables = list(cables.all())
+        nb_vertices = len(devices)
+        return ig.Graph(nb_vertices, cables)
 
 
-async def get_device_by_id(device_id: int):
+async def get_device_by_id(device_id: int) -> Device | None:
     """
     Get a device by its ID
     """
@@ -57,4 +134,7 @@ async def get_device_by_id(device_id: int):
         statement = select(Device).where(Device.id == device_id)
         result = await session.exec(statement)
         device = result.first()
-    return device
+        if device is None:
+            logger.debug("Device %s not found", device_id)
+            return None
+        return device
