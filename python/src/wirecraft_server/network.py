@@ -58,8 +58,7 @@ class NetworkDevice:
             devices = result.all()
             for device in devices:
                 # Get the shortest path to each device
-                print(self.id)
-                path = graph.get_shortest_path(self.id, to=device.id, output="vpath")
+                path = graph.get_shortest_path(self.id - 1, to=device.id - 1, output="vpath")
                 if path:
                     # return already existing device node object of the first device in the path
                     self.table[device.ip] = self.get_device_by_id(path[1])
@@ -69,28 +68,29 @@ class NetworkDevice:
         """
         Get a device by its ID
         """
-        for device in self.neighbors:
-            if device.id == device_id:
+        for device in devices:
+            if device.id == device_id + 1:
                 return device
-        raise ValueError(f"Device {device_id} not found in neighbors")
+        raise ValueError(f"Device {device_id} not found in neighbors ({[dev.id for dev in devices]})")
 
     def process_packet(self, packet: Packet) -> bool:
         """
         Process a packet
         """
+        logger.debug("Deivce %s processing packet: %s", self.id, packet)
         match self.type:
             case "switch":
                 return self.process_switch(packet)
             case "router":
                 return self.process_router(packet)
-            case "host":
+            case "pc":
                 return self.process_host(packet)
             case _:
                 logger.debug("Unknown device type: %s", self.type)
                 return False
 
     def process_switch(self, packet: Packet) -> bool:
-        if packet.dst_id == self.id:
+        if packet.dst_ip_adress == self.ip:
             logger.debug("Packet received by %s: %s", self.id, packet)
             return True
         if packet.ttl <= 0:
@@ -99,7 +99,7 @@ class NetworkDevice:
         return any(neighbor.process_packet(packet) for neighbor in self.neighbors)
 
     def process_router(self, packet: Packet) -> bool:
-        if packet.dst_id == self.id:
+        if packet.dst_ip_adress == self.ip:
             logger.debug("Packet received by %s: %s", self.id, packet)
             return True
         if packet.ttl <= 0:
@@ -109,7 +109,7 @@ class NetworkDevice:
         return any(neighbor.process_packet(packet) for neighbor in self.neighbors)
 
     def process_host(self, packet: Packet) -> bool:
-        if packet.dst_id == self.id:
+        if packet.dst_ip_adress == self.ip:
             logger.debug("Packet received by %s: %s", self.id, packet)
             return True
         if packet.ttl <= 0:
@@ -130,7 +130,11 @@ class NetworkDevice:
         if dst_ip == self.ip:
             logger.debug("Ping received by %s", self.id)
             return True
-        return self.table[dst_ip].process_packet(Packet(self.ip, dst_ip, self.id, self.table[dst_ip].id, "ping"))
+        try:
+            return self.table[dst_ip].process_packet(Packet(self.ip, dst_ip, self.id, self.table[dst_ip].id, "ping"))
+        except KeyError:
+            logger.debug("Device %s not found in routing table", dst_ip)
+            return False
 
 
 async def update_devices():
@@ -147,8 +151,6 @@ async def update_devices():
 
 async def update_routing_tables():
     graph = await update_network_graph()
-    ig.plot(graph)
-    input()
     for device in devices:
         await device.create_routing_table(graph)
 
@@ -157,7 +159,7 @@ async def update_network_graph():
     async with async_session() as session:
         devices = await session.exec(select(Device.id))
         devices = list(devices.all())
-        cables = await session.exec(select(Cable.device_id_1, Cable.device_id_2))
+        cables = await session.exec(select(Cable.device_id_1 - 1, Cable.device_id_2 - 1))
         cables = list(cables.all())
         nb_vertices = len(devices)
         return ig.Graph(nb_vertices, cables)

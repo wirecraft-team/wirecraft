@@ -133,7 +133,7 @@ class Server:
                 break
             await update_devices()
             await update_routing_tables()
-            print(devices[0].ping("192.168.1.3"))
+            print(devices[1].ping("192.168.1.3"))
             await self._tick()
 
     async def broadcast_json(self, data: Any):
