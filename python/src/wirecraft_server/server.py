@@ -7,7 +7,6 @@ import logging
 import time
 from typing import Any, Self
 
-import igraph as ig  # type: ignore
 from aiohttp import WSMessage, WSMsgType, web
 from pydantic_core import from_json, to_json
 
@@ -16,7 +15,7 @@ from wirecraft_server.context import ctx
 from .database.models import init
 from .handlers import CablesHandler, DevicesHandler
 from .handlers_core import Handler
-from .network import update_network_graph
+from .network import devices, update_devices, update_routing_tables
 
 TICK_RATE = 20
 
@@ -43,7 +42,6 @@ class Server:
         self._stop = asyncio.Event()
 
         self.handlers: list[Handler] = [CablesHandler(self), DevicesHandler(self)]
-        self.network_graph = ig.Graph()
 
     def start(self):
         logger.info("Server started!")
@@ -133,7 +131,9 @@ class Server:
             if stopped:
                 logger.info("Server stopped!")
                 break
-            print(await update_network_graph())
+            await update_devices()
+            await update_routing_tables()
+            print(devices[0].ping("192.168.1.3"))
             await self._tick()
 
     async def broadcast_json(self, data: Any):

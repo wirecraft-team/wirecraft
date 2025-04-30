@@ -5,11 +5,14 @@ from dataclasses import dataclass
 import igraph as ig
 from pydantic import BaseModel
 from sqlmodel import select
+import matplotlib.pyplot as plt
+
 
 from ._logger import logging
 from .database.models import Cable, Device, async_session
 
 logger = logging.getLogger(__name__)
+devices: list[NetworkDevice] = []
 
 
 @dataclass
@@ -32,20 +35,17 @@ class Packet:
         return True
 
 
-class NetworkDevice(BaseModel):
+class NetworkDevice:
     """
     A node in the network graph
     """
 
-    async def __init__(self, device_id: int):
+    def __init__(self, device_id: int, type: str, ip: str):
+        self.type = type
         self.id = device_id
-        myself = await get_device_by_id(device_id)
-        if myself is None:
-            raise ValueError(f"Device {device_id} not found")
-        self.type = myself.type
-        self.ip = myself.ip
+        self.ip = ip
         self.neighbors: list[NetworkDevice] = []
-        self.table: dict[str, NetworkDevice] = {}  # ip:node
+        self.table: dict[str, NetworkDevice] = {}
 
     async def create_routing_table(self, graph: ig.Graph):
         """
@@ -58,10 +58,12 @@ class NetworkDevice(BaseModel):
             devices = result.all()
             for device in devices:
                 # Get the shortest path to each device
+                print(self.id)
                 path = graph.get_shortest_path(self.id, to=device.id, output="vpath")
                 if path:
                     # return already existing device node object of the first device in the path
                     self.table[device.ip] = self.get_device_by_id(path[1])
+            return True
 
     def get_device_by_id(self, device_id: int) -> NetworkDevice:
         """
@@ -114,6 +116,41 @@ class NetworkDevice(BaseModel):
             logger.debug("Packet TTL expired: %s", packet)
             return False
         return False
+
+    def is_neighbour(self, dst_id: int) -> int:
+        for device in self.neighbors:
+            if device.id == dst_id:
+                return device.id
+        return -1
+
+    def ping(self, dst_ip: str) -> bool:
+        """
+        Ping a device
+        """
+        if dst_ip == self.ip:
+            logger.debug("Ping received by %s", self.id)
+            return True
+        return self.table[dst_ip].process_packet(Packet(self.ip, dst_ip, self.id, self.table[dst_ip].id, "ping"))
+
+
+async def update_devices():
+    """
+    Update the devices in the network
+    """
+    async with async_session() as session:
+        statement = select(Device)
+        result = await session.exec(statement)
+        devices.clear()
+        devices.extend(NetworkDevice(device_id=device.id, type=device.type, ip=device.ip) for device in result.all())
+        logger.debug("Devices updated: %s", devices)
+
+
+async def update_routing_tables():
+    graph = await update_network_graph()
+    ig.plot(graph)
+    input()
+    for device in devices:
+        await device.create_routing_table(graph)
 
 
 async def update_network_graph():
