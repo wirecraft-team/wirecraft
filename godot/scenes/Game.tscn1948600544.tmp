@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://wthmy25ja53i"]
+[gd_scene load_steps=11 format=3 uid="uid://wthmy25ja53i"]
 
 [ext_resource type="Script" uid="uid://xoknux2anugx" path="res://scripts/camera.gd" id="1_bfat1"]
 [ext_resource type="Script" path="res://scripts/cable_controller.gd" id="3_aycay"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://jqr6dy6nw7uv" path="res://assets/task.png" id="8_400sg"]
 [ext_resource type="Texture2D" uid="uid://dhtj8x5akisiy" path="res://assets/PC-1.png" id="8_qy1jj"]
 [ext_resource type="Script" path="res://scripts/ws.gd" id="9_dv77h"]
+[ext_resource type="Script" uid="uid://b7fae7nsii6r8" path="res://scripts/tasks.gd" id="10_qy1jj"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -18,6 +19,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="ws" type="Node" parent="."]
 script = ExtResource("9_dv77h")
+websocket_url = null
 
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("1_bfat1")
@@ -176,15 +178,20 @@ icon = ExtResource("8_400sg")
 flat = true
 expand_icon = true
 
-[node name="Label" type="Label" parent="CanvasLayer"]
-offset_right = 332.0
-offset_bottom = 197.0
-
 [node name="TaskWindow" type="Window" parent="CanvasLayer"]
 title = "Task"
 position = Vector2i(18, 36)
 size = Vector2i(335, 502)
 unresizable = true
+
+[node name="TaskContainer" type="VBoxContainer" parent="CanvasLayer/TaskWindow"]
+offset_right = 339.0
+offset_bottom = 499.0
+script = ExtResource("10_qy1jj")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/TaskWindow"]
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
 anchors_preset = 8

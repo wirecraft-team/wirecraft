@@ -176,15 +176,17 @@ icon = ExtResource("8_400sg")
 flat = true
 expand_icon = true
 
-[node name="Label" type="Label" parent="CanvasLayer"]
-offset_right = 332.0
-offset_bottom = 197.0
-
 [node name="TaskWindow" type="Window" parent="CanvasLayer"]
 title = "Task"
 position = Vector2i(18, 36)
 size = Vector2i(335, 502)
 unresizable = true
+
+[node name="TaskContainer" type="RichTextLabel" parent="CanvasLayer/TaskWindow"]
+offset_right = 333.0
+offset_bottom = 499.0
+bbcode_enabled = true
+text = "Testttt"
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
 anchors_preset = 8
