@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://wthmy25ja53i"]
 
 [ext_resource type="Script" uid="uid://bg2dis4o5gwcs" path="res://scripts/camera.gd" id="1_bfat1"]
-[ext_resource type="Script" path="res://scripts/cable_controller.gd" id="3_aycay"]
+[ext_resource type="Script" uid="uid://dhpw3orapxboi" path="res://scripts/cable_controller.gd" id="3_aycay"]
 [ext_resource type="Script" path="res://scripts/device_controller.gd" id="3_yc75h"]
 [ext_resource type="Script" uid="uid://cunqvh4nbadxd" path="res://scripts/ui.gd" id="6_kac4m"]
 [ext_resource type="Texture2D" uid="uid://cwgl6oq7d1yw1" path="res://assets/inventory.png" id="6_tacyi"]

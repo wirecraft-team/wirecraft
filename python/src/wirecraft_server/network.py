@@ -3,10 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import igraph as ig
-from pydantic import BaseModel
 from sqlmodel import select
-import matplotlib.pyplot as plt
-
 
 from ._logger import logging
 from .database.models import Cable, Device, async_session
@@ -96,7 +93,7 @@ class NetworkDevice:
         if packet.ttl <= 0:
             logger.debug("Packet TTL expired: %s", packet)
             return False
-        return any(neighbor.process_packet(packet) for neighbor in self.neighbors)
+        return any(value.process_packet(packet) for value in set(self.table.values()) if value.id != packet.src_id)
 
     def process_router(self, packet: Packet) -> bool:
         if packet.dst_ip_adress == self.ip:
