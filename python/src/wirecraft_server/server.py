@@ -15,7 +15,7 @@ from wirecraft_server.context import ctx
 from .database.models import init
 from .handlers import CablesHandler, DevicesHandler
 from .handlers_core import Handler
-from .network import devices, update_devices, update_routing_tables
+from .network import global_device_list, update_devices, update_routing_tables
 
 TICK_RATE = 20
 
@@ -133,7 +133,7 @@ class Server:
                 break
             await update_devices()
             await update_routing_tables()
-            print(devices[1].ping("192.168.1.3"))
+            print(global_device_list[1].ping("192.168.1.3"))
             await self._tick()
 
     async def broadcast_json(self, data: Any):

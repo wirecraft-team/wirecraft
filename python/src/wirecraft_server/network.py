@@ -1,19 +1,20 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from pydantic import Field
+from typing import Any
 
 import igraph as ig
+from pydantic import BaseModel
 from sqlmodel import select
 
 from ._logger import logging
 from .database.models import Cable, Device, async_session
 
 logger = logging.getLogger(__name__)
-devices: list[NetworkDevice] = []
+global_device_list: list[NetworkDevice] = []
 
 
-@dataclass
-class Packet:
+class Packet(BaseModel):
     src_ip_adress: str
     dst_ip_adress: str
     src_id: int  # mimics the MAC address
@@ -32,18 +33,19 @@ class Packet:
         return True
 
 
-class NetworkDevice:
+class NetworkDevice(BaseModel):
     """
     A node in the network graph
     """
 
-    def __init__(self, device_id: int, type: str, ip: str):
-        self.type = type
-        self.id = device_id
-        self.ip = ip
-        self.neighbors: list[NetworkDevice] = []
-        self.table: dict[str, NetworkDevice] = {}
+    type: str
+    id: int
+    ip: str
+    table: dict[str, NetworkDevice] = Field(default_factory=dict)
 
+    def __hash__(self) -> int:
+        return hash(self.id)
+    
     async def create_routing_table(self, graph: ig.Graph):
         """
         Create a routing table for the node
@@ -57,7 +59,7 @@ class NetworkDevice:
                 # Get the shortest path to each device
                 path = graph.get_shortest_path(self.id - 1, to=device.id - 1, output="vpath")
                 if path:
-                    # return already existing device node object of the first device in the path
+                    # return already existing device node object of the first device in the path (next hop)
                     self.table[device.ip] = self.get_device_by_id(path[1])
             return True
 
@@ -65,28 +67,28 @@ class NetworkDevice:
         """
         Get a device by its ID
         """
-        for device in devices:
+        for device in global_device_list:
             if device.id == device_id + 1:
                 return device
-        raise ValueError(f"Device {device_id} not found in neighbors ({[dev.id for dev in devices]})")
+        raise ValueError(f"Device {device_id} not found in neighbors ({[dev.id for dev in global_device_list]})")
 
     def process_packet(self, packet: Packet) -> bool:
         """
         Process a packet
         """
-        logger.debug("Deivce %s processing packet: %s", self.id, packet)
+        logger.debug("Device %s processing packet: %s", self.id, packet)
         match self.type:
             case "switch":
-                return self.process_switch(packet)
+                return self.process_packet_switch(packet)
             case "router":
-                return self.process_router(packet)
+                return self.process_packet_router(packet)
             case "pc":
-                return self.process_host(packet)
+                return self.process_packet_host(packet)
             case _:
                 logger.debug("Unknown device type: %s", self.type)
                 return False
 
-    def process_switch(self, packet: Packet) -> bool:
+    def process_packet_switch(self, packet: Packet) -> bool:
         if packet.dst_ip_adress == self.ip:
             logger.debug("Packet received by %s: %s", self.id, packet)
             return True
@@ -95,7 +97,7 @@ class NetworkDevice:
             return False
         return any(value.process_packet(packet) for value in set(self.table.values()) if value.id != packet.src_id)
 
-    def process_router(self, packet: Packet) -> bool:
+    def process_packet_router(self, packet: Packet) -> bool:
         if packet.dst_ip_adress == self.ip:
             logger.debug("Packet received by %s: %s", self.id, packet)
             return True
@@ -103,9 +105,9 @@ class NetworkDevice:
             logger.debug("Packet TTL expired: %s", packet)
             return False
         packet.ttl_decrement()
-        return any(neighbor.process_packet(packet) for neighbor in self.neighbors)
+        return any(value.process_packet(packet) for value in set(self.table.values()) if value.id != packet.src_id)
 
-    def process_host(self, packet: Packet) -> bool:
+    def process_packet_host(self, packet: Packet) -> bool:
         if packet.dst_ip_adress == self.ip:
             logger.debug("Packet received by %s: %s", self.id, packet)
             return True
@@ -113,12 +115,6 @@ class NetworkDevice:
             logger.debug("Packet TTL expired: %s", packet)
             return False
         return False
-
-    def is_neighbour(self, dst_id: int) -> int:
-        for device in self.neighbors:
-            if device.id == dst_id:
-                return device.id
-        return -1
 
     def ping(self, dst_ip: str) -> bool:
         """
@@ -128,7 +124,16 @@ class NetworkDevice:
             logger.debug("Ping received by %s", self.id)
             return True
         try:
-            return self.table[dst_ip].process_packet(Packet(self.ip, dst_ip, self.id, self.table[dst_ip].id, "ping"))
+            # self.table[dst_ip] is the next hop to the destination
+            return self.table[dst_ip].process_packet(
+                Packet(
+                    src_ip_adress=self.ip,
+                    dst_ip_adress=dst_ip,
+                    src_id=self.id,
+                    dst_id=self.table[dst_ip].id,
+                    message="ping",
+                )
+            )
         except KeyError:
             logger.debug("Device %s not found in routing table", dst_ip)
             return False
@@ -141,14 +146,16 @@ async def update_devices():
     async with async_session() as session:
         statement = select(Device)
         result = await session.exec(statement)
-        devices.clear()
-        devices.extend(NetworkDevice(device_id=device.id, type=device.type, ip=device.ip) for device in result.all())
-        logger.debug("Devices updated: %s", devices)
+        global_device_list.clear()
+        global_device_list.extend(
+            NetworkDevice(id=device.id, type=device.type, ip=device.ip) for device in result.all()
+        )
+        logger.debug("Devices updated: %s", global_device_list)
 
 
 async def update_routing_tables():
     graph = await update_network_graph()
-    for device in devices:
+    for device in global_device_list:
         await device.create_routing_table(graph)
 
 
@@ -160,17 +167,3 @@ async def update_network_graph():
         cables = list(cables.all())
         nb_vertices = len(devices)
         return ig.Graph(nb_vertices, cables)
-
-
-async def get_device_by_id(device_id: int) -> Device | None:
-    """
-    Get a device by its ID
-    """
-    async with async_session() as session:
-        statement = select(Device).where(Device.id == device_id)
-        result = await session.exec(statement)
-        device = result.first()
-        if device is None:
-            logger.debug("Device %s not found", device_id)
-            return None
-        return device
