@@ -45,7 +45,7 @@ class NetworkDevice(BaseModel):
 
     def __hash__(self) -> int:
         return hash(self.id)
-    
+
     async def create_routing_table(self, graph: ig.Graph):
         """
         Create a routing table for the node
