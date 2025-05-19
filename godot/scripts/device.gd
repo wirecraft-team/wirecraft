@@ -22,7 +22,7 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 			get_node("../../DeviceController").global_drag = true
 
 func _handle_port_input(_viewport: Node, event: InputEvent, _shape_idx: int, port_number: int):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and port_number >0:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and port_number > 0 and not dragging:
 		port_pressed.emit(port_number, device_id, get_node("Port" + str(port_number)).global_position)
 
 func _get_port_number_from_child(child: Node) -> int:

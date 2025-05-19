@@ -43,7 +43,7 @@ func finish_cable(port_number: int, device_id: int, port_pos:Vector2):
 	if port_occupied or device_id == current_cable.start_switch:
 		return
 	# Finish placing a cable
-	is_placing_cable = false	
+	is_placing_cable = false
 	# Connect the cable to the switches
 	var definitive_cable = current_cable
 	definitive_cable.set_point_position(1, port_pos)
@@ -72,11 +72,13 @@ func get_port_satus(device_id: int, port_number: int) -> bool:
 
 
 func update_cables(cables: Array):
+	if is_placing_cable:
+		# if we are placing a cable, it will produce a bug because it will be freeing the current cable
+		return
 	#removes all cables
 	for cable in get_children():
 		cable.queue_free()
 	#cables is like [{ "device_id_1": 1, "id": 1, "port_2": 1, "port_1": 1, "device_id_2": 2, "level_id": 1 }]
-	print("cables are",cables)
 	# Update cables based on the data received from the server
 	for cable in cables:
 		var new_cable = cable_scene.instantiate()
