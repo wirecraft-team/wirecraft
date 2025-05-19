@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
+MISSING: Any = object()
+
 
 class Context:
     instance: Context | None = None
@@ -13,11 +15,12 @@ class Context:
         return cls.instance
 
     def __init__(self):
-        self.debug_options: Sequence[str] = []
+        self.debug_options: Sequence[str] = MISSING
+        self.bind = MISSING
 
-    def set(self, debug_options: Sequence[str] | None = None) -> None:
-        if debug_options is not None:
-            self.debug_options = debug_options
+    def set(self, debug_options: Sequence[str], bind: str) -> None:
+        self.debug_options = debug_options
+        self.bind = bind
 
 
 ctx = Context()
