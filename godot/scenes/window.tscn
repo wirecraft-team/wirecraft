@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://c1qv5iguje7wk"]
 
+# if you have problems with window automatique repositioning you need to modifiy your 
+# godot parameters by clicking one ... above scene parameters and desactivate magnet parameters
+
 [node name="Window" type="Window"]
-position = Vector2i(0, 36)
 size = Vector2i(1000, 1000)

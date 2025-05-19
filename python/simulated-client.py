@@ -42,6 +42,9 @@ async def chat_client():
                 if content.lower() == "dev_props":
                     await ws.send_json({"t": "GET_DEVICE_PROPS", "d": {"id": 1}})
                     continue
+                if content.lower() == "glt":
+                    await ws.send_json({"t": "GET_LEVEL_TASKS", "d": {"level_id": 1}})
+                    continue
 
         await asyncio.create_task(send_messages())
 
