@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-from pydantic import Field
-from typing import Any
-
 import igraph as ig
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlmodel import select
 
 from ._logger import logging
