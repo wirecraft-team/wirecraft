@@ -17,7 +17,7 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 		if dragging:
 			dragging = false
 			get_node("../../DeviceController").global_drag = false
-		elif not get_node("../../CableController").is_placing_cable:
+		elif not get_node("../../CableController").is_placing_cable and not get_node("../../DeviceController").global_drag:
 			dragging = true
 			get_node("../../DeviceController").global_drag = true
 
