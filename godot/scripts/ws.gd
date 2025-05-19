@@ -6,7 +6,6 @@ extends Node
 # Our WebSocketClient instance.
 var socket = WebSocketPeer.new()
 var CableControler = preload("res://scripts/cable_controller.gd")
-var Tasks = preload("res://scripts/tasks.gd").new()
 
 func _ready():
 	# Initiate connection to the given URL.
@@ -52,7 +51,7 @@ func _process(_delta):
 					get_node("../CableController").update_device_signal()
 				if data_received.t == "GET_LEVEL_TASKS_RESPONSE":
 					print("tasks are :" , data_received.d)
-					Tasks.update_tasks(data_received.d)
+					get_node("/root/Control/CanvasLayer/TaskWindow").update_tasks(data_received.d)
 			else:
 				print("Error ", error)
 
