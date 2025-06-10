@@ -31,6 +31,10 @@ class Device(SQLModel, table=True):
     x: int
     y: int
     level_id: int = Field(default=None, foreign_key="level.id")
+    mac: str
+    ip: str
+    default_gateway: str | None = None
+    subnet_mask: str | None = None
 
 
 class Level(SQLModel, table=True):
@@ -59,15 +63,35 @@ async def init():
             await session.refresh(level_dev)
             if TYPE_CHECKING:
                 assert isinstance(level_dev.id, int)
-            switch1 = Device(name="sw1", type="switch", x=0, y=0, level_id=level_dev.id)
-            pc1 = Device(name="pc1", type="pc", x=400, y=-400, level_id=level_dev.id)
-            pc2 = Device(name="pc2", type="pc", x=-400, y=-400, level_id=level_dev.id)
+            switch1 = Device(
+                name="sw1", type="switch", x=0, y=0, level_id=level_dev.id, ip="192.168.1.1", mac="00:00:00:00:00:01"
+            )
+            pc1 = Device(
+                name="pc1",
+                type="pc",
+                x=400,
+                y=-400,
+                level_id=level_dev.id,
+                ip="192.168.1.2",
+                mac="00:00:00:00:00:02",
+                default_gateway=switch1.ip,
+            )
+            pc2 = Device(
+                name="pc2",
+                type="pc",
+                x=-400,
+                y=-400,
+                level_id=level_dev.id,
+                ip="192.168.1.3",
+                mac="00:00:00:00:00:03",
+                default_gateway=switch1.ip,
+            )
             session.add(switch1)
             session.add(pc1)
             session.add(pc2)
             await session.commit()
-            cable = Cable(device_id_1=switch1.id, port_1=1, device_id_2=pc1.id, port_2=1, level_id=level_dev.id)
-            session.add(cable)
+            # cable = Cable(device_id_1=switch1.id, port_1=1, device_id_2=pc1.id, port_2=1, level_id=level_dev.id)
+            # session.add(cable)
             await session.commit()
     # if there are cables with devices id that are < 0 then delete them as they were in a placing state when the game closed
     async with async_session() as session:
