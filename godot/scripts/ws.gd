@@ -36,7 +36,6 @@ func _process(_delta):
 		get_node("../CanvasLayer/ServerText").visible = false
 		while socket.get_available_packet_count():
 			var packet_data = socket.get_packet().get_string_from_utf8()
-			print("Got data from server: ", )
 			# parse data and see if type is "GET_LEVEL_CABLES"
 			var json = JSON.new()
 			var error = json.parse(packet_data)
