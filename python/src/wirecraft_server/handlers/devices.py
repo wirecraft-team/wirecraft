@@ -48,26 +48,6 @@ class DevicesHandler(Handler):
     @event
     async def add_device(self, data: Device):
         async with async_session() as session:
-            new_id = await session.exec(select(Device).order_by(Device.id.desc()))
-            new_id = new_id.first().id + 1
-
-            # making sure the device has all required fields, if not add them
-            if not data.type:
-                raise ValueError("Device type is required")
-            if not data.level_id:
-                raise ValueError("Device level_id is required")
-            if not data.id:
-                data.id = new_id
-            if not data.mac:
-                data.mac = f"00:00:00:00:00:{data.id:02x}"
-            if not data.ip:
-                data.ip = f"192.168.1.{data.id}"
-            if not data.name:
-                data.name = f"{data.type} {data.id}"
-            if not data.x:
-                data.x = 0
-            if not data.y:
-                data.y = 0
             session.add(data)
             await session.commit()
 

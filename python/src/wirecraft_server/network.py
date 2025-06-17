@@ -53,6 +53,9 @@ class NetworkDevice(BaseModel):
             result = await session.exec(statement)
             devices = result.all()
             for device in devices:
+                if device.ip is None:
+                    # No IP address assigned to the device, skip it
+                    continue
                 # Get the shortest path to each device
                 path = graph.get_shortest_path(self.id - 1, to=device.id - 1, output="vpath")
                 if path:
@@ -145,7 +148,9 @@ async def update_devices():
         result = await session.exec(statement)
         global_device_list.clear()
         global_device_list.extend(
-            NetworkDevice(id=device.id, type=device.type, ip=device.ip) for device in result.all()
+            NetworkDevice(id=device.id, type=device.type, ip=device.ip)
+            for device in result.all()
+            if device.ip is not None
         )
         logger.debug("Devices updated: %s", global_device_list)
 
@@ -160,7 +165,9 @@ async def update_network_graph():
     async with async_session() as session:
         devices = await session.exec(select(Device.id))
         devices = list(devices.all())
-        cables = await session.exec(select(Cable.device_id_1 - 1, Cable.device_id_2 - 1))
+        cables = await session.exec(select(Cable.device_id_1, Cable.device_id_2))
         cables = list(cables.all())
         nb_vertices = len(devices)
+
+        print(devices, cables)
         return ig.Graph(nb_vertices, cables)
