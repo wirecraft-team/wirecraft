@@ -10,6 +10,7 @@ dependencies = [ #
     "aiohttp>=3.11.12",
     "greenlet>=3.1.1",
     "igraph>=0.11.8",
+    "pytest-asyncio>=1.0.0",
 ]
 
 [project.scripts]
@@ -132,3 +133,4 @@ combine-as-imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests/"]
+asyncio_mode = "auto"  # or "strict"
