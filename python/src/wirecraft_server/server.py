@@ -13,7 +13,7 @@ from pydantic_core import from_json, to_json
 from wirecraft_server.context import ctx
 
 from .database.models import init
-from .handlers import CablesHandler, DevicesHandler
+from .handlers import CablesHandler, DevicesHandler, TasksHandler
 from .handlers_core import Handler
 from .network import global_device_list, update_devices, update_routing_tables
 
@@ -41,7 +41,7 @@ class Server:
         # to cancel them.
         self._stop = asyncio.Event()
 
-        self.handlers: list[Handler] = [CablesHandler(self), DevicesHandler(self)]
+        self.handlers: list[Handler] = [CablesHandler(self), DevicesHandler(self), TasksHandler(self)]
 
     def start(self):
         logger.info("Server started!")

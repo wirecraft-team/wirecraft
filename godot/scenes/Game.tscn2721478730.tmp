@@ -1,14 +1,14 @@
 [gd_scene load_steps=11 format=3 uid="uid://wthmy25ja53i"]
 
 [ext_resource type="Script" uid="uid://xoknux2anugx" path="res://scripts/camera.gd" id="1_bfat1"]
-[ext_resource type="Script" uid="uid://cwxygd3jhou15" path="res://scripts/cable_controller.gd" id="3_aycay"]
+[ext_resource type="Script" path="res://scripts/cable_controller.gd" id="3_aycay"]
 [ext_resource type="Script" path="res://scripts/device_controller.gd" id="3_yc75h"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="6_kac4m"]
 [ext_resource type="Texture2D" uid="uid://cwgl6oq7d1yw1" path="res://assets/inventory.png" id="6_tacyi"]
 [ext_resource type="Texture2D" uid="uid://btghaq4rnl1a8" path="res://assets/PT-Link-1.png" id="7_g4kob"]
 [ext_resource type="Texture2D" uid="uid://jqr6dy6nw7uv" path="res://assets/task.png" id="8_400sg"]
 [ext_resource type="Texture2D" uid="uid://dhtj8x5akisiy" path="res://assets/PC-1.png" id="8_qy1jj"]
-[ext_resource type="Script" uid="uid://cuehp1g4udr4k" path="res://scripts/ws.gd" id="9_dv77h"]
+[ext_resource type="Script" path="res://scripts/ws.gd" id="9_dv77h"]
 [ext_resource type="Script" uid="uid://b7fae7nsii6r8" path="res://scripts/tasks.gd" id="10_qy1jj"]
 
 [node name="Control" type="Control"]
@@ -182,11 +182,11 @@ title = "Task"
 position = Vector2i(18, 36)
 size = Vector2i(335, 502)
 unresizable = true
-script = ExtResource("10_qy1jj")
 
 [node name="TaskContainer" type="VBoxContainer" parent="CanvasLayer/TaskWindow"]
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 339.0
+offset_bottom = 499.0
+script = ExtResource("10_qy1jj")
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
 anchors_preset = 8
