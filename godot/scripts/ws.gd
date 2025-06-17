@@ -19,6 +19,7 @@ func _ready():
 		# Send data.
 		socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id": 1}}')
 		socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id": 1}}')
+		socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id": 1}}')
 
 
 func _process(_delta):
@@ -35,7 +36,6 @@ func _process(_delta):
 		get_node("../CanvasLayer/ServerText").visible = false
 		while socket.get_available_packet_count():
 			var packet_data = socket.get_packet().get_string_from_utf8()
-			print("Got data from server: ", )
 			# parse data and see if type is "GET_LEVEL_CABLES"
 			var json = JSON.new()
 			var error = json.parse(packet_data)
@@ -48,6 +48,9 @@ func _process(_delta):
 					#call update_devices function in CableControler
 					get_node("../DeviceController").update_devices(data_received.d)
 					get_node("../CableController").update_device_signal()
+				if data_received.t == "GET_LEVEL_TASKS_RESPONSE":
+					print("tasks are :" , data_received.d)
+					get_node("/root/Control/CanvasLayer/TaskWindow").update_tasks(data_received.d)
 			else:
 				print("Error ", error)
 
@@ -77,3 +80,6 @@ func add_device(device_name, device_type):
 func update_device_position(device_id:int, x:float, y:float):
 	socket.send_text('{"t": "UPDATE_DEVICE_POSITION", "d": {"device_id": %d, "x": %d, "y": %d}}' % [device_id, int(x), int(y)])
 	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id": 1}}')
+
+func update_tasks():
+	socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id": 1}}')
