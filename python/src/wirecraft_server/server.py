@@ -15,7 +15,7 @@ from wirecraft_server.context import ctx
 from .database.models import init
 from .handlers import CablesHandler, DevicesHandler, TasksHandler
 from .handlers_core import Handler
-from .network import global_device_list, update_devices, update_routing_tables
+from .network import update_devices, update_routing_tables
 
 TICK_RATE = 20
 

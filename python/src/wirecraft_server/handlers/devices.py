@@ -48,9 +48,8 @@ class DevicesHandler(Handler):
     @event
     async def add_device(self, data: Device):
         async with async_session() as session:
-            
             new_id = await session.exec(select(Device).order_by(Device.id.desc()))
-            new_id = new_id.first().id+1
+            new_id = new_id.first().id + 1
 
             # making sure the device has all required fields, if not add them
             if not data.type:
