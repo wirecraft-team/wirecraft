@@ -15,7 +15,7 @@ func _ready():
 		set_process(false)
 	else:
 		# Wait for the socket to connect.
-		await get_tree().create_timer(0.07).timeout
+		await get_tree().create_timer(0.25).timeout
 		# Send data.
 		socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id": 1}}')
 		socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id": 1}}')
