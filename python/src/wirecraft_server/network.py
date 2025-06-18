@@ -193,6 +193,7 @@ async def update_devices():
         device_manager.clear()
         for device in result.all():
             if device.ip is None:
+                device_manager.add_device(NetworkDevice(id=device.id, type=device.type, ip="device.ip"))
                 continue
             device_manager.add_device(NetworkDevice(id=device.id, type=device.type, ip=device.ip))
         logger.debug("Devices updated: %s", device_manager)
