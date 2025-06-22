@@ -3,6 +3,7 @@ extends Sprite2D
 @export var dragging :bool
 # Define all port signals
 signal port_pressed(port_number: int, device_id: int, port_pos: Vector2)
+var pos_offset = Vector2(0,0)
 
 func _ready():
 	# Connect all port input events automatically
@@ -17,12 +18,12 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 		if dragging:
 			dragging = false
 			get_node("../../DeviceController").global_drag = false
-		elif not get_node("../../CableController").is_placing_cable:
+		elif not get_node("../../CableController").is_placing_cable and not get_node("../../DeviceController").global_drag:
 			dragging = true
 			get_node("../../DeviceController").global_drag = true
 
 func _handle_port_input(_viewport: Node, event: InputEvent, _shape_idx: int, port_number: int):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and port_number >0:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and port_number > 0 and not dragging:
 		port_pressed.emit(port_number, device_id, get_node("Port" + str(port_number)).global_position)
 
 func _get_port_number_from_child(child: Node) -> int:
@@ -39,5 +40,9 @@ func get_port_global_position(port_number: int) -> Vector2:
 func _process(delta: float) -> void:
 	if dragging:
 		var mouse_pos = get_global_mouse_position()
-		set_global_position(mouse_pos)
-		get_node("../../ws").update_device_position(device_id, mouse_pos.x, mouse_pos.y)
+		#printerr(offset)
+		#printerr(mouse_pos)
+		set_global_position(Vector2(mouse_pos.x - pos_offset.x, mouse_pos.y - pos_offset.y))
+		get_node("../../ws").update_device_position(device_id, mouse_pos.x - pos_offset.x, mouse_pos.y - pos_offset.y)
+	else:
+		pos_offset = get_local_mouse_position()
