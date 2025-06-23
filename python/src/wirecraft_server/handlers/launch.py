@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel
 from sqlmodel import select
 
+from wirecraft_server.static.tests import TestFailure
+
 from ..database import Cable, Device, async_session
 from ..handlers_core import Handler, event
 from ..networking.capabilities import ARPCapability, ICMPCapability, IPv4Capability, Layer2Switching, Routing
@@ -24,7 +26,21 @@ class LaunchHandler(Handler):
     @event
     async def launch_simulation(self, data: LaunchData):
         level = levels[data.level_id]
-        await self.build_network(level)
+        devices, device_map, map_device_names = await self.build_network(level)
+
+        tasks = level.model_copy().tasks
+        for task in tasks:
+            for test in task.tests:
+                try:
+                    test(devices=devices, network=device_map, map_names=map_device_names)
+                except TestFailure as e:
+                    task.completed = False
+                    task.error_message = e.message
+                    break
+            else:
+                task.completed = True
+
+        return tasks
 
     async def build_network(self, level: Level):
         async with async_session() as session:
@@ -36,6 +52,7 @@ class LaunchHandler(Handler):
             result = await session.exec(stmt)
             cables = result.all()
 
+        map_device_names: dict[str, int] = {device.name: device.id for device in devices}
         device_map: dict[int, NetworkDevice] = {}
 
         for device in devices:
@@ -59,3 +76,5 @@ class LaunchHandler(Handler):
             device_b = device_map[cable.device_id_2]
 
             device_a.add_connection(cable.port_1, device_b, cable.port_2)
+
+        return devices, device_map, map_device_names
