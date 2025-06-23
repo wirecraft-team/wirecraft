@@ -38,10 +38,13 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_top = -50.0
-offset_right = 50.0
+offset_right = 150.0
+grow_vertical = 0
 focus_mode = 0
-icon = ExtResource("6_tacyi")
+text = "Inventory"
+icon = ExtResource("6_3xj3m")
 flat = true
+alignment = 0
 expand_icon = true
 
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
@@ -180,11 +183,14 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 1.0
 offset_top = -100.0
-offset_right = 50.0
+offset_right = 150.0
 offset_bottom = -50.0
+grow_vertical = 0
 focus_mode = 0
-icon = ExtResource("8_400sg")
+text = "Tasks"
+icon = ExtResource("10_mcffj")
 flat = true
+alignment = 0
 expand_icon = true
 
 [node name="TaskWindow" type="Window" parent="CanvasLayer"]
