@@ -197,7 +197,7 @@ expand_icon = true
 [node name="TaskWindow" type="Window" parent="CanvasLayer"]
 title = "Task"
 position = Vector2i(18, 36)
-size = Vector2i(335, 502)
+size = Vector2i(675, 722)
 unresizable = true
 script = ExtResource("10_qy1jj")
 
@@ -271,6 +271,4 @@ text = "Submit"
 [connection signal="pressed" from="CanvasLayer/TaskButton" to="CanvasLayer" method="_on_task_button_pressed"]
 [connection signal="close_requested" from="CanvasLayer/TaskWindow" to="CanvasLayer" method="_on_task_window_close_requested"]
 [connection signal="pressed" from="CanvasLayer/LaunchSimulation" to="ws" method="_on_launch_button_pressed"]
-[connection signal="text_submitted" from="CanvasLayer/InputGroup/IpAdressInput" to="ws" method="_on_line_edit_text_submitted"]
-[connection signal="text_submitted" from="CanvasLayer/InputGroup/NameInput" to="ws" method="_on_line_edit_text_submitted"]
 [connection signal="pressed" from="CanvasLayer/InputGroup/Button" to="ws" method="_on_button_pressed"]
