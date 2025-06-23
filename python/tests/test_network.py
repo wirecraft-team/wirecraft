@@ -48,5 +48,5 @@ async def test_ping(local_database):
 
     async with async_session() as session:
         # Retrieve the device and test ping
-        device = await session.get(Device, 1)
+        device = await session.get(Device, device_a.id)
         assert device is not None
