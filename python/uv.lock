@@ -528,6 +528,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pydantic-extra-types"
+version = "2.10.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7e/ba/4178111ec4116c54e1dc7ecd2a1ff8f54256cdbd250e576882911e8f710a/pydantic_extra_types-2.10.5.tar.gz", hash = "sha256:1dcfa2c0cf741a422f088e0dbb4690e7bfadaaf050da3d6f80d6c3cf58a2bad8", size = 138429 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/70/1a/5f4fd9e7285f10c44095a4f9fe17d0f358d1702a7c74a9278c794e8a7537/pydantic_extra_types-2.10.5-py3-none-any.whl", hash = "sha256:b60c4e23d573a69a4f1a16dd92888ecc0ef34fb0e655b4f305530377fa70e7a8", size = 38315 },
+]
+
+[[package]]
 name = "pyproject-api"
 version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -774,6 +787,7 @@ dependencies = [
     { name = "greenlet" },
     { name = "igraph" },
     { name = "numpy" },
+    { name = "pydantic-extra-types" },
     { name = "pytest-asyncio" },
     { name = "sqlmodel" },
 ]
@@ -804,6 +818,7 @@ requires-dist = [
     { name = "greenlet", specifier = ">=3.1.1" },
     { name = "igraph", specifier = ">=0.11.8" },
     { name = "numpy", specifier = ">=2.2.2" },
+    { name = "pydantic-extra-types", specifier = ">=2.10.5" },
     { name = "pytest-asyncio", specifier = ">=1.0.0" },
     { name = "sqlmodel", specifier = ">=0.0.22" },
 ]
