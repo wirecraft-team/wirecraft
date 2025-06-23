@@ -9,6 +9,42 @@ from ..database import Device, async_session
 from ..handlers_core import Handler, event
 
 
+class GetLevelDevicesData(BaseModel):
+    """
+    Payload for the get_level_devices event.
+    """
+
+    level_id: int
+
+
+class GetDevicePropsData(BaseModel):
+    """
+    Payload for the get_device_props ws method.
+    """
+
+    device_id: int
+
+
+class UpdateDevicePositionData(BaseModel):
+    """
+    Payload for the update_device_position ws method.
+    """
+
+    device_id: int
+    x: int
+    y: int
+
+
+class UpdateDeviceIpData(BaseModel):
+    """
+    Payload for the update_device_ip ws method.
+    TODO(airopi): this could be merged with UpdateDevicePositionData as a PatchDeviceData
+    """
+
+    device_id: int
+    ip: str
+
+
 class DevicesHandler(Handler):
     @event
     async def get_level_devices(self, data: GetLevelDevicesData) -> Sequence[Device]:
@@ -44,39 +80,3 @@ class DevicesHandler(Handler):
             device.ip = data.ip
             await session.commit()
         return device
-
-
-class GetLevelDevicesData(BaseModel):
-    """
-    Payload for the get_level_devices event.
-    """
-
-    level_id: int
-
-
-class GetDevicePropsData(BaseModel):
-    """
-    Payload for the get_device_props ws method.
-    """
-
-    device_id: int
-
-
-class UpdateDevicePositionData(BaseModel):
-    """
-    Payload for the update_device_position ws method.
-    """
-
-    device_id: int
-    x: int
-    y: int
-
-
-class UpdateDeviceIpData(BaseModel):
-    """
-    Payload for the update_device_ip ws method.
-    TODO(airopi): this could be merged with UpdateDevicePositionData as a PatchDeviceData
-    """
-
-    device_id: int
-    ip: str
