@@ -4,13 +4,11 @@ from ipaddress import IPv4Address
 
 from pydantic import Field
 
-from ..device import IPNetworkDevice
 from ..routing import Route, RoutingTable
 from .base import Capability
 
 
 class Routing(Capability):
-    device_type = IPNetworkDevice
     routing_table: RoutingTable = Field(init=False, default_factory=RoutingTable)
 
     def resolve_route(self, target_ip: IPv4Address) -> Route | None:

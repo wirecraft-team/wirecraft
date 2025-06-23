@@ -1,12 +1,12 @@
 from ipaddress import IPv4Address
 
-from .capabilities import ARPCapability, Routing
-from .device import IPNetworkDevice
+from .capabilities import ARPCapability, IPv4Capability, Routing
+from .device import NetworkDevice
 from .mac_address import MacAddress
 from .osi import ARPOpCode, ARPPacket, EthernetFrame, ICMPMessage, ICMPType, IPv4Packet
 
 
-def send_arp_request(source: IPNetworkDevice, target_ip: IPv4Address):
+def send_arp_request(source: NetworkDevice, target_ip: IPv4Address):
     """Send an ARP request to resolve the MAC address of a target IP."""
     source.log(f"Sending ARP request for IP {target_ip}")
     source.log(f"Resolving the route for {target_ip}")
@@ -19,6 +19,11 @@ def send_arp_request(source: IPNetworkDevice, target_ip: IPv4Address):
     if arp_cap is None:
         source.log("No ARP capability found, cannot send ARP request")
         raise ValueError("No ARP capability found")
+
+    ipv4_cap = source.get_capability(IPv4Capability)
+    if ipv4_cap is None:
+        source.log("No IPv4 capability found, cannot send ARP request")
+        raise ValueError("No IPv4 capability found")
 
     route = routing_cap.routing_table.get_route(target_ip)
     if route is None:
@@ -37,7 +42,7 @@ def send_arp_request(source: IPNetworkDevice, target_ip: IPv4Address):
         payload=ARPPacket(
             opcode=ARPOpCode.REQUEST,
             sender_mac=source.mac_address,
-            sender_ip=source.ip_address,
+            sender_ip=ipv4_cap.ip_address,
             target_mac=None,
             target_ip=target_ip,
         ),
@@ -52,7 +57,7 @@ def send_arp_request(source: IPNetworkDevice, target_ip: IPv4Address):
         source.log(f"No response or invalid response received for ARP request for {target_ip}")
 
 
-def send_ping(source: IPNetworkDevice, target_ip: IPv4Address):
+def send_ping(source: NetworkDevice, target_ip: IPv4Address):
     source.log(f"Sending ping to {target_ip}")
 
     routing_cap = source.get_capability(Routing)
@@ -64,6 +69,11 @@ def send_ping(source: IPNetworkDevice, target_ip: IPv4Address):
     if arp_cap is None:
         source.log("No ARP capability found, cannot send ARP request")
         raise ValueError("No ARP capability found")
+
+    ipv4_cap = source.get_capability(IPv4Capability)
+    if ipv4_cap is None:
+        source.log("No IPv4 capability found, cannot send ARP request")
+        raise ValueError("No IPv4 capability found")
 
     route = routing_cap.resolve_route(target_ip)
     if route is None:
@@ -83,7 +93,7 @@ def send_ping(source: IPNetworkDevice, target_ip: IPv4Address):
     icmp_packet = ICMPMessage(type=ICMPType.ECHO_REQUEST)
     ipv4_packet = IPv4Packet(
         ttl=64,
-        source_ip=source.ip_address,
+        source_ip=ipv4_cap.ip_address,
         destination_ip=target_ip,
         payload=icmp_packet,
     )

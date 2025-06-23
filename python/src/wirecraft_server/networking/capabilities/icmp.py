@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from pydantic import PrivateAttr
-
-from ..device import IPNetworkDevice, NetworkDevice
+from ..device import NetworkDevice
 from ..osi import ICMPMessage, ICMPType
 from .base import Capability
 
 
 class ICMPCapability(Capability):
     handle = ICMPMessage
-    device_type = IPNetworkDevice
-    if TYPE_CHECKING:
-        _device: IPNetworkDevice = PrivateAttr()  # type: ignore
 
     def __call__(self, source: NetworkDevice, message: ICMPMessage) -> ICMPMessage | None:
         self._device.log(f"Handling ICMP message from {source.mac_address}")

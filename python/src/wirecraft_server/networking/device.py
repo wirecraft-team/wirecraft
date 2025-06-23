@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from ipaddress import IPv4Address
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
@@ -34,8 +33,6 @@ class NetworkDevice(BaseModel):
 
     def add_capability(self, *capabilities: Capability):
         for capability in capabilities:
-            if not isinstance(self, capability.device_type):
-                raise TypeError(f"Capability {capability} is not compatible with device type {self.__class__.__name__}")
             capability.bind_to(self)
             if capability.handle:
                 self.data_handlers[capability.handle] = capability
@@ -83,11 +80,6 @@ class NetworkDevice(BaseModel):
         print(message)
 
 
-class IPNetworkDevice(NetworkDevice):
-    ip_address: IPv4Address
-
-
 from .capabilities.base import Capability  # noqa: E402 avoid circular import
 
-IPNetworkDevice.model_rebuild()
 BidirectionalMap["NetworkDevice", int].model_rebuild()

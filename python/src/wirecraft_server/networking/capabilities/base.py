@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel
 
 from ..device import NetworkDevice
 from ..osi import OsiDataModel
@@ -10,8 +10,6 @@ from ..osi import OsiDataModel
 
 class Capability(BaseModel):
     handle: ClassVar[type[OsiDataModel] | None] = None
-    device_type: ClassVar[type[NetworkDevice]] = NetworkDevice
-    _device: NetworkDevice = PrivateAttr()
 
     def bind_to(self, device: NetworkDevice):
         self._device = device
