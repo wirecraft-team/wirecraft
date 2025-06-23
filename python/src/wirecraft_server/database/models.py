@@ -1,7 +1,5 @@
 from sqlmodel import Field, SQLModel
 
-from ..utils import id_to_mac
-
 
 class Cable(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
