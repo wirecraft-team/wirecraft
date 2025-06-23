@@ -83,3 +83,18 @@ func update_device_position(device_id:int, x:float, y:float):
 
 func update_tasks():
 	socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id": 1}}')
+
+
+func _on_line_edit_text_submitted(new_text: String) -> void:
+	var ip_editing_device = get_node("../CanvasLayer/LineEdit").device_id
+	if ip_editing_device == -1:
+		print("caca")
+		return
+	var data = {"t":"UPDATE_IP","d":{"device":ip_editing_device, "ip":new_text}}
+	socket.send_text(JSON.stringify(data))
+	get_node("../CanvasLayer/LineEdit").visible = false
+	get_node("../CanvasLayer/LineEdit").text = ""
+	
+	
+func _on_launch_button_pressed() -> void:
+		socket.send_text('{"t": "LAUNCH_SIMULATION", "d": {"level_id": 1}}')

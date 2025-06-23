@@ -1,6 +1,7 @@
 extends Sprite2D
 @export var device_id :int
 @export var dragging :bool
+
 # Define all port signals
 signal port_pressed(port_number: int, device_id: int, port_pos: Vector2)
 var pos_offset = Vector2(0,0)
@@ -21,6 +22,9 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 		elif not get_node("../../CableController").is_placing_cable and not get_node("../../DeviceController").global_drag:
 			dragging = true
 			get_node("../../DeviceController").global_drag = true
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		get_node("../../CanvasLayer/LineEdit").visible = true
+		get_node("../../CanvasLayer/LineEdit").device_id = device_id
 
 func _handle_port_input(_viewport: Node, event: InputEvent, _shape_idx: int, port_number: int):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and port_number > 0 and not dragging:
