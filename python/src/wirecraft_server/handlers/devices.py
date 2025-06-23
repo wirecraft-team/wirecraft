@@ -5,8 +5,7 @@ from collections.abc import Sequence
 from pydantic import BaseModel
 from sqlmodel import select
 
-from ..database.base import device_dict
-from ..database.models import Device, async_session
+from ..database import Device, async_session
 from ..handlers_core import Handler, event
 
 
@@ -51,13 +50,13 @@ class DevicesHandler(Handler):
             session.add(data)
             await session.commit()
 
-    @event
-    async def get_device_props(self, data: GetDevicePropsData):
-        async with async_session() as session:
-            statement = select(Device.name).where(Device.id == data.device_id)
-            result = await session.exec(statement)
-            device_name = result.one()
-            return device_dict[device_name]
+    # @event
+    # async def get_device_props(self, data: GetDevicePropsData):
+    #     async with async_session() as session:
+    #         statement = select(Device.name).where(Device.id == data.device_id)
+    #         result = await session.exec(statement)
+    #         device_name = result.one()
+    #         return device_dict[device_name]
 
     @event
     async def update_device_position(self, data: UpdateDevicePositionData):

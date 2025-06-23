@@ -3,9 +3,13 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from pydantic import BaseModel
+from uv import TYPE_CHECKING
 
-from ..database.base import Task, list_level
 from ..handlers_core import Handler, event
+from ..static import levels
+
+if TYPE_CHECKING:
+    from ..static.base import Task
 
 
 class GetLevelTasksData(BaseModel):
@@ -19,5 +23,5 @@ class GetLevelTasksData(BaseModel):
 class TasksHandler(Handler):
     @event
     async def get_level_tasks(self, data: GetLevelTasksData) -> Sequence[Task]:
-        level = list_level[data.level_id]
+        level = levels[data.level_id]
         return level.tasks

@@ -12,10 +12,11 @@ from pydantic_core import from_json, to_json
 
 from wirecraft_server.context import ctx
 
-from .database.models import init
+# from .database.models import init
 from .handlers import CablesHandler, DevicesHandler, TasksHandler
 from .handlers_core import Handler
-from .network import update_devices, update_routing_tables
+
+# from .network import update_devices, update_routing_tables
 
 TICK_RATE = 20
 
@@ -115,7 +116,7 @@ class Server:
             logger.warning("Unhandled event: %s", data)
 
     async def _run(self):
-        await init()
+        # await init()
 
         self.app = web.Application()
         self.app.router.add_get("/", self._websocket_handler)
@@ -131,8 +132,8 @@ class Server:
             if stopped:
                 logger.info("Server stopped!")
                 break
-            await update_devices()
-            await update_routing_tables()
+            # await update_devices()
+            # await update_routing_tables()
             # print(global_device_list[1].ping("192.168.1.3"))
             await self._tick()
 

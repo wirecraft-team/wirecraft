@@ -21,7 +21,7 @@
 
 
 # class PacketHandler(Protocol[D, P]):
-#     def __call__(_self, self: D, source: NetworkDevice, packet: P) -> Packet | None: ...  # noqa: N805
+#     def __call__(_self, self: D, source: NetworkDevice, packet: P) -> Packet | None: ...
 
 
 # class Layer3Device(NetworkDevice):
@@ -65,7 +65,7 @@
 
 
 # class Computer(Layer3Device):
-#     def model_post_init(self, __context: Any):  # noqa: PYI063
+#     def model_post_init(self, __context: Any):
 #         super().model_post_init(__context)
 #         self._routing_table.add_route(IPv4Network("192.168.0.0/24"))
 

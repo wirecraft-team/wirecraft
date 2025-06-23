@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from pydantic import BaseModel
 from sqlmodel import select
 
-from ..database.models import Cable, async_session
+from ..database import Cable, async_session
 from ..handlers_core import Handler, event
 
 
