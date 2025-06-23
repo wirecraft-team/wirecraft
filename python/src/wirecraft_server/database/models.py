@@ -1,5 +1,8 @@
 from sqlmodel import Field, SQLModel
 
+from ..networking.mac_address import MacAddress
+from ..utils import id_to_mac
+
 
 class Cable(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -17,10 +20,13 @@ class Device(SQLModel, table=True):
     x: int
     y: int
     level_id: int = Field(default=None, foreign_key="levelstate.id")
-    mac: str
-    ip: str
-    default_gateway: str | None = None
-    subnet_mask: str | None = None
+    ip: str | None = None
+    # default_gateway: str | None = None
+    # subnet_mask: str | None = None
+
+    @property
+    def mac(self) -> MacAddress:
+        return id_to_mac(self.id)
 
 
 class LevelState(SQLModel, table=True):

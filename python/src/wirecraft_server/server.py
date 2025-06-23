@@ -12,7 +12,7 @@ from pydantic_core import from_json, to_json
 
 from wirecraft_server.context import ctx
 
-# from .database.session import init_db
+from .database import init_db
 from .handlers import CablesHandler, DevicesHandler, LaunchHandler, TasksHandler
 from .handlers_core import Handler
 
@@ -121,7 +121,7 @@ class Server:
             logger.warning("Unhandled event: %s", data)
 
     async def _run(self):
-        # await init_db()
+        await init_db()
 
         self.app = web.Application()
         self.app.router.add_get("/", self._websocket_handler)

@@ -8,7 +8,6 @@ from sqlmodel import select
 
 from ..database import Cable, Device, async_session
 from ..handlers_core import Handler, event
-from ..networking import MacAddress
 from ..networking.capabilities import ARPCapability, ICMPCapability, IPv4Capability, Layer2Switching, Routing
 from ..networking.device import NetworkDevice
 from ..static import levels
@@ -40,7 +39,7 @@ class LaunchHandler(Handler):
         device_map: dict[int, NetworkDevice] = {}
 
         for device in devices:
-            network_device = NetworkDevice(mac_address=MacAddress(device.mac))
+            network_device = NetworkDevice(mac_address=device.mac)
             device_map[device.id] = network_device
 
             if device.ip:

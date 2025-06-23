@@ -1,7 +1,9 @@
 import random
 
+from .networking.mac_address import MacAddress
 
-def id_to_mac(id: int) -> str:
+
+def id_to_mac(id: int) -> MacAddress:
     """
     Convert an integer ID to a MAC address string.
     To 3 first bytes are random, the last 3 bytes are derived from the ID.
@@ -22,12 +24,12 @@ def id_to_mac(id: int) -> str:
         (id >> 8) & 0xFF,
         id & 0xFF,
     ]
-    return ":".join(f"{byte:02x}" for byte in mac)
+    return MacAddress(":".join(f"{byte:02x}" for byte in mac))
 
 
-def mac_to_id(mac: str) -> int:
+def mac_to_id(mac: MacAddress) -> int:
     """Revert id_to_mac"""
-    parts = mac.split(":")
+    parts = mac.root.split(":")
     if len(parts) != 6:
         raise ValueError(f"Invalid MAC address format: {mac}")
     return int(parts[3], 16) << 16 | int(parts[4], 16) << 8 | int(parts[5], 16)

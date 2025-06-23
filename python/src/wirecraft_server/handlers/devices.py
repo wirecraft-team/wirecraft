@@ -48,8 +48,8 @@ class UpdateDeviceIpData(BaseModel):
 class DevicesHandler(Handler):
     @event
     async def get_level_devices(self, data: GetLevelDevicesData) -> Sequence[Device]:
-        statement = select(Device).where(Device.level_id == data.level_id)
         async with async_session() as session:
+            statement = select(Device).where(Device.level_id == data.level_id)
             result = await session.exec(statement)
             devices = result.all()
         return devices
