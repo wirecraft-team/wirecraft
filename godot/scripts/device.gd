@@ -3,6 +3,7 @@ extends Sprite2D
 @export var dragging :bool
 # Define all port signals
 signal port_pressed(port_number: int, device_id: int, port_pos: Vector2)
+var pos_offset = Vector2(0,0)
 
 func _ready():
 	# Connect all port input events automatically
@@ -39,5 +40,9 @@ func get_port_global_position(port_number: int) -> Vector2:
 func _process(delta: float) -> void:
 	if dragging:
 		var mouse_pos = get_global_mouse_position()
-		set_global_position(mouse_pos)
-		get_node("../../ws").update_device_position(device_id, mouse_pos.x, mouse_pos.y)
+		#printerr(offset)
+		#printerr(mouse_pos)
+		set_global_position(Vector2(mouse_pos.x - pos_offset.x, mouse_pos.y - pos_offset.y))
+		get_node("../../ws").update_device_position(device_id, mouse_pos.x - pos_offset.x, mouse_pos.y - pos_offset.y)
+	else:
+		pos_offset = get_local_mouse_position()

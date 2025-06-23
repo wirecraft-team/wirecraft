@@ -19,14 +19,10 @@ class Device(SQLModel, table=True):
     x: int
     y: int
     level_id: int = Field(default=None, foreign_key="levelstate.id")
-    # mac: str | None = None
-    ip: str | None = None
+    mac: str
+    ip: str
     default_gateway: str | None = None
     subnet_mask: str | None = None
-
-    @property
-    def mac(self) -> str:
-        return id_to_mac(self.id)
 
 
 class LevelState(SQLModel, table=True):

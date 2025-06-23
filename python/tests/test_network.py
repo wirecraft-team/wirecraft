@@ -42,12 +42,11 @@ async def test_ping(local_database):
             )
         )
         await session.commit()
-    print(device_a.id, device_b.id)
 
     await network.update_devices()
     await network.update_routing_tables()
 
     async with async_session() as session:
         # Retrieve the device and test ping
-        device = await session.get(Device, 1)
+        device = await session.get(Device, device_a.id)
         assert device is not None
