@@ -8,56 +8,7 @@ from ._logger import logging
 from .database.models import Cable, Device, async_session
 
 logger = logging.getLogger(__name__)
-
-
-class DevicesManager:
-    def __init__(self):
-        self._devices: list[NetworkDevice] = []
-        self._map_id_to_index: dict[int, int] = {}
-        # self._map_index_to_id: dict[int, int] = {}  # Reverse mapping for convenience
-
-    def __len__(self) -> int:
-        return len(self._devices)
-
-    def __repr__(self):
-        return f"DevicesManager({len(self._devices)} devices)"
-
-    def __iter__(self):
-        """
-        Iterate over the devices in the manager.
-        """
-        return iter(self._devices)
-
-    def clear(self):
-        self._devices.clear()
-        self._map_id_to_index.clear()
-        # self._map_index_to_id.clear()
-
-    def add_device(self, device: NetworkDevice):
-        if device.id in self._map_id_to_index:
-            raise ValueError(f"Device with ID {device.id} already exists.")
-        self._devices.append(device)
-        self._map_id_to_index[device.id] = len(self._devices) - 1
-        # self._map_index_to_id[len(self._devices) - 1] = device.id
-
-    def get_graph_index(self, device_id: int) -> int:
-        return self._map_id_to_index[device_id]
-
-    def get_device_by_graph_index(self, graph_index: int) -> NetworkDevice:
-        """
-        Get a device by its graph index
-        """
-        return self._devices[graph_index]
-
-    def get_device_by_id(self, device_id: int) -> NetworkDevice:
-        """
-        Get a device by its ID
-        """
-        return self.get_device_by_graph_index(self.get_graph_index(device_id))
-
-
-# Use a global variable because we need to have things working quickly, it's "temporary"
-device_manager = DevicesManager()
+global_device_list: list[NetworkDevice] = []
 
 
 class Packet(BaseModel):
@@ -102,19 +53,21 @@ class NetworkDevice(BaseModel):
             result = await session.exec(statement)
             devices = result.all()
             for device in devices:
-                if device.ip is None:
-                    # No IP address assigned to the device, skip it
-                    continue
                 # Get the shortest path to each device
-                path = graph.get_shortest_path(
-                    device_manager.get_graph_index(self.id),
-                    to=device_manager.get_graph_index(device.id),
-                    output="vpath",
-                )
+                path = graph.get_shortest_path(self.id - 1, to=device.id - 1, output="vpath")
                 if path:
                     # return already existing device node object of the first device in the path (next hop)
-                    self.table[device.ip] = device_manager.get_device_by_graph_index(path[1])
+                    self.table[device.ip] = self.get_device_by_id(path[1])
             return True
+
+    def get_device_by_id(self, device_id: int) -> NetworkDevice:
+        """
+        Get a device by its ID
+        """
+        for device in global_device_list:
+            if device.id == device_id + 1:
+                return device
+        raise ValueError(f"Device {device_id} not found in neighbors ({[dev.id for dev in global_device_list]})")
 
     def process_packet(self, packet: Packet) -> bool:
         """
@@ -190,25 +143,24 @@ async def update_devices():
     async with async_session() as session:
         statement = select(Device)
         result = await session.exec(statement)
-        device_manager.clear()
-        for device in result.all():
-            if device.ip is None:
-                device_manager.add_device(NetworkDevice(id=device.id, type=device.type, ip="device.ip"))
-                continue
-            device_manager.add_device(NetworkDevice(id=device.id, type=device.type, ip=device.ip))
-        logger.debug("Devices updated: %s", device_manager)
+        global_device_list.clear()
+        global_device_list.extend(
+            NetworkDevice(id=device.id, type=device.type, ip=device.ip) for device in result.all()
+        )
+        logger.debug("Devices updated: %s", global_device_list)
 
 
 async def update_routing_tables():
     graph = await update_network_graph()
-    for device in device_manager:
+    for device in global_device_list:
         await device.create_routing_table(graph)
 
 
 async def update_network_graph():
     async with async_session() as session:
-        cables = await session.exec(select(Cable.device_id_1, Cable.device_id_2))
-        cables = [tuple[int, int](map(device_manager.get_graph_index, cable)) for cable in cables.all()]
-        nb_vertices = len(device_manager)
-
+        devices = await session.exec(select(Device.id))
+        devices = list(devices.all())
+        cables = await session.exec(select(Cable.device_id_1 - 1, Cable.device_id_2 - 1))
+        cables = list(cables.all())
+        nb_vertices = len(devices)
         return ig.Graph(nb_vertices, cables)
