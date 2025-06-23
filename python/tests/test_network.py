@@ -42,7 +42,6 @@ async def test_ping(local_database):
             )
         )
         await session.commit()
-    print(device_a.id, device_b.id)
 
     await network.update_devices()
     await network.update_routing_tables()
