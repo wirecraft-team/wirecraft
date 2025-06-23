@@ -50,7 +50,7 @@ expand_icon = true
 
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
 title = "Inventory"
-position = Vector2i(653, 36)
+position = Vector2i(155, 36)
 size = Vector2i(400, 1000)
 unresizable = true
 always_on_top = true
@@ -222,23 +222,14 @@ text = "[color=#ff0000]Please start the server[/color]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="CanvasLayer"]
-visible = false
-offset_left = 9.0
-offset_top = 947.0
-offset_right = 167.0
-offset_bottom = 978.0
-placeholder_text = "IP"
-script = ExtResource("12_mcffj")
-
 [node name="LaunchSimulation" type="Button" parent="CanvasLayer"]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = -2.0
-offset_top = -148.0
-offset_right = 206.0
-offset_bottom = -98.0
+offset_left = 3.0
+offset_top = -142.0
+offset_right = 211.0
+offset_bottom = -92.0
 grow_vertical = 0
 focus_mode = 0
 text = "Launch simulation"
@@ -247,11 +238,39 @@ flat = true
 alignment = 0
 expand_icon = true
 
+[node name="InputGroup" type="Node2D" parent="CanvasLayer"]
+visible = false
+
+[node name="IpAdressInput" type="LineEdit" parent="CanvasLayer/InputGroup"]
+offset_left = 7.0
+offset_top = 905.0
+offset_right = 165.0
+offset_bottom = 936.0
+placeholder_text = "ip"
+script = ExtResource("12_mcffj")
+
+[node name="NameInput" type="LineEdit" parent="CanvasLayer/InputGroup"]
+offset_left = 7.0
+offset_top = 869.0
+offset_right = 165.0
+offset_bottom = 900.0
+placeholder_text = "name"
+script = ExtResource("12_mcffj")
+
+[node name="Button" type="Button" parent="CanvasLayer/InputGroup"]
+offset_left = 175.0
+offset_top = 876.0
+offset_right = 260.0
+offset_bottom = 925.0
+text = "Submit"
+
 [connection signal="pressed" from="CanvasLayer/InventoryButton" to="CanvasLayer" method="_on_inventory_button_pressed"]
 [connection signal="close_requested" from="CanvasLayer/InventoryWindow" to="CanvasLayer" method="_on_inventory_window_close_requested"]
 [connection signal="pressed" from="CanvasLayer/InventoryWindow/Control/Add_Switch_Button" to="CanvasLayer/InventoryWindow" method="_on_add_switch_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/InventoryWindow/Control/Add_PC_Button" to="CanvasLayer/InventoryWindow" method="_on_add_pc_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/TaskButton" to="CanvasLayer" method="_on_task_button_pressed"]
 [connection signal="close_requested" from="CanvasLayer/TaskWindow" to="CanvasLayer" method="_on_task_window_close_requested"]
-[connection signal="text_submitted" from="CanvasLayer/LineEdit" to="ws" method="_on_line_edit_text_submitted"]
 [connection signal="pressed" from="CanvasLayer/LaunchSimulation" to="ws" method="_on_launch_button_pressed"]
+[connection signal="text_submitted" from="CanvasLayer/InputGroup/IpAdressInput" to="ws" method="_on_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CanvasLayer/InputGroup/NameInput" to="ws" method="_on_line_edit_text_submitted"]
+[connection signal="pressed" from="CanvasLayer/InputGroup/Button" to="ws" method="_on_button_pressed"]

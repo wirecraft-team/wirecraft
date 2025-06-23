@@ -23,8 +23,11 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 			dragging = true
 			get_node("../../DeviceController").global_drag = true
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		get_node("../../CanvasLayer/LineEdit").visible = true
-		get_node("../../CanvasLayer/LineEdit").device_id = device_id
+		get_node("../../ws").get_ip(device_id)
+		get_node("../../ws").get_device_name(device_id)
+		print("tring to get ip and name")
+		get_node("../../CanvasLayer/InputGroup").visible = true
+		get_node("../../CanvasLayer/InputGroup/IpAdressInput").device_id = device_id
 
 func _handle_port_input(_viewport: Node, event: InputEvent, _shape_idx: int, port_number: int):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and port_number > 0 and not dragging:

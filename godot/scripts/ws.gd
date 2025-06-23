@@ -51,6 +51,10 @@ func _process(_delta):
 				if data_received.t == "GET_LEVEL_TASKS_RESPONSE":
 					print("tasks are :" , data_received.d)
 					get_node("/root/Control/CanvasLayer/TaskWindow").update_tasks(data_received.d)
+				if data_received.t == "GET_IP_RESPONSE":
+					get_node("../CanvasLayer/InputGroup/IpAdressInput").text = data_received.d
+				if data_received.t == "GET_NAME_RESPONSE":
+					get_node("../CanvasLayer/InputGroup/NameInput").text = data_received.ds
 			else:
 				print("Error ", error)
 
@@ -84,16 +88,26 @@ func update_device_position(device_id:int, x:float, y:float):
 func update_tasks():
 	socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id": 1}}')
 
-
-func _on_line_edit_text_submitted(new_text: String) -> void:
-	var ip_editing_device = get_node("../CanvasLayer/LineEdit").device_id
-	if ip_editing_device == -1:
-		return
-	var data = {"t":"UPDATE_IP","d":{"device":ip_editing_device, "ip":new_text}}
-	socket.send_text(JSON.stringify(data))
-	get_node("../CanvasLayer/LineEdit").visible = false
-	get_node("../CanvasLayer/LineEdit").text = ""
+func get_ip(device_id:int):
+	socket.send_text('{"t": "GET_IP", "d": {"device_id":' +str(device_id)+'}}')
+	
+func get_device_name(device_id:int):
+	socket.send_text('{"t": "GET_NAME", "d": {"device_id":' +str(device_id)+'}}')
 	
 	
 func _on_launch_button_pressed() -> void:
 		socket.send_text('{"t": "LAUNCH_SIMULATION", "d": {"level_id": 1}}')
+
+
+func _on_button_pressed() -> void:
+	var ip_input = get_node("../CanvasLayer/InputGroup/IpAdressInput")
+	var name_input = get_node("../CanvasLayer/InputGroup/NameInput")
+	if ip_input.device_id == -1:
+		return
+	var data = {"t":"UPDATE_IP","d":{"device":ip_input.device_id, "ip":ip_input.text}}
+	socket.send_text(JSON.stringify(data))
+	data = {"t":"UPDATE_IP","d":{"device":ip_input.device_id, "ip":name_input.text}}
+	socket.send_text(JSON.stringify(data))
+	get_node("../CanvasLayer/InputGroup").visible = false
+	ip_input.text = ""
+	name_input.text = ""
