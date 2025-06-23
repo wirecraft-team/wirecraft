@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel
 from sqlmodel import select
 
+from wirecraft_server.networking.capabilities.ethernet import BasicEthernetFrameCapability
 from wirecraft_server.static.tests import TestFailure
 
 from ..database import Cable, Device, async_session
@@ -66,10 +67,11 @@ class LaunchHandler(Handler):
                 network_device.add_capability(Layer2Switching())
             if device.type == "pc":
                 routing = Routing()
-                routing.routing_table.add_route(IPv4Network("192.168.0.0/24"), interface=0)
+                routing.routing_table.add_route(IPv4Network("192.168.0.0/24"), interface=1)  # the port on a PC is 1
                 network_device.add_capability(routing)
                 network_device.add_capability(ICMPCapability())
                 network_device.add_capability(ARPCapability())
+                network_device.add_capability(BasicEthernetFrameCapability())
 
         for cable in cables:
             device_a = device_map[cable.device_id_1]

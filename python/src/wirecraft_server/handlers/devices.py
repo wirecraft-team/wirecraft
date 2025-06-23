@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from ipaddress import IPv4Address
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlmodel import select
 
 from ..database import Device, async_session
@@ -35,14 +36,23 @@ class UpdateDevicePositionData(BaseModel):
     y: int
 
 
-class UpdateDeviceIpData(BaseModel):
+class UpdateDeviceData(BaseModel):
     """
     Payload for the update_device_ip ws method.
-    TODO(airopi): this could be merged with UpdateDevicePositionData as a PatchDeviceData
+    TODO(airopi): this could be merged with UpdateDevicePositionData
     """
 
     device_id: int
-    ip: str
+    ip: IPv4Address | None = Field(default=None)
+    name: str | None = Field(default=None)
+
+
+class GetDeviceData(BaseModel):
+    """
+    Payload for the get_device ws method.
+    """
+
+    device_id: int
 
 
 class DevicesHandler(Handler):
@@ -53,6 +63,14 @@ class DevicesHandler(Handler):
             result = await session.exec(statement)
             devices = result.all()
         return devices
+
+    @event
+    async def get_device(self, data: GetDeviceData) -> Device:
+        async with async_session() as session:
+            statement = select(Device).where(Device.id == data.device_id)
+            result = await session.exec(statement)
+            device = result.one()
+        return device
 
     @event
     async def add_device(self, data: Device):
@@ -72,11 +90,16 @@ class DevicesHandler(Handler):
         return device
 
     @event
-    async def update_device_ip(self, data: UpdateDeviceIpData) -> Device:
+    async def update_device(self, data: UpdateDeviceData) -> Device:
         async with async_session() as session:
             stmt = select(Device).where(Device.id == data.device_id)
             result = await session.exec(stmt)
             device = result.one()
-            device.ip = data.ip
+            if data.name:
+                device.name = data.name
+            if data.ip is not None:
+                device.ip = str(data.ip)
+            else:
+                device.ip = None
             await session.commit()
         return device

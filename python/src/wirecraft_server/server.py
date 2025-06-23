@@ -113,9 +113,13 @@ class Server:
         for handler in self.handlers:
             # t for type and d for data
             # inspired by https://discord.com/developers/docs/events/gateway-events#payload-structure
-            if event := handler.__handler_events__.get(data["t"]):
-                await event(data["d"])
-                handled = True
+            try:
+                if event := handler.__handler_events__.get(data["t"]):
+                    handled = True
+                    await event(data["d"])
+            except Exception:
+                logger.exception("Error while handling event %s:", data["t"])
+                continue
 
         if not handled:
             logger.warning("Unhandled event: %s", data)
