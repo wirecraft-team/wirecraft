@@ -1,9 +1,6 @@
-from sqlmodel import (
-    Field,  # type: ignore
-    SQLModel,
-)
+from sqlmodel import Field, SQLModel
 
-from wirecraft_server.utils import id_to_mac
+from ..utils import id_to_mac
 
 
 class Cable(SQLModel, table=True):

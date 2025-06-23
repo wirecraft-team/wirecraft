@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from ipaddress import IPv4Address, IPv4Network
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 from sqlmodel import select
-from uv import TYPE_CHECKING
 
 from ..database import Cable, Device, async_session
 from ..handlers_core import Handler, event

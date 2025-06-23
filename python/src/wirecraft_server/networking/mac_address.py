@@ -31,7 +31,3 @@ class MacAddress(RootModel[str]):
         return self.root
 
     __str__ = __repr__
-
-
-mac = MacAddress("00:00:00:00:00:00")  # Default MAC address for initialization
-print(mac)

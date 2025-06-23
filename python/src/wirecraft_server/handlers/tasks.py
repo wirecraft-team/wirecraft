@@ -3,13 +3,10 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from pydantic import BaseModel
-from uv import TYPE_CHECKING
 
 from ..handlers_core import Handler, event
 from ..static import levels
-
-if TYPE_CHECKING:
-    from ..static.base import Task
+from ..static.base import Task
 
 
 class GetLevelTasksData(BaseModel):

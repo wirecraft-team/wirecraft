@@ -15,7 +15,7 @@ class OsiDataModel(BaseModel):
     pass
 
 
-class EthernetFrame(OsiDataModel, Generic[P]):
+class EthernetFrame(OsiDataModel, Generic[P]):  # noqa: UP046
     destination_mac: MacAddress
     source_mac: MacAddress
     payload: P
