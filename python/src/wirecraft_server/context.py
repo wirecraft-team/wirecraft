@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Any
 
 MISSING: Any = object()
@@ -17,10 +18,12 @@ class Context:
     def __init__(self):
         self.debug_options: Sequence[str] = MISSING
         self.bind = MISSING
+        self.database = MISSING
 
-    def set(self, debug_options: Sequence[str], bind: str) -> None:
+    def set(self, debug_options: Sequence[str], bind: str, database: Path) -> None:
         self.debug_options = debug_options
         self.bind = bind
+        self.database = database
 
 
 ctx = Context()
