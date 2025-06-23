@@ -8,8 +8,6 @@ from sqlmodel import (
 )
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from wirecraft_server.utils import id_to_mac
-
 db = "sqlite+aiosqlite:///database.db"
 engine = create_async_engine(db)
 
