@@ -196,7 +196,7 @@ expand_icon = true
 
 [node name="TaskWindow" type="Window" parent="CanvasLayer"]
 title = "Task"
-position = Vector2i(18, 36)
+position = Vector2i(0, 36)
 size = Vector2i(675, 722)
 unresizable = true
 script = ExtResource("10_qy1jj")
@@ -206,21 +206,29 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -98.5
-offset_top = -18.5
-offset_right = 98.5
-offset_bottom = 18.5
-grow_horizontal = 2
-grow_vertical = 2
+offset_left = 735.0
+offset_top = 470.0
+offset_right = 1227.0
+offset_bottom = 650.0
 bbcode_enabled = true
-text = "[color=#ff0000]Please start the server[/color]"
+text = "[color=#ff0000]Please start the server or change the server url[/color]"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ServerUrl" type="LineEdit" parent="CanvasLayer/ServerText"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -1.673
+anchor_top = -13.95
+anchor_right = -1.673
+anchor_bottom = -13.95
+offset_left = 886.116
+offset_top = 2625.0
+offset_right = 1252.12
+offset_bottom = 2691.0
+text = "http://localhost:8765"
+placeholder_text = "Server url"
+alignment = 1
 
 [node name="LaunchSimulation" type="Button" parent="CanvasLayer"]
 anchors_preset = 2
@@ -264,11 +272,40 @@ offset_right = 260.0
 offset_bottom = 925.0
 text = "Submit"
 
+[node name="Sucess" type="Node2D" parent="CanvasLayer"]
+visible = false
+
+[node name="SucessText" type="RichTextLabel" parent="CanvasLayer/Sucess"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 861.5
+offset_top = 521.5
+offset_right = 1058.5
+offset_bottom = 558.5
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "[color=#00ff00]Level Complete ![/color]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextLevelButton" type="Button" parent="CanvasLayer/Sucess"]
+offset_left = 897.0
+offset_top = 559.0
+offset_right = 1026.0
+offset_bottom = 615.0
+text = "Go to next level"
+
 [connection signal="pressed" from="CanvasLayer/InventoryButton" to="CanvasLayer" method="_on_inventory_button_pressed"]
 [connection signal="close_requested" from="CanvasLayer/InventoryWindow" to="CanvasLayer" method="_on_inventory_window_close_requested"]
 [connection signal="pressed" from="CanvasLayer/InventoryWindow/Control/Add_Switch_Button" to="CanvasLayer/InventoryWindow" method="_on_add_switch_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/InventoryWindow/Control/Add_PC_Button" to="CanvasLayer/InventoryWindow" method="_on_add_pc_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/TaskButton" to="CanvasLayer" method="_on_task_button_pressed"]
 [connection signal="close_requested" from="CanvasLayer/TaskWindow" to="CanvasLayer" method="_on_task_window_close_requested"]
+[connection signal="text_submitted" from="CanvasLayer/ServerText/ServerUrl" to="ws" method="_on_server_url_text_submitted"]
 [connection signal="pressed" from="CanvasLayer/LaunchSimulation" to="ws" method="_on_launch_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/InputGroup/Button" to="ws" method="_on_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Sucess/NextLevelButton" to="ws" method="_on_next_level_button_pressed"]
