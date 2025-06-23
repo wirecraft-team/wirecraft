@@ -48,7 +48,19 @@ class CableConnectionTest(Test):
     destination: str
 
     def __call__(self, devices: Sequence[Device], network: dict[int, NetworkDevice], map_names: dict[str, int]) -> None:
-        raise NotImplementedError
+        source_device_id = map_names.get(self.source)
+        destination_device_id = map_names.get(self.destination)
+
+        if source_device_id is None:
+            raise TestFailure(f"Source device '{self.source}' not found in the network.")
+        if destination_device_id is None:
+            raise TestFailure(f"Destination device '{self.destination}' not found in the network.")
+
+        source_device = network[source_device_id]
+        destination_device = network[destination_device_id]
+
+        if destination_device not in source_device.connected_devices:
+            raise TestFailure(f"Device {self.source} is not connected to {self.destination}.")
 
 
 class PingTest(Test):
