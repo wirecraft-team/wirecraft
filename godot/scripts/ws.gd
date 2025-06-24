@@ -61,8 +61,14 @@ func _process(_delta):
 				if data_received.t == "GET_DEVICE_RESPONSE":
 					if data_received.d.ip:
 						get_node("../CanvasLayer/InputGroup/IpAdressInput").text = data_received.d.ip
-					get_node("../CanvasLayer/InputGroup/NameInput").text = data_received.d.name
+					get_node("../CanvasLayer/InputGroup/NameInput").text = data_received.d.name					
 				# if data_received.t == "GET_NAME_RESPONSE":
+				if data_received.t == "ADD_CABLE_RESPONSE":
+					update_cables()
+				if data_received.t == "ADD_DEVICE_RESPONSE":
+					update_devices()
+				if data_received.t == "UPDATE_DEVICE_POSITION_RESPONSE":
+					update_devices()
 			else:
 				print("Error ", error)
 
