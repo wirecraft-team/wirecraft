@@ -9,10 +9,11 @@ from typing import Any, Self
 
 from aiohttp import WSMessage, WSMsgType, web
 from pydantic_core import from_json, to_json
+from sqlalchemy.ext.asyncio import create_async_engine
 
-from wirecraft_server.context import ctx
-
+from .context import ctx
 from .database import init_db
+from .database.session import async_session
 from .handlers import CablesHandler, DevicesHandler, LaunchHandler, TasksHandler
 from .handlers_core import Handler
 
@@ -125,7 +126,10 @@ class Server:
             logger.warning("Unhandled event: %s", data)
 
     async def _run(self):
-        await init_db()
+        db = f"sqlite+aiosqlite:///{ctx.database.resolve()}"
+        engine = create_async_engine(db)
+        async_session.configure(bind=engine)
+        await init_db(engine)
 
         self.app = web.Application()
         self.app.router.add_get("/", self._websocket_handler)

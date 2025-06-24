@@ -2,10 +2,12 @@ services:
   wirecraft-server:
     hostname: wirecraft-server
     init: true
+    environment:
+      - DATABASE=data/database.db
     build:
       context: .
       target: production
     ports:
       - 8765:8765
     volumes:
-      - $PWD/database.db:/app/database.db
+      - $PWD/data:/app/data
