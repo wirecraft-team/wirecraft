@@ -58,10 +58,10 @@ class Layer2Switching(Capability):
         if frame.destination_mac in self._mac_address_table:
             self._device.log(f"Destination MAC {frame.destination_mac} known, forwarding to device")
             device_port = self._mac_address_table[frame.destination_mac]
-            return self._device.connected_devices.inverse[device_port].handle_request(source, frame)
+            return self._device.connected_devices.inverse[device_port].handle_request(self._device, frame)
 
         self._device.log(f"Destination MAC {frame.destination_mac} unknown, broadcasting the request")
-        return self._broadcast(source, frame)
+        return self._broadcast(self._device, frame)
 
     def _populate_mac_address_table(self, source: NetworkDevice, frame: EthernetFrameT):
         """
@@ -69,13 +69,15 @@ class Layer2Switching(Capability):
         This is used to learn the MAC addresses of connected devices.
         """
         if frame.source_mac not in self._mac_address_table:
-            self._device.log(f"Adding {frame.source_mac} to MAC address table")
+            self._device.log(
+                f"Adding {frame.source_mac} to MAC address table on interface {self._device.connected_devices[source]}"
+            )
             self._mac_address_table[frame.source_mac] = self._device.connected_devices[source]
 
     def _broadcast(self, source: NetworkDevice, frame: EthernetFrameT):
         self._device.log(f"Broadcast packet received from {frame.source_mac}, forwarding to all other devices")
         for device in broadcast_helper(self._device.connected_devices, source):
-            response = device.handle_request(source, frame)
+            response = device.handle_request(self._device, frame)
             if response:
                 self._device.log(f"Got a response from {device}!")
                 self._device.log("Updating MAC address table.")

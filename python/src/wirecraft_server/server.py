@@ -12,7 +12,7 @@ from pydantic_core import from_json, to_json
 
 from wirecraft_server.context import ctx
 
-# from .database.session import init_db
+from .database import init_db
 from .handlers import CablesHandler, DevicesHandler, LaunchHandler, TasksHandler
 from .handlers_core import Handler
 
@@ -113,15 +113,19 @@ class Server:
         for handler in self.handlers:
             # t for type and d for data
             # inspired by https://discord.com/developers/docs/events/gateway-events#payload-structure
-            if event := handler.__handler_events__.get(data["t"]):
-                await event(data["d"])
-                handled = True
+            try:
+                if event := handler.__handler_events__.get(data["t"]):
+                    handled = True
+                    await event(data["d"])
+            except Exception:
+                logger.exception("Error while handling event %s:", data["t"])
+                continue
 
         if not handled:
             logger.warning("Unhandled event: %s", data)
 
     async def _run(self):
-        # await init_db()
+        await init_db()
 
         self.app = web.Application()
         self.app.router.add_get("/", self._websocket_handler)

@@ -1,3 +1,5 @@
+# TODO(airopi): this is old code that should be rewrite to adopt the new modular design
+
 # from __future__ import annotations
 
 # from ipaddress import IPv4Address, IPv4Network
