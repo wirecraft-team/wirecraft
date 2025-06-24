@@ -31,3 +31,4 @@ class CablesHandler(Handler):
         async with async_session() as session:
             session.add(data)
             await session.commit()
+        return data

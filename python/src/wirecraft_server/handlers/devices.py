@@ -77,6 +77,7 @@ class DevicesHandler(Handler):
         async with async_session() as session:
             session.add(data)
             await session.commit()
+        return data
 
     @event
     async def update_device_position(self, data: UpdateDevicePositionData):
