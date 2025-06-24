@@ -26,6 +26,7 @@ func update_devices(devices: Array):
 		devivce.queue_free()
 	#devices is like [{ "id": 1, "name": "PC-1", "type": "pc", "x": 100, "y": 100, "ports": 1}, ...]
 	# Update devices based on the data received from the server
+	print("devices are",devices)
 	for device in devices:
 		var new_device = null
 		match device.type:

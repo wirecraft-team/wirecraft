@@ -1,8 +1,4 @@
-from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, SQLModel
-
-from ..networking.mac_address import MacAddress
-from ..utils import id_to_mac
 
 
 class Cable(SQLModel, table=True):
@@ -15,38 +11,16 @@ class Cable(SQLModel, table=True):
 
 
 class Device(SQLModel, table=True):
-    """
-    id: managed by the database
-    name: name of the device
-    type: type of the device, e.g. "switch", "pc"
-    x: x coordinate in the level
-    y: y coordinate in the level
-    # frozen: the device can be moved, but not configured or deleted
-    frozen_name: the device cannot be renamed, useful for tasks that require a specific device to be present
-    deletable: to set a device as non-deleted, useful for tasks that require a specific device to be present
-    fixed_ref: reference to a pre-defined device, useful for tasks that require a specific device to be present
-    level_id: the level this device belongs to, used to group devices in a level
-    ip: the IP address of the device, can be None if not assigned
-    """
-
     id: int = Field(default=None, primary_key=True)
     name: str
     type: str
     x: int
     y: int
-    # frozen: bool = Field(default=False, exclude=True)
-    frozen_name: bool = Field(default=False, exclude=True)
-    deletable: bool = Field(default=True, exclude=True)
     level_id: int = Field(default=None, foreign_key="levelstate.id")
-    ip: str | None = None
-    # default_gateway: str | None = None
-    # subnet_mask: str | None = None
-
-    __table_args__ = (UniqueConstraint("name", "level_id", name="uq_device_name_level_id"),)
-
-    @property
-    def mac(self) -> MacAddress:
-        return id_to_mac(self.id)
+    mac: str
+    ip: str
+    default_gateway: str | None = None
+    subnet_mask: str | None = None
 
 
 class LevelState(SQLModel, table=True):

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://d33tbmu8my37m"]
 
-[ext_resource type="Script" uid="uid://dyvii05g4odh1" path="res://scripts/cable.gd" id="1_ntu20"]
+[ext_resource type="Script" uid="uid://bax8qv7p2tf41" path="res://scripts/cable.gd" id="1_ntu20"]
 
 [node name="Line2D" type="Line2D"]
 width = 2.0

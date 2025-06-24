@@ -1,16 +1,14 @@
-[gd_scene load_steps=12 format=3 uid="uid://wthmy25ja53i"]
+[gd_scene load_steps=10 format=3 uid="uid://wthmy25ja53i"]
 
-[ext_resource type="Script" uid="uid://bg2dis4o5gwcs" path="res://scripts/camera.gd" id="1_bfat1"]
-[ext_resource type="Script" uid="uid://cwxygd3jhou15" path="res://scripts/cable_controller.gd" id="3_aycay"]
-[ext_resource type="Script" uid="uid://byesf7mk38tl" path="res://scripts/device_controller.gd" id="3_yc75h"]
+[ext_resource type="Script" uid="uid://xoknux2anugx" path="res://scripts/camera.gd" id="1_bfat1"]
+[ext_resource type="Script" path="res://scripts/cable_controller.gd" id="3_aycay"]
+[ext_resource type="Script" path="res://scripts/device_controller.gd" id="3_yc75h"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="6_kac4m"]
 [ext_resource type="Texture2D" uid="uid://cwgl6oq7d1yw1" path="res://assets/inventory.png" id="6_tacyi"]
 [ext_resource type="Texture2D" uid="uid://btghaq4rnl1a8" path="res://assets/PT-Link-1.png" id="7_g4kob"]
-[ext_resource type="Script" uid="uid://c875q28shg4vy" path="res://scripts/inventory.gd" id="7_qy1jj"]
 [ext_resource type="Texture2D" uid="uid://jqr6dy6nw7uv" path="res://assets/task.png" id="8_400sg"]
 [ext_resource type="Texture2D" uid="uid://dhtj8x5akisiy" path="res://assets/PC-1.png" id="8_qy1jj"]
-[ext_resource type="Script" uid="uid://cuehp1g4udr4k" path="res://scripts/ws.gd" id="9_dv77h"]
-[ext_resource type="Script" path="res://scripts/tasks.gd" id="10_qy1jj"]
+[ext_resource type="Script" path="res://scripts/ws.gd" id="9_dv77h"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -38,22 +36,19 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_top = -50.0
-offset_right = 150.0
-grow_vertical = 0
+offset_right = 50.0
 focus_mode = 0
-text = "Inventory"
-icon = ExtResource("6_3xj3m")
+icon = ExtResource("6_tacyi")
 flat = true
-alignment = 0
 expand_icon = true
 
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
 title = "Inventory"
-position = Vector2i(1508, 36)
+position = Vector2i(942, 36)
 size = Vector2i(400, 1000)
 unresizable = true
 always_on_top = true
-script = ExtResource("7_qy1jj")
+unfocusable = true
 
 [node name="Control" type="Control" parent="CanvasLayer/InventoryWindow"]
 layout_mode = 3
@@ -63,7 +58,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Add_Switch_Button" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+[node name="Button" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -73,12 +68,11 @@ offset_top = 10.0
 offset_right = 190.0
 offset_bottom = 110.0
 grow_horizontal = 2
-focus_mode = 0
 icon = ExtResource("7_g4kob")
 icon_alignment = 1
 expand_icon = true
 
-[node name="Add_PC_Button" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
+[node name="Button2" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -88,7 +82,6 @@ offset_top = 120.0
 offset_right = 190.0
 offset_bottom = 220.0
 grow_horizontal = 2
-focus_mode = 0
 icon = ExtResource("8_qy1jj")
 icon_alignment = 1
 expand_icon = true
@@ -103,7 +96,6 @@ offset_top = 230.0
 offset_right = 190.0
 offset_bottom = 330.0
 grow_horizontal = 2
-focus_mode = 0
 
 [node name="Button4" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
 layout_mode = 1
@@ -115,7 +107,6 @@ offset_top = 340.0
 offset_right = 190.0
 offset_bottom = 440.0
 grow_horizontal = 2
-focus_mode = 0
 
 [node name="Button5" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
 layout_mode = 1
@@ -127,7 +118,6 @@ offset_top = 450.0
 offset_right = 190.0
 offset_bottom = 550.0
 grow_horizontal = 2
-focus_mode = 0
 
 [node name="Button6" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
 layout_mode = 1
@@ -139,7 +129,6 @@ offset_top = 560.0
 offset_right = 190.0
 offset_bottom = 660.0
 grow_horizontal = 2
-focus_mode = 0
 
 [node name="Button7" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
 layout_mode = 1
@@ -151,7 +140,6 @@ offset_top = 670.0
 offset_right = 190.0
 offset_bottom = 770.0
 grow_horizontal = 2
-focus_mode = 0
 
 [node name="Button8" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
 layout_mode = 1
@@ -163,7 +151,6 @@ offset_top = 780.0
 offset_right = 190.0
 offset_bottom = 880.0
 grow_horizontal = 2
-focus_mode = 0
 
 [node name="Button9" type="Button" parent="CanvasLayer/InventoryWindow/Control"]
 layout_mode = 1
@@ -175,7 +162,6 @@ offset_top = 890.0
 offset_right = 190.0
 offset_bottom = 990.0
 grow_horizontal = 2
-focus_mode = 0
 
 [node name="TaskButton" type="Button" parent="CanvasLayer"]
 anchors_preset = 2
@@ -183,14 +169,11 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 1.0
 offset_top = -100.0
-offset_right = 150.0
+offset_right = 50.0
 offset_bottom = -50.0
-grow_vertical = 0
 focus_mode = 0
-text = "Tasks"
-icon = ExtResource("10_mcffj")
+icon = ExtResource("8_400sg")
 flat = true
-alignment = 0
 expand_icon = true
 
 [node name="TaskWindow" type="Window" parent="CanvasLayer"]
@@ -198,11 +181,12 @@ title = "Task"
 position = Vector2i(18, 36)
 size = Vector2i(335, 502)
 unresizable = true
-script = ExtResource("10_qy1jj")
 
-[node name="TaskContainer" type="VBoxContainer" parent="CanvasLayer/TaskWindow"]
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="TaskContainer" type="RichTextLabel" parent="CanvasLayer/TaskWindow"]
+offset_right = 333.0
+offset_bottom = 499.0
+bbcode_enabled = true
+text = "Testttt"
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
 anchors_preset = 8
@@ -223,7 +207,5 @@ vertical_alignment = 1
 
 [connection signal="pressed" from="CanvasLayer/InventoryButton" to="CanvasLayer" method="_on_inventory_button_pressed"]
 [connection signal="close_requested" from="CanvasLayer/InventoryWindow" to="CanvasLayer" method="_on_inventory_window_close_requested"]
-[connection signal="pressed" from="CanvasLayer/InventoryWindow/Control/Add_Switch_Button" to="CanvasLayer/InventoryWindow" method="_on_add_switch_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/InventoryWindow/Control/Add_PC_Button" to="CanvasLayer/InventoryWindow" method="_on_add_pc_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/TaskButton" to="CanvasLayer" method="_on_task_button_pressed"]
 [connection signal="close_requested" from="CanvasLayer/TaskWindow" to="CanvasLayer" method="_on_task_window_close_requested"]
