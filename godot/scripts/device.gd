@@ -27,7 +27,6 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		get_node("../../ws").get_device(device_id)
 		# get_node("../../ws").get_device_name(device_id)
-		print("tring to get ip and name")
 		get_node("../../CanvasLayer/InputGroup").visible = true
 		get_node("../../CanvasLayer/InputGroup/IpAdressInput").device_id = device_id
 

@@ -10,7 +10,6 @@ var CableControler = preload("res://scripts/cable_controller.gd")
 func connect_to_server():
 	socket = WebSocketPeer.new()
 	var err = socket.connect_to_url(websocket_url)
-	print("Trying to connect to:", websocket_url)
 	if err != OK:
 		print("Unable to connect")
 		print(err)
@@ -22,7 +21,6 @@ func _ready():
 	connect_to_server()
 		# Wait for the socket to connect.
 	await get_tree().create_timer(0.25).timeout
-	print("connexion sucess")
 		# Send data.
 	socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id":'+ str(level_id)+'}}')
 	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id":'+ str(level_id)+'}}')
@@ -55,7 +53,6 @@ func _process(_delta):
 					get_node("../DeviceController").update_devices(data_received.d)
 					get_node("../CableController").update_device_signal()
 				if data_received.t == "GET_LEVEL_TASKS_RESPONSE":
-					print("tasks are :" , data_received.d)
 					get_node("/root/Control/CanvasLayer/TaskWindow").update_tasks(data_received.d)
 					check_completion(data_received.d)
 				if data_received.t == "GET_DEVICE_RESPONSE":
@@ -144,7 +141,6 @@ func _on_button_pressed() -> void:
 func check_completion(data):
 	for task in data:
 		if task.completed != true:
-			print(str(task)+" is not completed")
 			return
 	level_id+=1
 	update_game()
