@@ -51,7 +51,7 @@ expand_icon = true
 
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
 title = "Inventory"
-position = Vector2i(1508, 36)
+position = Vector2i(1511, 36)
 size = Vector2i(400, 1000)
 unresizable = true
 always_on_top = true
