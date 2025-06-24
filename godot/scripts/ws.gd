@@ -69,6 +69,7 @@ func _process(_delta):
 					update_devices()
 				if data_received.t == "UPDATE_DEVICE_POSITION_RESPONSE":
 					update_devices()
+					update_cables()
 			else:
 				print("Error ", error)
 
