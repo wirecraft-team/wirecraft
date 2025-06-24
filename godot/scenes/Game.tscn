@@ -37,9 +37,11 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_top = -50.0
-offset_right = 50.0
+offset_right = 200.0
+grow_vertical = 0
 focus_mode = 0
-icon = ExtResource("6_tacyi")
+text = "Inventory (Ctrl I)"
+icon = ExtResource("6_3xj3m")
 flat = true
 expand_icon = true
 
@@ -170,10 +172,11 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 1.0
 offset_top = -100.0
-offset_right = 50.0
+offset_right = 201.0
 offset_bottom = -50.0
 focus_mode = 0
-icon = ExtResource("8_400sg")
+text = "Tasks (Ctrl T)"
+icon = ExtResource("10_mcffj")
 flat = true
 expand_icon = true
 
@@ -189,6 +192,76 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="ServerText" type="RichTextLabel" parent="CanvasLayer"]
+offset_left = 735.0
+offset_top = 470.0
+offset_right = 1227.0
+offset_bottom = 650.0
+bbcode_enabled = true
+text = "[color=#ff0000]Please start the server or change the server url[/color]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ServerUrl" type="LineEdit" parent="CanvasLayer/ServerText"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -1.673
+anchor_top = -13.95
+anchor_right = -1.673
+anchor_bottom = -13.95
+offset_left = 886.116
+offset_top = 2625.0
+offset_right = 1252.12
+offset_bottom = 2691.0
+text = "ws://localhost:8765"
+placeholder_text = "Server url"
+alignment = 1
+
+[node name="LaunchSimulation" type="Button" parent="CanvasLayer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = -150.0
+offset_right = 301.0
+offset_bottom = -100.0
+grow_vertical = 0
+focus_mode = 0
+text = "Launch simulation (Ctrl R)"
+icon = ExtResource("12_2rd6h")
+flat = true
+alignment = 0
+expand_icon = true
+
+[node name="InputGroup" type="Node2D" parent="CanvasLayer"]
+visible = false
+
+[node name="IpAdressInput" type="LineEdit" parent="CanvasLayer/InputGroup"]
+offset_left = 7.0
+offset_top = 905.0
+offset_right = 165.0
+offset_bottom = 936.0
+placeholder_text = "ip"
+script = ExtResource("12_mcffj")
+
+[node name="NameInput" type="LineEdit" parent="CanvasLayer/InputGroup"]
+offset_left = 7.0
+offset_top = 869.0
+offset_right = 165.0
+offset_bottom = 900.0
+placeholder_text = "name"
+script = ExtResource("12_mcffj")
+
+[node name="Button" type="Button" parent="CanvasLayer/InputGroup"]
+offset_left = 175.0
+offset_top = 876.0
+offset_right = 260.0
+offset_bottom = 925.0
+text = "Submit"
+
+[node name="Sucess" type="Node2D" parent="CanvasLayer"]
+visible = false
+
+[node name="SucessText" type="RichTextLabel" parent="CanvasLayer/Sucess"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5

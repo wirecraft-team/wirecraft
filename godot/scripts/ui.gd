@@ -13,7 +13,16 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+func _input(event):
+	if event.is_action_pressed("inventory"):
+		_on_inventory_button_pressed()
 
+	if event.is_action_pressed("tasks"):
+		_on_task_button_pressed()
+
+	if event.is_action_pressed("launch_simulation"):
+		get_node("res://scripts/ws.gd")._on_launch_button_pressed()
+	
 # Close action on window
 func _on_inventory_window_close_requested() -> void:
 	inventory_window.visible = false
