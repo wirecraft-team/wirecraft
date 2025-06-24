@@ -1,6 +1,6 @@
-[gd_scene load_steps=13 format=3 uid="uid://wthmy25ja53i"]
+[gd_scene load_steps=14 format=3 uid="uid://wthmy25ja53i"]
 
-[ext_resource type="Script" uid="uid://xoknux2anugx" path="res://scripts/camera.gd" id="1_bfat1"]
+[ext_resource type="Script" uid="uid://bg2dis4o5gwcs" path="res://scripts/camera.gd" id="1_bfat1"]
 [ext_resource type="Script" uid="uid://cwxygd3jhou15" path="res://scripts/cable_controller.gd" id="3_aycay"]
 [ext_resource type="Script" uid="uid://bjsmd74ncauqn" path="res://scripts/device_controller.gd" id="3_yc75h"]
 [ext_resource type="Texture2D" uid="uid://cktj0trtops10" path="res://assets/inventory-button.png" id="6_3xj3m"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://cuehp1g4udr4k" path="res://scripts/ws.gd" id="9_dv77h"]
 [ext_resource type="Texture2D" uid="uid://chpeohmddnj75" path="res://assets/tasks-button.png" id="10_mcffj"]
 [ext_resource type="Script" uid="uid://b7fae7nsii6r8" path="res://scripts/tasks.gd" id="10_qy1jj"]
+[ext_resource type="Texture2D" uid="uid://dsquqaunxeyay" path="res://assets/simulation-button.png" id="12_2rd6h"]
 [ext_resource type="Script" uid="uid://varcaru4oep0" path="res://scripts/line_edit.gd" id="12_mcffj"]
 
 [node name="Control" type="Control"]
@@ -50,7 +51,7 @@ expand_icon = true
 
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
 title = "Inventory"
-position = Vector2i(155, 36)
+position = Vector2i(1508, 36)
 size = Vector2i(400, 1000)
 unresizable = true
 always_on_top = true
@@ -234,14 +235,14 @@ alignment = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 3.0
-offset_top = -142.0
-offset_right = 211.0
-offset_bottom = -92.0
+offset_left = 1.0
+offset_top = -150.0
+offset_right = 209.0
+offset_bottom = -100.0
 grow_vertical = 0
 focus_mode = 0
 text = "Launch simulation"
-icon = ExtResource("6_3xj3m")
+icon = ExtResource("12_2rd6h")
 flat = true
 alignment = 0
 expand_icon = true
