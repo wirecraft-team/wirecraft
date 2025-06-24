@@ -49,8 +49,6 @@ func get_port_global_position(port_number: int) -> Vector2:
 func _process(delta: float) -> void:
 	if dragging:
 		var mouse_pos = get_global_mouse_position()
-		#printerr(offset)
-		#printerr(mouse_pos)
 		set_global_position(Vector2(mouse_pos.x - pos_offset.x, mouse_pos.y - pos_offset.y))
 	else:
 		pos_offset = get_local_mouse_position()
