@@ -21,8 +21,8 @@ func _input(event):
 		_on_task_button_pressed()
 
 	if event.is_action_pressed("launch_simulation"):
-		get_node("res://scripts/ws.gd")._on_launch_button_pressed()
-	
+		get_node("../ws")._on_launch_button_pressed()
+
 # Close action on window
 func _on_inventory_window_close_requested() -> void:
 	inventory_window.visible = false
@@ -34,7 +34,7 @@ func _on_task_window_close_requested() -> void:
 # Button actions to open / close windows
 func _on_inventory_button_pressed() -> void:
 	inventory_window.visible = not inventory_window.visible
-	get_node("./InventoryButton").release_focus()
+	get_node("./TaskButton").release_focus()
 
 func _on_task_button_pressed() -> void:
 	task_window.visible = not task_window.visible
