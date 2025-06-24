@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from ipaddress import IPv4Address
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlmodel import select
 
 from ..database import Device, async_session
@@ -35,28 +36,48 @@ class UpdateDevicePositionData(BaseModel):
     y: int
 
 
+class UpdateDeviceData(BaseModel):
+    """
+    Payload for the update_device_ip ws method.
+    TODO(airopi): this could be merged with UpdateDevicePositionData
+    """
+
+    device_id: int
+    ip: IPv4Address | None = Field(default=None)
+    name: str | None = Field(default=None)
+
+
+class GetDeviceData(BaseModel):
+    """
+    Payload for the get_device ws method.
+    """
+
+    device_id: int
+
+
 class DevicesHandler(Handler):
     @event
     async def get_level_devices(self, data: GetLevelDevicesData) -> Sequence[Device]:
-        statement = select(Device).where(Device.level_id == data.level_id)
         async with async_session() as session:
+            statement = select(Device).where(Device.level_id == data.level_id)
             result = await session.exec(statement)
             devices = result.all()
         return devices
+
+    @event
+    async def get_device(self, data: GetDeviceData) -> Device:
+        async with async_session() as session:
+            statement = select(Device).where(Device.id == data.device_id)
+            result = await session.exec(statement)
+            device = result.one()
+        return device
 
     @event
     async def add_device(self, data: Device):
         async with async_session() as session:
             session.add(data)
             await session.commit()
-
-    # @event
-    # async def get_device_props(self, data: GetDevicePropsData):
-    #     async with async_session() as session:
-    #         statement = select(Device.name).where(Device.id == data.device_id)
-    #         result = await session.exec(statement)
-    #         device_name = result.one()
-    #         return device_dict[device_name]
+        return data
 
     @event
     async def update_device_position(self, data: UpdateDevicePositionData):
@@ -66,5 +87,20 @@ class DevicesHandler(Handler):
             device = result.one()
             device.x = data.x
             device.y = data.y
+            await session.commit()
+        return device
+
+    @event
+    async def update_device(self, data: UpdateDeviceData) -> Device:
+        async with async_session() as session:
+            stmt = select(Device).where(Device.id == data.device_id)
+            result = await session.exec(stmt)
+            device = result.one()
+            if data.name:
+                device.name = data.name
+            if data.ip is not None:
+                device.ip = str(data.ip)
+            else:
+                device.ip = None
             await session.commit()
         return device
