@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://wthmy25ja53i"]
+[gd_scene load_steps=16 format=3 uid="uid://wthmy25ja53i"]
 
 [ext_resource type="Script" uid="uid://xoknux2anugx" path="res://scripts/camera.gd" id="1_bfat1"]
 [ext_resource type="Script" uid="uid://cwxygd3jhou15" path="res://scripts/cable_controller.gd" id="3_aycay"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://b7fae7nsii6r8" path="res://scripts/tasks.gd" id="10_qy1jj"]
 [ext_resource type="Texture2D" uid="uid://dsquqaunxeyay" path="res://assets/simulation-button.png" id="12_2rd6h"]
 [ext_resource type="Script" uid="uid://varcaru4oep0" path="res://scripts/line_edit.gd" id="12_mcffj"]
+[ext_resource type="AudioStream" uid="uid://bw4peordmxm78" path="res://assets/correct.mp3" id="13_r7sob"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -205,6 +206,9 @@ script = ExtResource("10_qy1jj")
 
 [node name="Wrong" type="AudioStreamPlayer" parent="CanvasLayer/TaskWindow"]
 stream = ExtResource("5_7ua8r")
+
+[node name="Correct" type="AudioStreamPlayer" parent="CanvasLayer/TaskWindow"]
+stream = ExtResource("13_r7sob")
 
 [node name="TaskContainer" type="VBoxContainer" parent="CanvasLayer/TaskWindow"]
 offset_right = 40.0

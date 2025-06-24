@@ -3,6 +3,7 @@ extends Window
 # It is attached to the TaskWindow node in the scene tree.
 @onready var tasks_container = get_node("TaskContainer")
 @onready var wrong_snd : AudioStreamPlayer = get_node("Wrong")
+@onready var correct_snd : AudioStreamPlayer = get_node("Correct")
 
 func _init():
 	pass
@@ -25,6 +26,7 @@ func update_tasks(tasks: Array):
 	for child in tasks_container.get_children():
 		child.queue_free()
 
+	var failed = true
 	# Ajoute chaque tâche comme un Label
 	for task in tasks:
 		var task_box = VBoxContainer.new()
@@ -45,12 +47,7 @@ func update_tasks(tasks: Array):
 			error_label.add_theme_color_override("font_color", Color(0.5, 0, 0))
 			task_box.add_child(name_label)
 			task_box.add_child(error_label)
-			print(wrong_snd)
-			if wrong_snd == null:
-				print("Erreur : le nœud Wrong n'est pas trouvé !")
-			else:
-				wrong_snd.play()
-			
+			failed = true
 
 		var desc_label = Label.new()
 		desc_label.text = str(task.description)
@@ -60,3 +57,7 @@ func update_tasks(tasks: Array):
 		tasks_container.add_child(task_box)
 
 	print("Tasks updated in the window")
+	if failed:
+		wrong_snd.play()
+	else:
+		correct_snd.play()
