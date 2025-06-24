@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from pydantic import BaseModel
 from sqlmodel import select
 
-from ..database.models import Cable, async_session
+from ..database import Cable, async_session
 from ..handlers_core import Handler, event
 
 
@@ -31,3 +31,4 @@ class CablesHandler(Handler):
         async with async_session() as session:
             session.add(data)
             await session.commit()
+        return data
