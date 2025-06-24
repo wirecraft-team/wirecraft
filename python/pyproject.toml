@@ -28,6 +28,8 @@ only-include = ["src"]
 [tool.hatch.build.targets.wheel.sources]
 "src/wirecraft_server" = "wirecraft_server"
 
+[tool.hatch.build.targets.wheel.include]
+"src/wirecraft_server/py.typed" = ""
 
 [dependency-groups]
 dev = [
@@ -42,7 +44,12 @@ tox = ["tox", "tox-uv"]
 
 [tool.pyright]
 typeCheckingMode = "strict"
-include = ["src"]
+include = ["src", "tests"]
+
+executionEnvironments = [
+    { root = "src" },
+    { root = "tests", reportPrivateUsage = false },
+]
 
 [tool.tox]
 legacy_tox_ini = """
