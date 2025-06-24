@@ -29,10 +29,6 @@ func update_tasks(tasks: Array):
 	for task in tasks:
 		var task_box = VBoxContainer.new()
 
-		var rich_label = RichTextLabel.new()
-		rich_label.bbcode_enabled = true
-		rich_label.bbcode_text = "[b]Texte en gras[/b]"
-
 		var name_label = Label.new()
 		name_label.text = str(task.name)
 		name_label.add_theme_font_size_override("font_size", 20)
@@ -49,7 +45,6 @@ func update_tasks(tasks: Array):
 			error_label.add_theme_color_override("font_color", Color(0.5, 0, 0))
 			task_box.add_child(name_label)
 			task_box.add_child(error_label)
-		task_box.add_child(rich_label)
 
 		var desc_label = Label.new()
 		desc_label.text = str(task.description)
