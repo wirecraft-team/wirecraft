@@ -2,7 +2,7 @@ extends Window
 # This script is used to manage the tasks in the task window.
 # It is attached to the TaskWindow node in the scene tree.
 @onready var tasks_container = get_node("TaskContainer")
-
+@onready var wrong_snd : AudioStreamPlayer = get_node("Wrong")
 
 func _init():
 	pass
@@ -45,6 +45,12 @@ func update_tasks(tasks: Array):
 			error_label.add_theme_color_override("font_color", Color(0.5, 0, 0))
 			task_box.add_child(name_label)
 			task_box.add_child(error_label)
+			print(wrong_snd)
+			if wrong_snd == null:
+				print("Erreur : le nœud Wrong n'est pas trouvé !")
+			else:
+				wrong_snd.play()
+			
 
 		var desc_label = Label.new()
 		desc_label.text = str(task.description)
