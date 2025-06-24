@@ -8,7 +8,7 @@ def test_id_to_mac():
     expected_mac = "79:cf:ba"
 
     # Check if the last three bytes match the expected values
-    assert mac.endswith(expected_mac), f"Expected MAC to end with {expected_mac}, got {mac}"
+    assert mac.root.endswith(expected_mac), f"Expected MAC to end with {expected_mac}, got {mac}"
 
     mac2 = utils.id_to_mac(id)
     # Check if the function is idempotent

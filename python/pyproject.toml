@@ -28,6 +28,8 @@ only-include = ["src"]
 [tool.hatch.build.targets.wheel.sources]
 "src/wirecraft_server" = "wirecraft_server"
 
+[tool.hatch.build.targets.wheel.include]
+"src/wirecraft_server/py.typed" = ""
 
 [dependency-groups]
 dev = [
@@ -42,21 +44,51 @@ tox = ["tox", "tox-uv"]
 
 [tool.pyright]
 typeCheckingMode = "strict"
-include = ["src"]
+include = ["src", "tests"]
+
+executionEnvironments = [
+    { root = "src" },
+    { root = "tests", reportPrivateUsage = false },
+]
 
 [tool.tox]
-legacy_tox_ini = """
-[tox]
-envlist = py312
+envlist = ["3.12"]
 
-[testenv]
-runner = uv-venv-lock-runner
-description = run all checks on the code
-commands =
-    ruff format --check src
-    ruff check src
-    pyright src/
-"""
+[tool.tox.env_run_base]
+runner = "uv-venv-lock-runner"
+description = "run all checks on the code"
+commands = [
+    [
+        "ruff",
+        "format",
+        "--check",
+        "src",
+    ],
+    [
+        "ruff",
+        "check",
+        "src",
+    ],
+    [
+        "pyright",
+    ],
+    [
+        "pytest",
+    ],
+]
+# legacy_tox_ini = """
+# [tox]
+# envlist = py312
+
+# [testenv]
+# runner = uv-venv-lock-runner
+# description = run all checks on the code
+# commands =
+#     ruff format --check src
+#     ruff check src
+#     pyright src/
+#     pytest
+# """
 
 
 [tool.ruff]
