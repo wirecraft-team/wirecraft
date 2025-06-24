@@ -111,11 +111,10 @@ func update_cables():
 	
 func update_game():
 	# to be called when we want the whole thing refreshed (level sucess)
-	update_cables()
 	update_tasks()
 	update_devices()
-# func get_ip(device_id:int):
-# 	socket.send_text('{"t": "GET_IP", "d": {"device_id":' +str(device_id)+'}}')
+	update_cables()
+
 	
 func get_device(device_id:int):
 	socket.send_text('{"t": "GET_DEVICE", "d": {"device_id":' +str(device_id)+'}}')
@@ -137,8 +136,7 @@ func _on_button_pressed() -> void:
 	if name_input.text:
 		data['d']["name"] = name_input.text
 	socket.send_text(JSON.stringify(data))
-	# data = {"t":"UPDATE_IP","d":{"device":ip_input.device_id, "ip":name_input.text}}
-	# socket.send_text(JSON.stringify(data))
+
 	get_node("../CanvasLayer/InputGroup").visible = false
 	ip_input.text = ""
 	name_input.text = ""
