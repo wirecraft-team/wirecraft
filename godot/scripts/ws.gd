@@ -157,3 +157,5 @@ func _on_next_level_button_pressed() -> void:
 func _on_server_url_text_submitted(new_text: String) -> void:
 	websocket_url = new_text
 	connect_to_server()
+	await get_tree().create_timer(0.25).timeout
+	update_game()

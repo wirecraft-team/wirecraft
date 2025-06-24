@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=3 uid="uid://wthmy25ja53i"]
 
-[ext_resource type="Script" uid="uid://bg2dis4o5gwcs" path="res://scripts/camera.gd" id="1_bfat1"]
+[ext_resource type="Script" uid="uid://xoknux2anugx" path="res://scripts/camera.gd" id="1_bfat1"]
 [ext_resource type="Script" uid="uid://cwxygd3jhou15" path="res://scripts/cable_controller.gd" id="3_aycay"]
 [ext_resource type="Script" uid="uid://bjsmd74ncauqn" path="res://scripts/device_controller.gd" id="3_yc75h"]
 [ext_resource type="Texture2D" uid="uid://cktj0trtops10" path="res://assets/inventory-button.png" id="6_3xj3m"]
@@ -50,7 +50,7 @@ expand_icon = true
 
 [node name="InventoryWindow" type="Window" parent="CanvasLayer"]
 title = "Inventory"
-position = Vector2i(1508, 36)
+position = Vector2i(155, 36)
 size = Vector2i(400, 1000)
 unresizable = true
 always_on_top = true
