@@ -226,7 +226,7 @@ offset_left = 886.116
 offset_top = 2625.0
 offset_right = 1252.12
 offset_bottom = 2691.0
-text = "http://localhost:8765"
+text = "ws://localhost:8765"
 placeholder_text = "Server url"
 alignment = 1
 
