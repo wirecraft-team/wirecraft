@@ -42,6 +42,7 @@ offset_top = 700.0
 offset_right = 1078.0
 offset_bottom = 794.0
 placeholder_text = "Enter Level (0,1,2)"
+alignment = 1
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
