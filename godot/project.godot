@@ -13,7 +13,12 @@ config_version=5
 config/name="wirecraft"
 run/main_scene="res://scenes/Menu.tscn"
 config/features=PackedStringArray("4.4", "Forward Plus")
+boot_splash/show_image=false
 config/icon="res://assets/icon.png"
+
+[autoload]
+
+Global="*res://scripts/global.gd"
 
 [display]
 

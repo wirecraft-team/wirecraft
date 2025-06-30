@@ -1,7 +1,4 @@
 extends Control
-
-
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
 
@@ -21,3 +18,10 @@ func _on_button_2_pressed() -> void:
 
 func _on_button_3_pressed() -> void:
 	get_tree().quit()
+
+
+func _on_line_edit_text_changed(new_text: String) -> void:
+	if new_text not in ['0', '1', '2',]:	
+		Global.level_id = 0
+	else:
+		Global.level_id = int(new_text)
