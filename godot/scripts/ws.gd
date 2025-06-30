@@ -1,5 +1,4 @@
 extends Node
-@export var level_id = 0
 # The URL we will connect to.
 @export var websocket_url = "ws://localhost:8765"
 # Our WebSocketClient instance.
@@ -22,9 +21,9 @@ func _ready():
 		# Wait for the socket to connect.
 	await get_tree().create_timer(0.25).timeout
 		# Send data.
-	socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id":'+ str(level_id)+'}}')
-	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id":'+ str(level_id)+'}}')
-	socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id":'+ str(level_id)+'}}')
+	socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id":'+ str(Global.level_id)+'}}')
+	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id":'+ str(Global.level_id)+'}}')
+	socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id":'+ str(Global.level_id)+'}}')
 
 
 func _process(_delta):
@@ -85,26 +84,26 @@ func _process(_delta):
 
 func send_cable(start_id:int, start_port:int, end_id:int, end_port:int):
 	# Send cable information to the server
-	#TODO: Don't hardcode level_id
-	socket.send_text('{"t": "ADD_CABLE", "d": {"device_id_1": %d, "port_1": %d, "device_id_2": %d, "port_2": %d, "level_id": %d}}' % [start_id, start_port, end_id, end_port, level_id])
+	#TODO: Don't hardcode Global.level_id
+	socket.send_text('{"t": "ADD_CABLE", "d": {"device_id_1": %d, "port_1": %d, "device_id_2": %d, "port_2": %d, "level_id": %d}}' % [start_id, start_port, end_id, end_port, Global.level_id])
 
 func add_device(device_name, device_type):
-	socket.send_text('{"t":"ADD_DEVICE", "d":{"name":"%s", "type":"%s", "x":0, "y":0, "level_id":%d}}' % [device_name, device_type, level_id])
-	socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id":'+ str(level_id)+'}}')
-	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id":'+ str(level_id)+'}}')
+	socket.send_text('{"t":"ADD_DEVICE", "d":{"name":"%s", "type":"%s", "x":0, "y":0, "level_id":%d}}' % [device_name, device_type, Global.level_id])
+	socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id":'+ str(Global.level_id)+'}}')
+	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id":'+ str(Global.level_id)+'}}')
 
 func update_device_position(device_id:int, x:float, y:float):
 	socket.send_text('{"t": "UPDATE_DEVICE_POSITION", "d": {"device_id": %d, "x": %d, "y": %d}}' % [device_id, int(x), int(y)])
-	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id":'+ str(level_id)+'}}')
+	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id":'+ str(Global.level_id)+'}}')
 
 func update_tasks():
-	socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id":'+ str(level_id)+'}}')
+	socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id":'+ str(Global.level_id)+'}}')
 
 func update_devices():
-	socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id":'+ str(level_id)+'}}')
+	socket.send_text('{"t": "GET_LEVEL_DEVICES", "d": {"level_id":'+ str(Global.level_id)+'}}')
 	
 func update_cables():
-	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id":'+ str(level_id)+'}}')
+	socket.send_text('{"t": "GET_LEVEL_CABLES", "d": {"level_id":'+ str(Global.level_id)+'}}')
 	
 func update_game():
 	# to be called when we want the whole thing refreshed (level sucess)
@@ -118,8 +117,8 @@ func get_device(device_id:int):
 	
 	
 func _on_launch_button_pressed() -> void:
-		socket.send_text('{"t": "LAUNCH_SIMULATION", "d": {"level_id":'+ str(level_id)+'}}')
-		socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id":'+ str(level_id)+'}}')
+		socket.send_text('{"t": "LAUNCH_SIMULATION", "d": {"level_id":'+ str(Global.level_id)+'}}')
+		socket.send_text('{"t": "GET_LEVEL_TASKS", "d": {"level_id":'+ str(Global.level_id)+'}}')
 
 
 func _on_button_pressed() -> void:
@@ -142,7 +141,7 @@ func check_completion(data):
 	for task in data:
 		if task.completed != true:
 			return
-	level_id+=1
+	Global.level_id+=1
 	update_game()
 	show_level_succes_modal()
 	
