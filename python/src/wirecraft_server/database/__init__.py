@@ -23,7 +23,7 @@ async def init_db(engine: AsyncEngine):
     But in an async environment, because the loop already exists at this point, we would need to use asyncio.create_task in env.py.
 
     I don't want to use this because we should keep a reference to the task and wait until it is finished, but we can get any value from `command.upgrade`.
-    Instead, we re-implement the migration logic, and directly use run_sync to apply the migration (because Alembic doesn't support asynchrone).
+    Instead, we re-implement the migration logic, and directly use run_sync to apply the migration (because Alembic doesn't support asynchronous).
     """
 
     config = Config()
