@@ -18,12 +18,12 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if dragging:
 			dragging = false
-			get_node("../../DeviceController").global_drag = false
+			Global.dragging = false
 			var mouse_pos = get_global_mouse_position()
 			get_node("../../ws").update_device_position(device_id, mouse_pos.x - pos_offset.x, mouse_pos.y - pos_offset.y)
-		elif not get_node("../../CableController").is_placing_cable and not get_node("../../DeviceController").global_drag:
+		elif not get_node("../../CableController").is_placing_cable and not Global.dragging:
 			dragging = true
-			get_node("../../DeviceController").global_drag = true
+			Global.dragging= true
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		get_node("../../ws").get_device(device_id)
 		# get_node("../../ws").get_device_name(device_id)
@@ -47,6 +47,8 @@ func get_port_global_position(port_number: int) -> Vector2:
 
 func _process(delta: float) -> void:
 	if dragging:
+		if not Global.dragging:
+			dragging = false
 		var mouse_pos = get_global_mouse_position()
 		set_global_position(Vector2(mouse_pos.x - pos_offset.x, mouse_pos.y - pos_offset.y))
 	else:

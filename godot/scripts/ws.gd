@@ -49,6 +49,7 @@ func _process(_delta):
 					get_node("../CableController").update_cables(data_received.d)
 				if data_received.t == "GET_LEVEL_DEVICES_RESPONSE":
 					#call update_devices function in CableControler
+					Global.dragging = false
 					get_node("../DeviceController").update_devices(data_received.d)
 					get_node("../CableController").update_device_signal()
 				if data_received.t == "GET_LEVEL_TASKS_RESPONSE":
