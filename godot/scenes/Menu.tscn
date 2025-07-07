@@ -23,9 +23,9 @@ text = "Launch Wirecraft"
 [node name="Button2" type="Button" parent="."]
 layout_mode = 0
 offset_left = 848.0
-offset_top = 797.0
+offset_top = 800.0
 offset_right = 1077.0
-offset_bottom = 891.0
+offset_bottom = 894.0
 text = "Settings"
 
 [node name="Button3" type="Button" parent="."]
@@ -47,10 +47,10 @@ alignment = 1
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 0
-offset_left = 759.102
-offset_top = 119.949
-offset_right = 1167.1
-offset_bottom = 527.949
+offset_left = 357.0
+offset_top = 120.0
+offset_right = 1570.0
+offset_bottom = 528.0
 texture = ExtResource("2_upctu")
 expand_mode = 1
 
