@@ -1,9 +1,13 @@
+name: wirecraft
+
 services:
   wirecraft-server:
     hostname: wirecraft-server
     init: true
     environment:
-      - DATABASE=data/database.db
+      # Change this locally accordingly to the database environment, or use variable interpolation from a local .env
+      DATABASE: "wirecraft:wirecraft@postgres/wirecraft"
+      DATABASE_TYPE: "postgresql"
     build:
       context: .
       target: production
@@ -11,3 +15,12 @@ services:
       - 8765:8765
     volumes:
       - $PWD/data:/app/data
+
+  database:
+    hostname: postgres
+    image: postgres:17.5-alpine
+    environment:
+      - POSTGRES_USER=wirecraft
+      - POSTGRES_DB=wirecraft
+      # when in production, swap this locally
+      - POSTGRES_PASSWORD=wirecraft

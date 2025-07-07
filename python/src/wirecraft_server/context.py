@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 MISSING: Any = object()
 
@@ -17,13 +16,17 @@ class Context:
 
     def __init__(self):
         self.debug_options: Sequence[str] = MISSING
-        self.bind = MISSING
-        self.database = MISSING
+        self.bind: str = MISSING
+        self.database: str = MISSING
+        self.database_type: Literal["sqlite", "postgresql"] = MISSING
 
-    def set(self, debug_options: Sequence[str], bind: str, database: Path) -> None:
+    def set(
+        self, debug_options: Sequence[str], bind: str, database: str, database_type: Literal["sqlite", "postgresql"]
+    ) -> None:
         self.debug_options = debug_options
         self.bind = bind
         self.database = database
+        self.database_type = database_type
 
 
 ctx = Context()
