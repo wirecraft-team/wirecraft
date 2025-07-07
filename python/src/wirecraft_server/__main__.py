@@ -1,15 +1,10 @@
-from pathlib import Path
+from typing import Literal
 
 import click
 
 from wirecraft_server._logger import init_logger
 from wirecraft_server.context import ctx
 from wirecraft_server.server import Server
-
-
-def init_server():
-    server = Server()
-    return server
 
 
 @click.command()
@@ -24,14 +19,25 @@ def init_server():
     "database",
     default="database.db",
     envvar="DATABASE",
-    help="Set the database file.",
-    type=click.Path(file_okay=True, dir_okay=False, writable=True, resolve_path=True),
+    help="Set the database path (a file for SQLite, an url for PostgreSQL).",
+    type=str,
 )
-def main(debug_options: list[str], log_level: str, bind: str, database: str):
-    ctx.set(debug_options=debug_options, bind=bind, database=Path(database))
+@click.option(
+    "--database-type",
+    "-T",
+    "database_type",
+    default="sqlite",
+    envvar="DATABASE_TYPE",
+    help="Set the database type.",
+    type=click.Choice(["sqlite", "postgresql"], case_sensitive=False),
+)
+def main(
+    debug_options: list[str], log_level: str, bind: str, database: str, database_type: Literal["sqlite", "postgresql"]
+) -> None:
+    ctx.set(debug_options=debug_options, bind=bind, database=database, database_type=database_type)
     init_logger(log_level)
 
-    server = init_server()
+    server = Server()
     server.start()
 
 

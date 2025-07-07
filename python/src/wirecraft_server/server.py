@@ -5,6 +5,7 @@ import contextlib
 import json
 import logging
 import time
+from pathlib import Path
 from typing import Any, Self
 
 from aiohttp import WSMessage, WSMsgType, web
@@ -126,7 +127,14 @@ class Server:
             logger.warning("Unhandled event: %s", data)
 
     async def _run(self):
-        db = f"sqlite+aiosqlite:///{ctx.database.resolve()}"
+        if ctx.database_type == "sqlite":
+            path = Path(ctx.database)
+            db = f"sqlite+aiosqlite:///{path.resolve()}"
+        elif ctx.database_type == "postgresql":
+            db = f"postgresql+asyncpg://{ctx.database}"
+        else:
+            raise ValueError(f"Unsupported database type: {ctx.database_type}")
+
         engine = create_async_engine(db)
         async_session.configure(bind=engine)
         await init_db(engine)
