@@ -126,6 +126,17 @@ class Server:
         if not handled:
             logger.warning("Unhandled event: %s", data)
 
+    async def _websocket_helthcheck(self, request: web.Request):
+        """
+        This is a simple healthcheck endpoint that returns a 200 OK response.
+        It can be used to check if the server is running.
+        """
+        ws = web.WebSocketResponse()
+        await ws.prepare(request)
+        await ws.send_str("OK")
+        await ws.close()
+        return ws
+
     async def _run(self):
         if ctx.database_type == "sqlite":
             path = Path(ctx.database)
@@ -141,6 +152,7 @@ class Server:
 
         self.app = web.Application()
         self.app.router.add_get("/", self._websocket_handler)
+        self.app.router.add_get("/health", self._websocket_helthcheck)
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
         self.site = web.TCPSite(self.runner, ctx.bind, 8765)

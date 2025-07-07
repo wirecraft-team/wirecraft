@@ -879,7 +879,7 @@ wheels = [
 
 [[package]]
 name = "wirecraft-server"
-version = "0.1b2"
+version = "0.1b4"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
