@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 
 from alembic import context as alembic_context
@@ -27,7 +28,8 @@ async def init_db(engine: AsyncEngine):
 
     config = Config()
     config.set_main_option("sqlalchemy.url", str(engine.url))
-    config.set_main_option("script_location", "migrations")
+    path = Path(__file__).parent / "migrations"
+    config.set_main_option("script_location", path.as_posix())
 
     script = ScriptDirectory.from_config(config)
 
