@@ -49,6 +49,7 @@ func _process(_delta):
 					get_node("../CableController").update_cables(data_received.d)
 				if data_received.t == "GET_LEVEL_DEVICES_RESPONSE":
 					#call update_devices function in CableControler
+					Global.dragging = false
 					get_node("../DeviceController").update_devices(data_received.d)
 					get_node("../CableController").update_device_signal()
 				if data_received.t == "GET_LEVEL_TASKS_RESPONSE":
@@ -66,6 +67,10 @@ func _process(_delta):
 				if data_received.t == "UPDATE_DEVICE_POSITION_RESPONSE":
 					update_devices()
 					update_cables()
+				
+				if data_received.t == "UPDATE_LEVEL_ID_RESPONSE":
+					Global.level_id = data_received.d.level_id
+					update_game()
 			else:
 				print("Error ", error)
 
@@ -149,6 +154,7 @@ func show_level_succes_modal():
 func _on_next_level_button_pressed() -> void:
 	Global.level_id+=1
 	update_game()
+	socket.send_text('{"t": "UPDATE_LEVEL_ID", "d": {"level_id":'+ str(Global.level_id)+'}}')
 	get_node("../CanvasLayer/Sucess").visible = false
 
 
