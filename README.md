@@ -2,83 +2,75 @@
 
 The Wirecraft project!
 
+This project is a school project and is part of our studies. It isn't intended for public use at the moment, but you can give it a try if you want.
+It's a network simulation game, where the aim is to carry out various requested tasks (getting devices to communicate with each other, supporting a load of requests, setting up load balancing, etc... it's not a "client" of an existing game but an entire game).
+
 ## Installation instructions
 
 The project is divided into two parts: Godot for the client, python for the server.
 
 ### Install the client
 
-(#TODO) Download the distributed build in the release section at https://github.com/wirecraft-team/wirecraft/releases
-(for now use the build in /godot/build of the zip)
-#### Windows:
-    1. run wirecraft.exe
-#### Linux:
-    1. chmod +x wirecraftx86_64
-    2. ./wirecraftx86_64
-#### MacOs:
-    0. Change your OS 🤢
-    1. extract wirecraft.zip
-    2. Run the .app
-    3. Your system will say that the app can't be opened, and you should move it to bin. DON'T DO THIS 😭
-    4. Go to your System Settings -> Privacy & Security -> Security -> "Open Anyway"
-    32. Buy us a certificate
+Download the distributed build in the release section at https://github.com/wirecraft-team/wirecraft/releases  
+You can also get the latest builds from CI/CD artifacts at https://github.com/wirecraft-team/wirecraft/actions/workflows/godot-build.yml
 
-> [!IMPORTANT]
-> Don't forget to launch the server before starting the client
+#### Windows:
+1. Run wirecraft.exe
+
+#### Linux:
+1. `chmod +x wirecraftx86_64`
+2. `./wirecraftx86_64`
+
+#### MacOs:
+1. Extract wirecraft.zip
+2. Run the .app
+3. Your system will say that the app can't be opened, and you should move it to bin. DON'T DO THIS 😭
+4. Go to your System Settings -> Privacy & Security -> Security -> "Open Anyway"
+99. Buy us a certificate
 
 ### Install the server
 
 > [!IMPORTANT]
 > The project requires Python >= 3.12 ! (If you use `uv` or Docker, python version isn't an issue).
 
-#### Install from git
+Wirecraft server is a Python package. The options are available with the `--help` command.  
+You have plenty options to install & launch it, depending on whatever you prefer. Here are some instructions example, but fill free to use your favorite way.
 
-> [!NOTE]
-> To install the project at a specific version, you can specify a commit ID / a tag name / a branch.  
-> Replace `@main` by `@ee0d809` or `@vx.x.x` or `@branch` in the URL.
+#### Install the package
 
-Using pip:
+##### Directly from git
+
+You can install if from the git repo, for example:
 ```bash
 pip install git+https://github.com/wirecraft-team/wirecraft.git@main#subdirectory=python -U
-wirecraft-server
 ```
+Then run it with `wirecraft-server` CLI.
 
-Using uvx:
+Or install & run it directly with tools like `uvx` or `pipx`, for example:
 ```bash
 uvx --from uvx --from git+https://github.com/wirecraft-team/wirecraft.git@main#subdirectory=python wirecraft-server
 ```
 
-Using pipx: should be possible.
+> [!NOTE]
+> To install the project at a specific version, you can specify a commit ID / a tag name / a branch.  
+> Replace `@main` with `@ee0d809` or `@vx.x.x` or `@branch` in the URL.
 
-#### Install from sources
+##### From sources
 
-Clone the repo / download a zip.
+You can clone the repo, enter the `python directory`, and install from local directory, for example with `pip install .`.  
+You can also directly use `uv run wirecraft-server`.
 
-Using uv:
+#### Using docker & compose
+
+A Dockerfile & a docker-compose.yaml is available to launch directly the server using PostgreSQL as a backend database.
+
+`compose.yaml` is available at `python/compose.yaml`. Sources needs to be present to build is correctly.
+
 ```bash
-cd python
-uv sync --no-dev
-uv run wirecraft-server
+git clone https://github.com/wirecraft-team/wirecraft.git@main
+cd wirecraft/python
+docker compose up
 ```
-nb: `uv run wirecraft-server` install dev deps, I don't know why. (#TODO)  
-Instead of using `uv run`, you can also activate the venv at `.venv` and run `wirecraft-server`.
-
-Using pip:
-```bash
-cd python
-python -m venv venv
-source venv/bin/activate
-pip install .
-wirecraft-server
-```
-
-#### Install with Docker
-
-#TODO (soon)
-
-### Debug options
-
-- `show_center`: add a red square at position 0,0 in the map
 
 ## Development instructions
 
@@ -130,30 +122,16 @@ source .venv/bin/activate
 
 ### Debugging
 
-If you are no a big fan of `print("a")`, `print("aa")`, `print("aaaaaaaaaaaaaaaa")`, you can use the VSCode Debugger! (Or any other debugger, but I will only give explanations for VSCode).
+### Debug options
 
-> [!NOTE]
-> The following instructions will work, but I'm not sure if it is the best way to proceed, because it doesn't launch the script in the same way than using `uv run wirecraft`.  
-> However, it works, so be happy with that.
+You can add debugs options (that will add prints, etc...) for the server. Add parameters to the command with `--debug`. For example, `wirecraft-server --debug A --debug B`.
 
-Create a `.vscode/launch.json` and add the following config:
-```json
-{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Debug Wirecraft",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "src/client/__main__.py",
-            "console": "integratedTerminal"
-        }
-    ]
-}
-```
+The following debug options are available:
+- nones.
 
-Then, on the debugger tab, you can do `Debug Wirecraft`! Your program will stop on breakpoints, giving you the ability to see your variables, etc...
+### Log level
 
+You can increase the log level for the server using `--log-level`. Log levels are: `CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`.
 
 ## Recommended VSCode Extensions
 
