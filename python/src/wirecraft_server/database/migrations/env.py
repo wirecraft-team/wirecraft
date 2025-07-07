@@ -81,7 +81,7 @@ def run_migrations_online() -> None | asyncio.Task[None]:
 
 
 if context.is_offline_mode():
-    # This is useless be we keep it for the sake of completeness.
+    # This is useless but we keep it for the sake of completeness.
     run_migrations_offline()
 else:
     run_migrations_online()
