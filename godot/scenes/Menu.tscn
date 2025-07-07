@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://rgc5eaboq7ya"]
 
 [ext_resource type="Script" uid="uid://b8hv368bkb8nu" path="res://scripts/menu.gd" id="1_brqes"]
-[ext_resource type="Texture2D" uid="uid://yqhh2n7kx0ud" path="res://assets/logo.png" id="2_upctu"]
+[ext_resource type="Texture2D" uid="uid://blgjg8ymy6tp3" path="res://assets/wirecraft-logo.svg" id="2_upctu"]
 
 [node name="Menu" type="Control"]
 layout_mode = 3
