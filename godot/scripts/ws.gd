@@ -141,15 +141,14 @@ func check_completion(data):
 	for task in data:
 		if task.completed != true:
 			return
-	Global.level_id+=1
-	update_game()
 	show_level_succes_modal()
 	
 func show_level_succes_modal():
 	get_node("../CanvasLayer/Sucess").visible = true
 	
-	
 func _on_next_level_button_pressed() -> void:
+	Global.level_id+=1
+	update_game()
 	get_node("../CanvasLayer/Sucess").visible = false
 
 
