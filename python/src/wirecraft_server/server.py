@@ -129,7 +129,7 @@ class Server:
     async def _run(self):
         if ctx.database_type == "sqlite":
             path = Path(ctx.database)
-            db = f"sqlite+aiosqlite:///{path.resolve()}"
+            db = f"sqlite+aiosqlite:///{path.resolve().as_uri()}"
         elif ctx.database_type == "postgresql":
             db = f"postgresql+asyncpg://{ctx.database}"
         else:
