@@ -9,7 +9,7 @@ from ..static import levels
 from ..static.base import Task
 
 
-class GetLevelTasksData(BaseModel):
+class GetLevelIdData(BaseModel):
     """
     Payload for the get_level_tasks event.
     """
@@ -19,6 +19,15 @@ class GetLevelTasksData(BaseModel):
 
 class TasksHandler(Handler):
     @event
-    async def get_level_tasks(self, data: GetLevelTasksData) -> Sequence[Task]:
+    async def get_level_tasks(self, data: GetLevelIdData) -> Sequence[Task]:
         level = levels[data.level_id]
         return level.tasks
+
+
+class LevelIdHandler(Handler):
+    @event
+    async def update_level_id(self, data: GetLevelIdData) -> int:
+        """
+        Update the current level ID.
+        """
+        return data.level_id
