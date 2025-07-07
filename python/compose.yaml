@@ -11,6 +11,7 @@ services:
     build:
       context: .
       target: production
+    image: ghcr.io/wirecraft-team/wirecraft:main
     ports:
       - 8765:8765
     volumes:
