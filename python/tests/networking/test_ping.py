@@ -37,18 +37,23 @@ def test_direct_ping():
         ICMPCapability(),
     )
 
+    arp_cap_a = computer_a.get_capability(ARPCapability)
+    assert arp_cap_a is not None, "ARP table should be available on computer A"
+
+    arp_cap_b = computer_b.get_capability(ARPCapability)
+    assert arp_cap_b is not None, "ARP table should be available on computer B"
+
+    assert send_ping(computer_a, IPv4Address("192.168.0.3")) is False, "Ping should fail before connection!"
+
+    assert arp_cap_a.arp_table.root == {}, "ARP table of A should still be empty"
+
     computer_a.add_connection(0, computer_b, 0)
 
     assert send_ping(computer_a, IPv4Address("192.168.0.3")) is True, "Ping should be successful!"
 
-    arp_cap_a = computer_a.get_capability(ARPCapability)
-    assert arp_cap_a is not None, "ARP table should be available on computer A"
     assert arp_cap_a.arp_table[IPv4Address("192.168.0.3")] == MacAddress("BB:BB:BB:BB:BB:BB"), (
         "ARP table of A should contain the MAC address of computer B"
     )
-
-    arp_cap_b = computer_b.get_capability(ARPCapability)
-    assert arp_cap_b is not None, "ARP table should be available on computer B"
     assert arp_cap_b.arp_table[IPv4Address("192.168.0.2")] == MacAddress("AA:AA:AA:AA:AA:AA"), (
         "ARP table of B should contain the MAC address of computer A"
     )

@@ -34,7 +34,11 @@ def send_arp_request(source: NetworkDevice, target_ip: IPv4Address):
         source.log(f"The route for {target_ip} goes through a gateway, which is not allowed for ARP requests.")
         raise ValueError("ARP requests should be sent to a directly connected device, not through a gateway")
 
-    device = source.connected_devices.inverse[route.interface]
+    device = source.connected_devices.inverse.get(route.interface)
+    if device is None:
+        source.log(f"No device connected on the specified interface {route.interface}")
+        return
+
     source.log(f"Sending ARP request through the interface {route.interface} to {device}")
     request = EthernetFrame(
         destination_mac=MacAddress.broadcast(),
