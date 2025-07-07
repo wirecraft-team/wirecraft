@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/var/cache/apk \
     --mount=type=bind,source=src,target=src \
     uv sync --no-editable --locked
 
-FROM python:3.12.0-alpine AS base
+FROM python:3.12-alpine AS base
 RUN apk add --no-cache websocat
 COPY --parents --from=build /app/.venv /
 WORKDIR /app
