@@ -37,6 +37,8 @@ def test_direct_ping():
         ICMPCapability(),
     )
 
+    assert send_ping(computer_a, IPv4Address("192.168.0.3")) is False, "Ping should fail before connection!"
+
     computer_a.add_connection(0, computer_b, 0)
 
     assert send_ping(computer_a, IPv4Address("192.168.0.3")) is True, "Ping should be successful!"
