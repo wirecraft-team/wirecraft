@@ -133,6 +133,18 @@ The following debug options are available:
 
 You can increase the log level for the server using `--log-level`. Log levels are: `CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`.
 
+### Database
+
+Whenever you made an edit to the database layout, generate a new revision.  
+This can be achieved with the following commands:
+
+```bash
+uv run alembic upgrade head
+uv run alembic revision --autogenerate -m "message"
+```
+
+We first create an SQLite database locally and apply the last version declared by alembic with the `upgrade` command, then we create a new revision. `--autogenerate` will compares the **current state** of the database (we just created) and the declared model from the code.
+
 ## Recommended VSCode Extensions
 
 ### Python related extensions
