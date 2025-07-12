@@ -13,6 +13,7 @@ dependencies = [ #
     "pytest-asyncio>=1.0.0",
     "pydantic-extra-types>=2.10.5",
     "asyncpg>=0.30.0",
+    "alembic>=1.16.2",
 ]
 
 [project.scripts]
@@ -77,26 +78,13 @@ commands = [
         "pytest",
     ],
 ]
-# legacy_tox_ini = """
-# [tox]
-# envlist = py312
-
-# [testenv]
-# runner = uv-venv-lock-runner
-# description = run all checks on the code
-# commands =
-#     ruff format --check src
-#     ruff check src
-#     pyright src/
-#     pytest
-# """
-
 
 [tool.ruff]
 line-length = 120
 indent-width = 4
 target-version = "py312"
 src = ["src"]
+exclude = ["migrations"]
 
 [tool.ruff.lint]
 select = [

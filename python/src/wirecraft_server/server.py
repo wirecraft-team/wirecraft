@@ -5,6 +5,7 @@ import contextlib
 import json
 import logging
 import time
+import urllib.parse
 from pathlib import Path
 from typing import Any, Self
 
@@ -140,7 +141,9 @@ class Server:
     async def _run(self):
         if ctx.database_type == "sqlite":
             path = Path(ctx.database)
-            db = f"sqlite+aiosqlite://{path.resolve().as_uri()[7:]}"
+            resolved = path.resolve()
+            encoded_path = urllib.parse.quote(str(resolved))
+            db = f"sqlite+aiosqlite:///{encoded_path}"
         elif ctx.database_type == "postgresql":
             db = f"postgresql+asyncpg://{ctx.database}"
         else:
