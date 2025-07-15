@@ -19,8 +19,6 @@ from .database.session import async_session
 from .handlers import CablesHandler, DevicesHandler, LaunchHandler, TasksHandler
 from .handlers_core import Handler
 
-# from .network import update_devices, update_routing_tables
-
 TICK_RATE = 20
 
 logger = logging.getLogger(__name__)
@@ -28,10 +26,7 @@ logger = logging.getLogger(__name__)
 
 class Server:
     """
-    Cette classe est utilisée pour interagir avec la base de donnée, pour effectuer les différents calcules, sauvegarder
-    l'état d'une partie...
-    Elle est actuellement utilisée en tant que librairie, mais pourra (à terme) être réimplémentée pour fonctionner
-    seule en tant que serveur distant.
+    This is the core of the server, maintaining the state (current connections, database instance, background tasks...)
     """
 
     def __init__(self) -> None:
@@ -64,13 +59,14 @@ class Server:
             raise SystemExit(1)
 
     async def _wait_next_refresh(self):
+        """This method allow the server to do background tasks at a fixed rate."""
         delay = 1 / TICK_RATE
         _next = self._last_refresh + delay
         _now = time.perf_counter()
         _wait = _next - _now
         if _wait < 0:
             # TODO(airopi): implement server slow down (increase delay in case of poor performances)
-            logger.warning("Can't keep up ! %ss behind the normal refresh", -round(_wait, 3))
+            # logger.warning("Can't keep up ! %ss behind the normal refresh", -round(_wait, 3))
             self._last_refresh = _now
             return self._stop.is_set()
 
@@ -80,18 +76,20 @@ class Server:
         return self._stop.is_set()
 
     def _connect(self, ws: web.WebSocketResponse) -> Self:
+        """Handle a new client connection."""
         self.client_connexions.add(ws)
         logger.debug("New client connected")
         return self
 
     def _disconnect(self, ws: web.WebSocketResponse):
+        """Handle a client disconnection."""
         self.client_connexions.remove(ws)
         logger.debug("Client disconnected")
 
     async def _websocket_handler(self, request: web.Request):
         """
-        Il y a une tâche "websocket_handler" par client connecté.
-        Cette tâche maintient la connection et reçoit les messages du client.
+        There is an "websocket_handler" running per client.
+        This task maintain the connection and receive the messages from the client.
         """
         ws = web.WebSocketResponse()
         await ws.prepare(request)
@@ -110,9 +108,15 @@ class Server:
         return ws
 
     async def _handle_message(self, msg: WSMessage):
+        """
+        Handle the messages received from the client.
+        It will search for an handler for the event type and call it.
+        """
         data = from_json(msg.data)
         logger.debug("Received: %s", data)
         handled: bool = False
+        # Loop is used so multiple handler could handle the same event.
+        # This is useful for example if we want to log the event and then handle it.
         for handler in self.handlers:
             # t for type and d for data
             # inspired by https://discord.com/developers/docs/events/gateway-events#payload-structure
@@ -184,6 +188,9 @@ class Server:
             await asyncio.gather(*[ws.send_bytes(message) for ws in self.client_connexions])
 
     async def _tick(self):
+        """
+        This can be activated to tell the client what is the current tick.
+        """
         self._current_tick += 1
         if self._current_tick % 60 == 0:
             # await self.broadcast_json({"t": "TICK_EVENT", "d": self._current_tick})
