@@ -1,6 +1,6 @@
 [project]
 name = "wirecraft_server"
-version = "0.1b4"
+version = "1.0.0b1"
 requires-python = ">=3.12"
 dependencies = [ #
     "numpy>=2.2.2",
@@ -9,7 +9,6 @@ dependencies = [ #
     "sqlmodel>=0.0.22",
     "aiohttp>=3.11.12",
     "greenlet>=3.1.1",
-    "igraph>=0.11.8",
     "pytest-asyncio>=1.0.0",
     "pydantic-extra-types>=2.10.5",
     "asyncpg>=0.30.0",
