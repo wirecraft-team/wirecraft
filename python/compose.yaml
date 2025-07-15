@@ -14,8 +14,6 @@ services:
     image: ghcr.io/wirecraft-team/wirecraft:main
     ports:
       - 8765:8765
-    volumes:
-      - $PWD/data:/app/data
     depends_on:
       database:
         condition: service_healthy
