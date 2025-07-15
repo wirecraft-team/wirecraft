@@ -6,7 +6,7 @@ from ipaddress import IPv4Address
 from pydantic import BaseModel, Field
 from sqlmodel import select
 
-from ..database import Device, async_session
+from ..database import Device, LevelState, async_session
 from ..handlers_core import Handler, event
 
 
@@ -58,7 +58,13 @@ class GetDeviceData(BaseModel):
 class DevicesHandler(Handler):
     @event
     async def get_level_devices(self, data: GetLevelDevicesData) -> Sequence[Device]:
-        async with async_session() as session:
+        async with async_session.begin() as session:
+            statement = select(LevelState).where(LevelState.id == data.level_id)
+            result = await session.exec(statement)
+            level_state = result.one_or_none()
+            if level_state is None:
+                session.add(LevelState(id=data.level_id))
+                await session.flush()
             statement = select(Device).where(Device.level_id == data.level_id)
             result = await session.exec(statement)
             devices = result.all()

@@ -6,7 +6,7 @@ services:
     init: true
     environment:
       # Change this locally accordingly to the database environment, or use variable interpolation from a local .env
-      DATABASE: "wirecraft:wirecraft@postgres/wirecraft"
+      DATABASE: "admin:projetinfo1A@postgres/wirecraft"
       DATABASE_TYPE: "postgresql"
     build:
       context: .
@@ -30,10 +30,10 @@ services:
     hostname: postgres
     image: postgres:17.5-alpine
     environment:
-      - POSTGRES_USER=wirecraft
+      - POSTGRES_USER=admin
       - POSTGRES_DB=wirecraft
       # when in production, swap this locally
-      - POSTGRES_PASSWORD=wirecraft
+      - POSTGRES_PASSWORD=projetinfo1A
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 30s
