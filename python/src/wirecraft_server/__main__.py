@@ -31,10 +31,32 @@ from wirecraft_server.server import Server
     help="Set the database type.",
     type=click.Choice(["sqlite", "postgresql"], case_sensitive=False),
 )
+@click.option(
+    "--reset-database",
+    "-R",
+    "reset_database",
+    default=False,
+    envvar="RESET_DATABASE",
+    help="Reset the database.",
+    type=bool,
+    is_flag=True,
+    show_default=True,
+)
 def main(
-    debug_options: list[str], log_level: str, bind: str, database: str, database_type: Literal["sqlite", "postgresql"]
+    debug_options: list[str],
+    log_level: str,
+    bind: str,
+    database: str,
+    database_type: Literal["sqlite", "postgresql"],
+    reset_database: bool = False,
 ) -> None:
-    ctx.set(debug_options=debug_options, bind=bind, database=database, database_type=database_type)
+    ctx.set(
+        debug_options=debug_options,
+        bind=bind,
+        database=database,
+        database_type=database_type,
+        reset_database=reset_database,
+    )
     init_logger(log_level)
 
     server = Server()
