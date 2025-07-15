@@ -36,11 +36,36 @@ You can also get the latest builds from CI/CD artifacts at https://github.com/wi
 Wirecraft server is a Python package. The options are available with the `--help` command.  
 You have plenty options to install & launch it, depending on whatever you prefer. Here are some instructions example, but fill free to use your favorite way.
 
+#### Using docker & compose
+
+##### Using published images
+
+A compose.yaml is available to launch directly the server using PostgreSQL as a backend database.
+
+Your can copy the `compose.yaml` available at `python/compose.yaml`. Make `docker compose up` should pull the server image and run the project using PostgreSQL.
+
+> [!NOTE]
+> Only the `main` tag version is available at the moment.
+
+##### Building the image locally
+
+The Dockerfile is available in the `python/` directory. You can then build easily the image using docker compose: 
+
+```bash
+git clone https://github.com/wirecraft-team/wirecraft.git@main
+cd wirecraft/python
+docker compose up --build
+```
+
+> [!NOTE]
+> To install the project at a specific version, you can specify a commit ID / a tag name / a branch.  
+> Replace `@main` with `@ee0d809` or `@vx.x.x` or `@branch` in the URL.
+
 #### Install the package
 
 ##### Directly from git
 
-You can install if from the git repo, for example:
+You can install it from the git repo, for example:
 ```bash
 pip install git+https://github.com/wirecraft-team/wirecraft.git@main#subdirectory=python -U
 ```
@@ -59,18 +84,6 @@ uvx --from uvx --from git+https://github.com/wirecraft-team/wirecraft.git@main#s
 
 You can clone the repo, enter the `python directory`, and install from local directory, for example with `pip install .`.  
 You can also directly use `uv run wirecraft-server`.
-
-#### Using docker & compose
-
-A Dockerfile & a docker-compose.yaml is available to launch directly the server using PostgreSQL as a backend database.
-
-`compose.yaml` is available at `python/compose.yaml`. Sources needs to be present to build is correctly.
-
-```bash
-git clone https://github.com/wirecraft-team/wirecraft.git@main
-cd wirecraft/python
-docker compose up
-```
 
 ## Development instructions
 
