@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class NetworkDevice(BaseModel):
-    mac_address: MacAddress  # mac_address should be private, but we need to initialize it in the constructor, and Pydantic does not allow private fields to be set in the constructor
+    mac_address: MacAddress
     # Map a device to a port
     connected_devices: BidirectionalMap[NetworkDevice, int] = Field(
         init=False, default_factory=BidirectionalMap["NetworkDevice", int]
